@@ -9,14 +9,11 @@
     <parent>
         <artifactId>JOnema</artifactId>
         <groupId>fr.onema.JOnema</groupId>
-        <relativePath>../pom.xml</relativePath>
         <version>1.0</version>
     </parent>
 
     <build>
         <directory>build</directory>
-        <sourceDirectory>src/</sourceDirectory>
-        <testSourceDirectory>test/</testSourceDirectory>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -65,9 +62,4 @@
             <scope>compile</scope>
         </dependency>
     </dependencies>
-
-    <properties>
-        <parentBasedir>../</parentBasedir>
-    </properties>
-
 </project>
