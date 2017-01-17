@@ -16,7 +16,34 @@ Architecture de SIREN
 ![SIREN Image](resources/DiagrammeArchiFonctionnelleDrone.png "SIREN")
 Architecture du Simulateur
 ![Simulateur Image](resources/DiagrammeArchiFonctionnelleSimulation.png "Simulateur")   
-   
+
+
+## Lieutenants
+Seul les lieutenants peuvent valider un merge request sur la branch ```MASTER``` du dépôt.
+### Java
+- **Thibault** YOU (*Code*)
+- **Loïc** SZYMANSKI (*Code*)
+- **François** VANDERPERRE (*Algorithme*)
+
+### Python
+- **Jérôme** GOASDOUE 
+
+## Import du projet
+Il est nécessaire que GIT soit installé sur le poste.
+Pour configurer GIT lors de la première exécution :
+```
+git config --global user.name "John DOE"            # Prénom NOM
+git config --global user.email johndoe@example.com  # Adresse email
+```
+
+Pour cloner le dépot en ligne de commande :
+```
+git clone https://lab.collombj.com/LastProject/siren-java-project.git
+```
+
+Pour cloner le dépot depuis une interface, il faut utiliser l'URL suivante :
+> [https://lab.collombj.com/LastProject/siren-java-project.git](https://lab.collombj.com/LastProject/siren-java-project.git)
+
 ## Compilation et Exécution
 ### Compilation
 Pour générer les JARs :
@@ -39,7 +66,7 @@ Les jars sont stockés dans :
             |--simulator-1.0.jar                       # JAR Simulateur sans dépendances
             |--simulator-1.0-jar-with-dependencies.jar # JAR Simulateur avec dépendances
 ```
-
+**ATTENTION** : Les JARs ne sont pas présents dans le dépot de base. Il est impératif de les générer (soit par ligne de commande, soit avec IntelliJ) 
 ### Exécution
 Pour lancer un JAR :
 ```
