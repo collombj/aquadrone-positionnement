@@ -10,6 +10,14 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <sonar.projectName>${project.artifactId}</sonar.projectName>
+        <sonar.projectVersion>${project.version}</sonar.projectVersion>
+        <sonar.language>java</sonar.language>
+        <sonar.exclusions>src/main/java/org/mavlink/**</sonar.exclusions>
+        <jacoco.basedir>${project.build.directory}/</jacoco.basedir>
+        <sonar.jacoco.reportPath>${jacoco.basedir}/jacoco.exec</sonar.jacoco.reportPath>
+        <jacoco.ut.outputdir>${jacoco.basedir}/jacoco-ut-out</jacoco.ut.outputdir>
+        <sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
     </properties>
 
     <dependencies>
@@ -49,7 +57,37 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>coverage-per-test</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.19.1</version>
+                        <configuration>
+                            <properties>
+                                <property>
+                                    <name>listener</name>
+                                    <value>org.sonar.java.jacoco.JUnitListener</value>
+                                </property>
+                            </properties>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
 
+            <dependencies>
+                <dependency>
+                    <groupId>org.sonarsource.java</groupId>
+                    <artifactId>sonar-jacoco-listeners</artifactId>
+                    <version>4.3.0.7717</version>
+                    <scope>test</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
     <modules>
         <module>lib</module>
         <module>app</module>
