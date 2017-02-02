@@ -4,4 +4,4 @@ maven-build:
     - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -Dmaven.test.failure.ignore=true
 #   - mvn sonar:sonar -Dsonar.host.url=http://163.172.212.188:9000
     - mvn sonar:sonar -Dsonar.host.url=http://127.0.0.1:9000 -Dsonar.junit.reportsPath=build/surefire-reports -Dsonar.jacoco.reportPaths=build/jacoco.exec
-    - cat build/site/jacoco/index.html
+#    - cat build/site/jacoco/index.html
