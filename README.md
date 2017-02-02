@@ -18,6 +18,29 @@ Architecture du Simulateur
 ![Simulateur Image](resources/DiagrammeArchiFonctionnelleSimulation.png "Simulateur")   
 
 
+## Prérequis logiciel
+Les outils suivants sont requis :
+- JDK 8u112 (+ JRE)
+    - QAPlugin Suite
+        - Checkstyle
+        - FindBugs
+        - PMD
+- Scene Builder
+- QGIS 2.18 (*optionnel* : remplacable par la VM de référence)
+- IntelliJ Ultimate 2016.3
+- PyCharm Professional 2016.3 (pour le dev QGIS/python - *si nécessaire*)
+- CLion 2016.3 (pour le dev ArduSub - **si dev drone nécessaire**)
+- VMware WorkStation
+    - VM de référence : http://szymans.com/VM/AquaDrone-VM.zip
+    - VM de développement ArduSub : http://szymans.com/VM/AquaDrone-Dev.zip
+
+## Découpage des semaines
+- S1 (06/02): Développement majeur
+- S2 (13/02): Débuggage des applications et des algorithmes
+- S3 (20/02): Développement de l'interface JavaFX (SIREN)
+- S4 (27/02): Développement du module QGIS
+- S5 (06/03) : Livraison et test du drone
+
 ## Lieutenants
 Seul les lieutenants peuvent valider un merge request sur la branch ```MASTER``` du dépôt.
 ### Java
