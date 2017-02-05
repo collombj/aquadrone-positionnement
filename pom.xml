@@ -17,7 +17,9 @@
         <jacoco.basedir>${project.build.directory}/</jacoco.basedir>
         <sonar.jacoco.reportPath>${jacoco.basedir}/jacoco.exec</sonar.jacoco.reportPath>
         <jacoco.ut.outputdir>${jacoco.basedir}/jacoco-ut-out</jacoco.ut.outputdir>
-        <sonar.jacoco.reportMissing.force.zero>true</sonar.jacoco.reportMissing.force.zero>
+
+        <sonar.sources>src/main/java</sonar.sources>
+        <sonar.tests>src/test/java</sonar.tests>
     </properties>
 
     <dependencies>
