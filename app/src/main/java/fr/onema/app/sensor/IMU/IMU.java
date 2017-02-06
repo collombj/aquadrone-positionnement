@@ -1,6 +1,4 @@
 package fr.onema.app.sensor.IMU;
-
-import org.mavlink.IMAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 
 /**
