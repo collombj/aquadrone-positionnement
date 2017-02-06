@@ -1,9 +1,11 @@
 package fr.onema.simulator.Virtualizer.Entry;
 
+import fr.onema.simulator.File.CSV;
+
 /**
  * Created by Theo on 06/02/2017.
  */
-public class ReferenceEntry /* Implements CSV */{
+public class ReferenceEntry implements CSV {
     private int timestamp;
     private int lat;
     private int lon;

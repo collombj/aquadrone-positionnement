@@ -1,4 +1,5 @@
 package fr.onema.simulator.Virtualizer.Entry;
+import fr.onema.simulator.File.CSV;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
@@ -6,7 +7,7 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 /**
  * Created by Theo on 06/02/2017.
  */
-public class VirtualizerEntry /* implements CSV */{
+public class VirtualizerEntry implements CSV {
     private final long timestamp;
     private final int GPSLat;
     private final int GPSLon;
