@@ -1,5 +1,6 @@
-package fr.onema.simulator.Virtualizer.Entry;
-import fr.onema.simulator.File.CSV;
+package fr.onema.simulator.virtualizer.entry;
+
+import fr.onema.lib.file.CSV;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
@@ -9,9 +10,9 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
  */
 public class VirtualizerEntry implements CSV {
     private final long timestamp;
-    private final int GPSLat;
-    private final int GPSLon;
-    private final int GPSAlt;
+    private final int gpsLat;
+    private final int gpsLon;
+    private final int gpsAlt;
     private final short xacc;
     private final short yacc;
     private final short zacc;
@@ -26,10 +27,11 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer
+     *
      * @param timestamp
-     * @param GPSLat
-     * @param GPSLon
-     * @param GPSAlt
+     * @param gpsLat
+     * @param gpsLon
+     * @param gpsAlt
      * @param xacc
      * @param yacc
      * @param zacc
@@ -42,11 +44,11 @@ public class VirtualizerEntry implements CSV {
      * @param pressure
      * @param temperature
      */
-    public VirtualizerEntry(long timestamp, int GPSLat, int GPSLon, int GPSAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
-        this.GPSLat = GPSLat;
-        this.GPSLon = GPSLon;
-        this.GPSAlt = GPSAlt;
+        this.gpsLat = gpsLat;
+        this.gpsLon = gpsLon;
+        this.gpsAlt = gpsAlt;
         this.xacc = xacc;
         this.yacc = yacc;
         this.zacc = zacc;
@@ -62,15 +64,16 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message GPS en format MavLink
+     *
      * @return GPSMAVLinkMessage
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
         msg.time_usec = System.currentTimeMillis();
         msg.fix_type = 6;
-        msg.lat = this.GPSLat;
-        msg.lon = this.GPSLon;
-        msg.alt = this.GPSAlt;
+        msg.lat = this.gpsLat;
+        msg.lon = this.gpsLon;
+        msg.alt = this.gpsAlt;
         // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
         msg.eph = Short.MAX_VALUE; // Dilution horizontale
         msg.epv = Short.MAX_VALUE; // Dilution verticale
@@ -82,6 +85,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message IMU en format MavLink
+     *
      * @return IMUMAVLinkMessage
      */
     public msg_scaled_imu getIMUMessage() {
@@ -101,6 +105,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * retourne le message de pression en format MavLink
+     *
      * @return PressureMAVLinkMessage
      */
     public msg_scaled_pressure getPressureMessage() {
@@ -113,6 +118,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * retourne le message de temperature en format MavLink
+     *
      * @return PressureMAVLinkMessage
      */
     public msg_scaled_pressure getTemperatureMessage() {
@@ -129,30 +135,34 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS
-     * @return GPSLat
+     *
+     * @return gpsLat
      */
-    public int getGPSLat() {
-        return GPSLat;
+    public int getGpsLat() {
+        return gpsLat;
     }
 
     /**
      * Récupère la longitude du GPS
-     * @return GPSLon
+     *
+     * @return gpsLon
      */
-    public int getGPSLon() {
-        return GPSLon;
+    public int getGpsLon() {
+        return gpsLon;
     }
 
     /**
      * Récupère l'altitude du GPS
-     * @return GPSAlt
+     *
+     * @return gpsAlt
      */
-    public int getGPSAlt() {
-        return GPSAlt;
+    public int getGpsAlt() {
+        return gpsAlt;
     }
 
     /**
      * Récupère l'acceleration en X
+     *
      * @return xacc
      */
     public short getXacc() {
@@ -161,6 +171,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Y
+     *
      * @return yacc
      */
     public short getYacc() {
@@ -169,6 +180,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Z
+     *
      * @return zacc
      */
     public short getZacc() {
@@ -177,6 +189,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en X
+     *
      * @return xgyro
      */
     public short getXgyro() {
@@ -185,6 +198,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Y
+     *
      * @return ygyro
      */
     public short getYgyro() {
@@ -193,6 +207,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Z
+     *
      * @return zgyro
      */
     public short getZgyro() {
@@ -201,6 +216,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en X
+     *
      * @return xmag
      */
     public short getXmag() {
@@ -209,6 +225,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Y
+     *
      * @return ymag
      */
     public short getYmag() {
@@ -217,6 +234,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Z
+     *
      * @return zmag
      */
     public short getZmag() {
@@ -225,6 +243,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la pression
+     *
      * @return pressure
      */
     public float getPressure() {
@@ -233,9 +252,34 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la temperature
+     *
      * @return temperature
      */
     public short getTemperature() {
         return temperature;
+    }
+
+    @Override
+    public String toCSV() {
+        return timestamp + "," +
+                gpsLat + "," +
+                gpsLon + "," +
+                gpsAlt + "," +
+                xacc + "," +
+                yacc + "," +
+                zacc + "," +
+                xgyro + "," +
+                ygyro + "," +
+                zgyro + "," +
+                xmag + "," +
+                ymag + "," +
+                zmag + "," +
+                pressure + "," +
+                temperature;
+    }
+
+    @Override
+    public String getCSVHeader() {
+        return "timestamp, gps_lat, xacc, yacc, zacc, xgyro, ygyro, zgyro, xmag, ymag, zmag, pressure, temperature";
     }
 }

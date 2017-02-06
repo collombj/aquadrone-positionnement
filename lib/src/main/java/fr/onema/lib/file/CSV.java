@@ -20,5 +20,4 @@ public interface CSV {
      * @return Le header CSV associé.
      */
     String getCSVHeader();
-
 }

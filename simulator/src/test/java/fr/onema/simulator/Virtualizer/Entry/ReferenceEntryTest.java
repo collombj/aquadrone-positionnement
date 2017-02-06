@@ -1,12 +1,18 @@
-package fr.onema.simulator.Virtualizer.Entry;
+package fr.onema.simulator.virtualizer.entry;
 
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 public class ReferenceEntryTest {
-    /**Positive Parameter Values**/
-    private static ReferenceEntry entry = new ReferenceEntry(1,2,3,4,5,6);
+    /**
+     * Positive Parameter Values
+     **/
+    private static ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4, 5, 6);
+    /**
+     * Negative Parameter Values
+     **/
+    private static ReferenceEntry entryNegative = new ReferenceEntry(1, -2, -3, -4, 5, -6);
 
     @Test
     public void testGetTemperature() {
@@ -43,8 +49,10 @@ public class ReferenceEntryTest {
         assertEquals(entry.toCSV(), "1,2,3,4,5,6");
     }
 
-    /**Negative Parameter Values**/
-    private static ReferenceEntry entryNegative = new ReferenceEntry(1,-2,-3,-4,5,-6);
+    @Test
+    public void testCSVHeader() {
+        assertEquals(entry.getCSVHeader(), "timestamp, latitude, longitude, altitude, direction, temperature");
+    }
 
     @Test
     public void testGetNegativeTemperature() {
@@ -67,12 +75,12 @@ public class ReferenceEntryTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDeclarationNegativeTimestamp(){
-        ReferenceEntry entryNegative = new ReferenceEntry(-1,-2,-3,-4,5,-6);
+    public void testDeclarationNegativeTimestamp() {
+        ReferenceEntry entryNegative = new ReferenceEntry(-1, -2, -3, -4, 5, -6);
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testDeclarationNegativeDirection(){
-        ReferenceEntry entryNegative = new ReferenceEntry(1,-2,-3,-4,-5,-6);
+    public void testDeclarationNegativeDirection() {
+        ReferenceEntry entryNegative = new ReferenceEntry(1, -2, -3, -4, -5, -6);
     }
 }
