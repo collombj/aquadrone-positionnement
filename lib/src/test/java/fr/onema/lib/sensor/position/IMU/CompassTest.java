@@ -1,8 +1,8 @@
-package fr.onema.app.sensor.position.IMU;
+package fr.onema.lib.sensor.position.IMU;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Created by strock on 06/02/2017.

@@ -1,10 +1,11 @@
-package fr.onema.app.sensor.position.IMU;
+package fr.onema.lib.sensor.position.IMU;
 
 
 import org.junit.Test;
+import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 
-import static org.junit.Assert.*;
-import org.mavlink.messages.ardupilotmega.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by strock on 06/02/2017.

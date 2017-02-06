@@ -1,5 +1,6 @@
-package fr.onema.app.sensor.IMU;
-import org.mavlink.messages.ardupilotmega.*;
+package fr.onema.lib.sensor.position.IMU;
+
+import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 
 /**
  * Created by strock on 06/02/2017.
@@ -15,7 +16,13 @@ public class IMU {
         this.compass = compass;
     }
 
-    public IMU build (msg_scaled_imu msg){
+
+    /**
+     *
+     * @param msg recuperation du flux mavlink
+     * @return
+     */
+    public static IMU build (msg_scaled_imu msg){
 
         Accelerometer accelerometer = new Accelerometer(msg.xacc,msg.yacc,msg.zacc);
         Gyroscope gyroscope= new Gyroscope(msg.xgyro,msg.ygyro,msg.zgyro);
@@ -26,7 +33,7 @@ public class IMU {
 
     }
 
-    /*public IMU build (long timestamp,prevLat,prevLON,PrevAlt,prevDir,lat,lon, alt, dir){
+    /*public static IMU build (long timestamp,prevLat,prevLON,PrevAlt,prevDir,lat,lon, alt, dir){
 
       //to do
 
@@ -36,7 +43,7 @@ public class IMU {
     }*/
 
 
-    public Accelerometer getAccelerometer() {
+    public  Accelerometer getAccelerometer() {
         return accelerometer;
     }
 
