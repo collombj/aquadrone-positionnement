@@ -45,7 +45,7 @@ public class msg_optical_flow extends MAVLinkMessage {
      */
     public int flow_y;
     /**
-     * Sensor ID
+     * sensor ID
      */
     public int sensor_id;
     /**
@@ -68,14 +68,14 @@ public class msg_optical_flow extends MAVLinkMessage {
      * Decode message with raw data
      */
     public void decode(LittleEndianDataInputStream dis) throws IOException {
-        time_usec = (long) dis.readLong();
-        flow_comp_m_x = (float) dis.readFloat();
-        flow_comp_m_y = (float) dis.readFloat();
-        ground_distance = (float) dis.readFloat();
+        time_usec = dis.readLong();
+        flow_comp_m_x = dis.readFloat();
+        flow_comp_m_y = dis.readFloat();
+        ground_distance = dis.readFloat();
         flow_x = (int) dis.readShort();
         flow_y = (int) dis.readShort();
-        sensor_id = (int) dis.readUnsignedByte() & 0x00FF;
-        quality = (int) dis.readUnsignedByte() & 0x00FF;
+        sensor_id = dis.readUnsignedByte() & 0x00FF;
+        quality = dis.readUnsignedByte() & 0x00FF;
     }
 
     /**

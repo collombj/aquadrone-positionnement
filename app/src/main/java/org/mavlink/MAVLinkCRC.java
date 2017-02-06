@@ -6,7 +6,7 @@
  * Copyright (C) 2012 Guillaume Helle.
  * Project : MAVLINK Java
  * Module : org.mavlink.library
- * File : org.mavlink.MAVLinkCRC.java
+ * file : org.mavlink.MAVLinkCRC.java
  * Author : Guillaume Helle
  * <p>
  * ======================================================
