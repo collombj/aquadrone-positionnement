@@ -29,11 +29,11 @@ public class msg_optical_flow_rad extends MAVLinkMessage {
      */
     public long integration_time_us;
     /**
-     * Flow in radians around X axis (Sensor RH rotation about the X axis induces a positive flow. Sensor linear motion along the positive Y axis induces a negative flow.)
+     * Flow in radians around X axis (sensor RH rotation about the X axis induces a positive flow. sensor linear motion along the positive Y axis induces a negative flow.)
      */
     public float integrated_x;
     /**
-     * Flow in radians around Y axis (Sensor RH rotation about the Y axis induces a positive flow. Sensor linear motion along the positive X axis induces a positive flow.)
+     * Flow in radians around Y axis (sensor RH rotation about the Y axis induces a positive flow. sensor linear motion along the positive X axis induces a positive flow.)
      */
     public float integrated_y;
     /**
@@ -61,7 +61,7 @@ public class msg_optical_flow_rad extends MAVLinkMessage {
      */
     public int temperature;
     /**
-     * Sensor ID
+     * sensor ID
      */
     public int sensor_id;
     /**
@@ -84,18 +84,18 @@ public class msg_optical_flow_rad extends MAVLinkMessage {
      * Decode message with raw data
      */
     public void decode(LittleEndianDataInputStream dis) throws IOException {
-        time_usec = (long) dis.readLong();
-        integration_time_us = (int) dis.readInt() & 0x00FFFFFFFF;
-        integrated_x = (float) dis.readFloat();
-        integrated_y = (float) dis.readFloat();
-        integrated_xgyro = (float) dis.readFloat();
-        integrated_ygyro = (float) dis.readFloat();
-        integrated_zgyro = (float) dis.readFloat();
-        time_delta_distance_us = (int) dis.readInt() & 0x00FFFFFFFF;
-        distance = (float) dis.readFloat();
+        time_usec = dis.readLong();
+        integration_time_us = dis.readInt() & 0x00FFFFFFFF;
+        integrated_x = dis.readFloat();
+        integrated_y = dis.readFloat();
+        integrated_xgyro = dis.readFloat();
+        integrated_ygyro = dis.readFloat();
+        integrated_zgyro = dis.readFloat();
+        time_delta_distance_us = dis.readInt() & 0x00FFFFFFFF;
+        distance = dis.readFloat();
         temperature = (int) dis.readShort();
-        sensor_id = (int) dis.readUnsignedByte() & 0x00FF;
-        quality = (int) dis.readUnsignedByte() & 0x00FF;
+        sensor_id = dis.readUnsignedByte() & 0x00FF;
+        quality = dis.readUnsignedByte() & 0x00FF;
     }
 
     /**
