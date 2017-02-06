@@ -6,7 +6,11 @@
  * Copyright (C) 2012 Guillaume Helle.
  * Project : MAVLink Java Generator
  * Module : org.mavlink.library
+<<<<<<< HEAD:lib/src/main/java/org/mavlink/messages/MAVLinkMessage.java
  * file : org.mavlink.messages.MAVLinkMessage.java
+=======
+ * File : org.MAVLinkMessage.java
+>>>>>>> 20-dev-de-virtualizerentry:lib/src/main/java/org/mavlink/messages/MAVLinkMessage.java
  * Author : Guillaume Helle
  * <p>
  * ======================================================
