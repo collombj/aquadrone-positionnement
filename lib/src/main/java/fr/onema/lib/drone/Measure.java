@@ -39,6 +39,7 @@ public interface Measure extends CSV {
 
     /**
      * Méthode permettant d'obtenir l'affichage associé à une mesure.
+     * L'affichage sera du type: "{value} Unit".
      *
      * @return Une chaine de caractère représentant l'affichage de la mesure associée.
      */
