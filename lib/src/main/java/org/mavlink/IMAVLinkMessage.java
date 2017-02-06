@@ -6,7 +6,7 @@
  * Copyright (C) 2012 Guillaume Helle.
  * Project : MAVLINK Java
  * Module : org.mavlink.library
- * File : org.mavlink.messages.IMAVLinkMessage.java
+ * file : org.mavlink.messages.IMAVLinkMessage.java
  * Author : Guillaume Helle
  * <p>
  * ======================================================
@@ -33,36 +33,36 @@ public interface IMAVLinkMessage {
     /**
      * Packet start in MAVLink V1.0
      */
-    public final static byte MAVPROT_PACKET_START_V10 = (byte) 0xFE;
+    byte MAVPROT_PACKET_START_V10 = (byte) 0xFE;
 
     /**
      * Packet start in MAVLink V1.0 (String)
      */
-    public final static String STRING_MAVPROT_PACKET_START_V10 = "0xFE";
+    String STRING_MAVPROT_PACKET_START_V10 = "0xFE";
 
     /**
      * Packet start in MAVLink V0.9
      */
-    public final static byte MAVPROT_PACKET_START_V09 = (byte) 0x55;
+    byte MAVPROT_PACKET_START_V09 = (byte) 0x55;
 
     /**
      * Packet start in MAVLink V0.9 (String)
      */
-    public final static String STRING_MAVPROT_PACKET_START_V09 = "0x55";
+    String STRING_MAVPROT_PACKET_START_V09 = "0x55";
 
     /**
      * Len to add to payload for CRC computing
      */
-    public final static int CRC_LEN = 5;
+    int CRC_LEN = 5;
 
     /**
      * Use to initialize CRC before computing
      */
-    public final static int X25_INIT_CRC = 0x0000ffff;
+    int X25_INIT_CRC = 0x0000ffff;
 
     /**
      * Use to validate CRC
      */
-    public final static int X25_VALIDATE_CRC = 0x0000f0b8;
+    int X25_VALIDATE_CRC = 0x0000f0b8;
 
 }

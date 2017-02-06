@@ -15,7 +15,7 @@ import java.io.IOException;
 
 /**
  * Class msg_file_transfer_protocol
- * File transfer message
+ * file transfer message
  **/
 public class msg_file_transfer_protocol extends MAVLinkMessage {
     public static final int MAVLINK_MSG_ID_FILE_TRANSFER_PROTOCOL = 110;
@@ -52,11 +52,11 @@ public class msg_file_transfer_protocol extends MAVLinkMessage {
      * Decode message with raw data
      */
     public void decode(LittleEndianDataInputStream dis) throws IOException {
-        target_network = (int) dis.readUnsignedByte() & 0x00FF;
-        target_system = (int) dis.readUnsignedByte() & 0x00FF;
-        target_component = (int) dis.readUnsignedByte() & 0x00FF;
+        target_network = dis.readUnsignedByte() & 0x00FF;
+        target_system = dis.readUnsignedByte() & 0x00FF;
+        target_component = dis.readUnsignedByte() & 0x00FF;
         for (int i = 0; i < 251; i++) {
-            payload[i] = (int) dis.readUnsignedByte() & 0x00FF;
+            payload[i] = dis.readUnsignedByte() & 0x00FF;
         }
     }
 

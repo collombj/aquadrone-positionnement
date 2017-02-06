@@ -6,7 +6,7 @@
  * Copyright (C) 2012 Guillaume Helle.
  * Project : MAVLINK Java
  * Module : org.mavlink.library
- * File : org.mavlink.messages.MAVLinkReader.java
+ * file : org.mavlink.messages.MAVLinkReader.java
  * Author : Guillaume Helle
  * <p>
  * ======================================================
@@ -86,7 +86,6 @@ public class MAVLinkReader {
     private long nbMessagesReceived = 0;
     private long totalBytesReceived = 0;
     private int offset = 0;
-    ;
 
     /**
      * Constructor with MAVLink 1.0 by default and without stream. Must be used whith byte array read methods.
