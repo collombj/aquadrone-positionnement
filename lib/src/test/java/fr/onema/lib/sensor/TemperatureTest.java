@@ -1,4 +1,4 @@
-package fr.onema.lib;
+package fr.onema.lib.sensor;
 
 import fr.onema.lib.sensor.Temperature;
 import org.junit.Test;
