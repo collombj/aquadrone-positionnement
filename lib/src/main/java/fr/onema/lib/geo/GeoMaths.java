@@ -9,14 +9,6 @@ import java.util.Objects;
  */
 // TODO : complete
 public class GeoMaths {
-
-<<<<<<< HEAD
-    // TODO : complete
-    public static double cartesianDistance(CartesianCoordinate pos1, CartesianCoordinate pos2) {
-        Objects.requireNonNull(pos1);
-        Objects.requireNonNull(pos2);
-        return Math.sqrt(Math.pow((pos2.x - pos1.x),2) + Math.pow((pos2.y - pos1.y),2) + Math.pow((pos2.z - pos1.z),2));
-=======
     private static final double DEG_2_RAD = Math.PI/180;
     private static final double RAD_2_DEG = 180/Math.PI;
     private static final int R = 6_378_137; //Rayon terrestre à l'équateur en mètres
@@ -152,6 +144,5 @@ public class GeoMaths {
         double accelerationZ = ((velocityCurrent.vz - velocityRef.vz / timestamp) * MS2_TO_G) * 1_000;
 
         return new Accelerometer((int)accelerationX, (int)accelerationY, (int)accelerationZ);
->>>>>>> 50-geomaths
     }
 }

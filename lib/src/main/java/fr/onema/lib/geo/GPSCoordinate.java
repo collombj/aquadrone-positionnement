@@ -8,10 +8,6 @@ public class GPSCoordinate {
     public final long lat;
     public final long lon;
     public final long alt;
-
-<<<<<<< HEAD
-    // TODO : complete
-=======
     /**
      * Construit une coordonnée GPS (lat, lon, alt)
      *
@@ -19,7 +15,6 @@ public class GPSCoordinate {
      * @param lon la longitude
      * @param alt l'altitude
      */
->>>>>>> 50-geomaths
     public GPSCoordinate(long lat, long lon, long alt) {
         this.lat = lat;
         this.lon = lon;
