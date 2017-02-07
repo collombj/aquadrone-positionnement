@@ -50,7 +50,7 @@ public class IMU {
     }*/
 
 
-    public  Accelerometer getAccelerometer() {
+    public Accelerometer getAccelerometer() {
         return accelerometer;
     }
 

@@ -2,16 +2,16 @@ package fr.onema.lib.sensor.position;
 
 import fr.onema.lib.drone.Measure;
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.sensor.position.IMU.IMU;
 
 import java.util.List;
+import java.util.Objects;
 
 
 /**
  * Created by strock on 07/02/2017.
  * recalcul l'ensemble des measures et les entres dans la base de données
  */
-public abstract class algorithm {
+public abstract class Algorithm {
 
     private static int maxIterations = 800;
     private boolean init = false;
@@ -20,13 +20,15 @@ public abstract class algorithm {
     /**
      * initialisation de la classe avec GPS
      *
-     * @param GPS position de base Gps
+     * @param gps position de base Gps
      */
-    public void init(GPS GPS) {
-        initGPS = GPS;
+    public void init(GPS gps) {
+        Objects.requireNonNull(gps);
+        initGPS = gps;
         init = true;
     }
 
+    // TODO : complete
     /**
      * calcul les nouvelles positions et les positionne en base de données
      *
@@ -34,7 +36,7 @@ public abstract class algorithm {
      * @return si l'initialisation n'ets pas faite  true si l'ensemble est fait
      */
     public boolean calcul(List<Measure> measures) {
-        if (init == true) {
+        if (init) {
 
 
             if (measures.size() > maxIterations) {
@@ -52,7 +54,7 @@ public abstract class algorithm {
         return init;
     }
 
-
+    // TODO : complete
     /**
      * calcul des nouvelles positions selon l'algorithme
      *
@@ -61,10 +63,10 @@ public abstract class algorithm {
      * @return la nouvelle position
      */
     public Position correctPosition(Position first, Position defaut,GPS gps) {
-        //to do
         return new Position();
     }
 
+    // TODO : complete
     /**
      * utilité à définir peut renvoyer la liste des nouvelles positions en cas de besoins
      */
