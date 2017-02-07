@@ -1,9 +1,12 @@
-package fr.onema.app.siren;
+package fr.onema.lib.tools;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
+import java.util.Properties;
 
 /**
  * Created by Jérôme on 06/02/2017.
@@ -12,9 +15,11 @@ public class Configuration {
     private static String path;
     private String host;
     private String port;
+    private String db;
     private String user;
     private String passwd;
     private String notifyKey;
+    private String srid;
 
 
     /**
@@ -33,25 +38,6 @@ public class Configuration {
             throw new IllegalArgumentException("No path was specified");
         }else {
             path = settingPath;
-        }
-    }
-
-    /**
-     * Classe implémentant Properties, pour conserver l'ordre des propriétés
-     * d'un fichier .properties
-     */
-    public class OrderedProperties extends Properties {
-        private final LinkedHashSet<Object> keyOrder = new LinkedHashSet<>();
-
-        @Override
-        public synchronized Enumeration<Object> keys() {
-            return Collections.enumeration(keyOrder);
-        }
-
-        @Override
-        public synchronized Object put(Object key, Object value) {
-            keyOrder.add(key);
-            return super.put(key, value);
         }
     }
 
@@ -75,9 +61,11 @@ public class Configuration {
             input.close();
             host = properties.getProperty("db.host");
             port = properties.getProperty("db.port");
+            db = properties.getProperty("db.name");
             user = properties.getProperty("db.user");
             passwd = properties.getProperty("db.passwd");
             notifyKey = properties.getProperty("db.notify-key");
+            srid = properties.getProperty("geo.srid");
             if (!properties.getProperty("flow.lat").equals(String.valueOf(x))) {
                 properties.replace("flow.lat", String.valueOf(x));
             }
@@ -148,5 +136,42 @@ public class Configuration {
      */
     public String getNotifyKey() {
         return notifyKey;
+    }
+
+    /**
+     * On récupère le SRID(système de projection) utilisé dans l'application.
+     *
+     * @return Le SRID de l'application
+     */
+    public String getSrid() {
+        return srid;
+    }
+
+    /**
+     * On récupère le nom de la base de données.
+     *
+     * @return Le nom de la base de données.
+     */
+    public String getDb() {
+        return db;
+    }
+
+    /**
+     * Classe implémentant Properties, pour conserver l'ordre des propriétés
+     * d'un fichier .properties
+     */
+    public class OrderedProperties extends Properties {
+        private final LinkedHashSet<Object> keyOrder = new LinkedHashSet<>();
+
+        @Override
+        public synchronized Enumeration<Object> keys() {
+            return Collections.enumeration(keyOrder);
+        }
+
+        @Override
+        public synchronized Object put(Object key, Object value) {
+            keyOrder.add(key);
+            return super.put(key, value);
+        }
     }
 }

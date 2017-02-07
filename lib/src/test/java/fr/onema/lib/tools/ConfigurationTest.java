@@ -1,7 +1,5 @@
-package fr.onema.app;
+package fr.onema.lib.tools;
 
-import fr.onema.app.siren.Configuration;
-import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;

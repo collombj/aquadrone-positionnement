@@ -3,6 +3,7 @@ package fr.onema.lib.database;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.tools.Configuration;
 
 import java.sql.*;
 import java.util.LinkedList;
@@ -16,27 +17,20 @@ import java.util.Properties;
  */
 public class DatabaseDriver {
     private String host;
-    private int port;
+    private String port;
     private String base;
     private String user;
     private String password;
     private String srid;
     private Connection connector;
 
-    private DatabaseDriver(String host, int port, String base, String user, String srid, String password) {
+    private DatabaseDriver(String host, String port, String base, String user, String password, String srid) {
         this.host = host;
         this.port = port;
         this.base = base;
         this.user = user;
         this.password = password;
         this.srid = srid;
-    }
-
-    public class DatabaseDriverFactory {//TODO doit recevoir une configuration en argument
-
-        public DatabaseDriver getDatabaseDriver() {
-            return null;
-        }
     }
 
     public void initAsReadable() {
@@ -132,12 +126,119 @@ public class DatabaseDriver {
         return null;
     }
 
-    public int insertDive(long dateStart, long dateEnd) {//TODO
-        return 0;
+    /**
+     * Insert une nouvelle Dive dans la base de données.
+     *
+     * @param diveEntity L'objet représentant une plongée dans le programme.
+     * @return L'ID de la nouvelle plongée et -1 en cas d'erreur lors de la récupération de l'ID.
+     * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
+     */
+    public int insertDive(DiveEntity diveEntity) throws SQLException {
+        PreparedStatement insertStatement = null;
+        String insertString = "INSERT INTO Dive VALUES (?,?)";
+
+        try {
+            insertStatement = connector.prepareStatement(insertString);
+
+            insertStatement.setLong(1, diveEntity.getStartTime());
+            insertStatement.setLong(2, diveEntity.getEndTime());
+
+            insertStatement.execute();
+
+            // Get the generated key from the previous insert.
+            try (ResultSet generatedKeys = insertStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+        } finally {
+            if (insertStatement != null) {
+                insertStatement.close();
+            }
+        }
+        return -1;
     }
 
-    public int insertMeasure() {//TODO
-        return 0;
+    /**
+     * Méthode permettant d'insérer des mesures dans la base de données.
+     *
+     * @param measureEntity L'objet entité de représentant une mesure réalisée.
+     * @param diveID        L'identifiant de la plongée associée.
+     * @param measureInfoID L'identifiant du type de la mesure réalisée.
+     * @return L'ID de la nouvelle mesure et -1 en cas d'erreur pour lors de la récupération de l'ID.
+     * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
+     */
+    public int insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) throws SQLException {
+        PreparedStatement insertStatement = null;
+        String insertString = "INSERT INTO Measure VALUES (" +
+                "?" +
+                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?)";
+
+        try {
+            insertStatement = connector.prepareStatement(insertString);
+
+            // Timestamp
+            insertStatement.setLong(1, measureEntity.getTimestamp());
+
+            // location_corrected
+            insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+            insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+            insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            insertStatement.setString(5, srid);
+
+            // location_brut
+            insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+            insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+            insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            insertStatement.setString(9, srid);
+
+            //acceleration XYZ
+            insertStatement.setInt(10, measureEntity.getAccelerationX());
+            insertStatement.setInt(11, measureEntity.getAccelerationY());
+            insertStatement.setInt(12, measureEntity.getAccelerationZ());
+
+            //precision_cm
+            insertStatement.setInt(13, measureEntity.getPrecisionCm());
+
+            // measure_value
+            insertStatement.setString(14, measureEntity.getMeasureValue());
+
+            // rotationXYZ
+            insertStatement.setInt(15, measureEntity.getRotationX());
+            insertStatement.setInt(16, measureEntity.getRotationY());
+            insertStatement.setInt(17, measureEntity.getRotationZ());
+
+            // dive_id
+            insertStatement.setInt(18, diveID);
+
+            // measure_information_id
+            insertStatement.setInt(19, measureInfoID);
+
+            insertStatement.execute();
+
+            try (ResultSet generatedKeys = insertStatement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    return generatedKeys.getInt(1);
+                }
+            }
+
+        } finally {
+            if (insertStatement != null) {
+                insertStatement.close();
+            }
+        }
+        return -1;
     }
 
     public void updatePosition(int measureId, long lat, long lon, long alt, int precision) {
@@ -176,6 +277,19 @@ public class DatabaseDriver {
         } catch (SQLException e) {
             System.out.println("Failed updating dive n°" + diveId);
             e.printStackTrace();
+        }
+    }
+
+    public class DatabaseDriverFactory {
+
+        public DatabaseDriver getDatabaseDriver(Configuration config) {
+            return new DatabaseDriver(
+                    config.getHost(),
+                    config.getPort(),
+                    config.getDb(),
+                    config.getUser(),
+                    config.getPasswd(),
+                    config.getSrid());
         }
     }
 
