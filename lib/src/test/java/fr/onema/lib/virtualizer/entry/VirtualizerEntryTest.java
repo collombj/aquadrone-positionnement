@@ -44,5 +44,22 @@ public class VirtualizerEntryTest {
         assertNotNull(virtual.getTemperatureMessage());
     }
 
+    @Test
+    public void constructorNotNull() {
+        VirtualizerEntry ref = new VirtualizerEntry(1,1,1,1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
+        assertNotNull(ref);
+    }
+
+    @Test
+    public void toCSVTest() {
+        VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
+        assertEquals("1,1,1,1,1,1,1,1,1,1,1,1,1,1.0,1,0,0,0,0", ref.toCSV());
+    }
+
+    @Test
+    public void getCSVHeaderTest() {
+        VirtualizerEntry ref = new VirtualizerEntry(1,1,1,1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
+        assertEquals("timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature,Latitude,Longitude,Altitude,Direction",ref.getCSVHeader());
+    }
 
 }

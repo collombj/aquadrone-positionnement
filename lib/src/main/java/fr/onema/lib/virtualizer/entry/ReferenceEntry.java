@@ -81,13 +81,22 @@ public class ReferenceEntry implements CSV {
         return temperature;
     }
 
+    /**
+     * Renvoi une string des valeurs au format CSV
+     * @return la chaine de caractère CSV
+     */
     @Override
     public String toCSV() {
-        return null;
+        return this.timestamp + "," + this.lat + "," + this.lon + "," + this.alt + "," + this.direction + "," + this.temperature;
     }
 
+    /**
+     * Renvoi une string des champs au format CSV
+     * @return la chaine de caractère CSV
+     */
     @Override
     public String getCSVHeader() {
-        return null;
+        return "timestamp,Latitude,Longitude,Altitude,Direction,Temperature";
     }
+
 }

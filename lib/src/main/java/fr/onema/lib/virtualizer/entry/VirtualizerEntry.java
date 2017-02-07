@@ -25,21 +25,21 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer
-     * @param timestamp
-     * @param GPSLat
-     * @param GPSLon
-     * @param GPSAlt
-     * @param xacc
-     * @param yacc
-     * @param zacc
-     * @param xgyro
-     * @param ygyro
-     * @param zgyro
-     * @param xmag
-     * @param ymag
-     * @param zmag
-     * @param pressure
-     * @param temperature
+     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
+     * @param GPSLat Latitude du GPS
+     * @param GPSLon Longitude du GPS
+     * @param GPSAlt Altitude du GPS
+     * @param xacc Acceleration en x
+     * @param yacc Acceleration en y
+     * @param zacc Acceleration en z
+     * @param xgyro Rotation en x
+     * @param ygyro Rotation en y
+     * @param zgyro Rotation en z
+     * @param xmag Orientation magnétique en x
+     * @param ymag Orientation magnétique en y
+     * @param zmag Orientation magnétique en z
+     * @param pressure Pression
+     * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int GPSLat, int GPSLon, int GPSAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
@@ -238,13 +238,23 @@ public class VirtualizerEntry implements CSV {
         return temperature;
     }
 
+     /**
+     * Renvoi une string des valeurs au format CSV
+     * @return la chaine de caractère CSV
+     */
     @Override
     public String toCSV() {
-        return null;
+        return this.timestamp + "," + this.GPSLon + "," + this.GPSLat + "," + this.GPSAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature + ",0,0,0,0";
     }
 
+
+     /**
+      * Renvoi une string des champs au format CSV
+      * @return la chaine de caractère CSV
+      */
     @Override
     public String getCSVHeader() {
-        return null;
+        return "timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature,Latitude,Longitude,Altitude,Direction";
     }
+
 }
