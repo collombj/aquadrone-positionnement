@@ -8,6 +8,10 @@ import java.util.Objects;
 /**
  * Created by you on 06/02/2017.
  */
+
+/***
+ * Classe représentant les mesures GPS
+ */
 public class GPS extends Sensor {
     private GPSCoordinate position;
     private int direction;
@@ -48,18 +52,13 @@ public class GPS extends Sensor {
         return direction;
     }
 
-    /***
-     * Retourne le format CSV de la mesure GPS
-     * @return La chaîne CSV correspondante
-     */
     @Override
     public String toCSV() {
         return super.getTimestamp() + "," + getPosition().lat + "," + getPosition().lon + "," + getPosition().alt + "," + getDirection();
     }
 
-    // TODO : to implement
     @Override
     public String getCSVHeader() {
-        return null;
+        return "timestamp, latitude, longitude, altitude, direction";
     }
 }

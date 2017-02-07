@@ -7,7 +7,6 @@ package fr.onema.lib.database.entity;
  *
  * Cette classe représente une plongée telle qu'elle est modélisée dans la base de données
  */
-
 public class DiveEntity {
     private int id;
     private long startTime;

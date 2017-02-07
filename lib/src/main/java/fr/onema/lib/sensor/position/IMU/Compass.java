@@ -4,7 +4,6 @@ package fr.onema.lib.sensor.position.IMU;
  * Created by strock on 06/02/2017.
  */
 public class Compass {
-
     private final int xMagnetic;
     private final int yMagnetic;
     private final int zMagnetic;
@@ -21,14 +20,17 @@ public class Compass {
         this.zMagnetic = zMagnetic;
     }
 
+    // TODO : complete
     public int getxMagnetic() {
         return xMagnetic;
     }
 
+    // TODO : complete
     public int getyMagnetic() {
         return yMagnetic;
     }
 
+    // TODO : complete
     public int getzMagnetic() {
         return zMagnetic;
     }

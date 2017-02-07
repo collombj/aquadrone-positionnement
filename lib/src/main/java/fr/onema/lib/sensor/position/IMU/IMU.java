@@ -16,41 +16,28 @@ public class IMU {
         this.compass = compass;
     }
 
-
     /**
-     *
+     * Constructeur de l'IMU
      * @param msg recuperation du flux mavlink
-     * @return
      */
     public static IMU build (msg_scaled_imu msg){
-
         Accelerometer accelerometer = new Accelerometer(msg.xacc,msg.yacc,msg.zacc);
         Gyroscope gyroscope= new Gyroscope(msg.xgyro,msg.ygyro,msg.zgyro);
         Compass compass = new Compass (msg.xmag,msg.ymag,msg.zmag);
-
         return new IMU(accelerometer,gyroscope,compass);
-
-
     }
 
-    /*public static IMU build (long timestamp,prevLat,prevLON,PrevAlt,prevDir,lat,lon, alt, dir){
-
-      //to do
-
-        return new IMU(accelerometer,gyroscope,compass);
-
-
-    }*/
-
-
+    // TODO : complete
     public  Accelerometer getAccelerometer() {
         return accelerometer;
     }
 
+    // TODO : complete
     public Gyroscope getGyroscope() {
         return gyroscope;
     }
 
+    // TODO : complete
     public Compass getCompass() {
         return compass;
     }

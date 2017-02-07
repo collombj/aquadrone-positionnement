@@ -1,4 +1,4 @@
-package fr.onema.simulator.virtualizer.entry;
+package fr.onema.simulator.Virtualizer.Entry;
 
 import fr.onema.lib.file.CSV;
 
