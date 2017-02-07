@@ -5,11 +5,18 @@ package fr.onema.lib.geo;
  */
 public class CartesianCoordinate {
 
-    public final int x;
-    public final int y;
-    public final int z;
+    public final double x;
+    public final double y;
+    public final double z;
 
-    public CartesianCoordinate(int x, int y, int z) {
+    /**
+     * Construit une coordonnée cartésienne
+     *
+     * @param x la valeur sur x
+     * @param y la valeur sur y
+     * @param z la valeur sur z
+     */
+    public CartesianCoordinate(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
