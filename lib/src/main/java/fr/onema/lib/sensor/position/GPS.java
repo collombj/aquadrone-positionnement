@@ -1,20 +1,20 @@
-package fr.onema.app.sensor.position;
+package fr.onema.lib.sensor.position;
 
 import fr.onema.lib.geo.GPSCoordinate;
 import org.mavlink.messages.ardupilotmega.msg_global_position_int;
-
+import fr.onema.lib.sensor.*;
 import java.util.Objects;
 
 /**
  * Created by you on 06/02/2017.
  */
-public class GPS { // implements Sensor
+public class GPS extends Sensor {
     private GPSCoordinate position;
     private int direction;
 
     // TODO : maybe a single constructor is better
     private GPS(long timestamp, long lat, long lon, long alt) {
-        // TODO : set timestamp to abstract
+        super(timestamp);
         this.position = new GPSCoordinate(lat, lon, alt);
     }
 
@@ -48,5 +48,18 @@ public class GPS { // implements Sensor
         return direction;
     }
 
-    // TODO : implement to CSV
+    /***
+     * Retourne le format CSV de la mesure GPS
+     * @return La chaîne CSV correspondante
+     */
+    @Override
+    public String toCSV() {
+        return super.getTimestamp() + "," + getPosition().lat + "," + getPosition().lon + "," + getPosition().alt + "," + getDirection();
+    }
+
+    // TODO : to implement
+    @Override
+    public String getCSVHeader() {
+        return null;
+    }
 }
