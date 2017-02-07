@@ -142,4 +142,44 @@ public class MeasureEntity {
     public String getMeasureValue() {
         return measureValue;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MeasureEntity that = (MeasureEntity) o;
+
+        if (id != that.id) return false;
+        if (timestamp != that.timestamp) return false;
+        if (accelerationX != that.accelerationX) return false;
+        if (accelerationY != that.accelerationY) return false;
+        if (accelerationZ != that.accelerationZ) return false;
+        if (rotationX != that.rotationX) return false;
+        if (rotationY != that.rotationY) return false;
+        if (rotationZ != that.rotationZ) return false;
+        if (precisionCm != that.precisionCm) return false;
+        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
+        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
+            return false;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
+        result = 31 * result + (locationBrut != null ? locationBrut.hashCode() : 0);
+        result = 31 * result + (locationCorrected != null ? locationCorrected.hashCode() : 0);
+        result = 31 * result + accelerationX;
+        result = 31 * result + accelerationY;
+        result = 31 * result + accelerationZ;
+        result = 31 * result + rotationX;
+        result = 31 * result + rotationY;
+        result = 31 * result + rotationZ;
+        result = 31 * result + precisionCm;
+        result = 31 * result + (measureValue != null ? measureValue.hashCode() : 0);
+        return result;
+    }
 }

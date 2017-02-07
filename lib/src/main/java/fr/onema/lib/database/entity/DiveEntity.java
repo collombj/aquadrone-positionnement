@@ -55,4 +55,25 @@ public class DiveEntity {
     public long getEndTime() {
         return endTime;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        DiveEntity that = (DiveEntity) o;
+
+        if (id != that.id) return false;
+        if (startTime != that.startTime) return false;
+        return endTime == that.endTime;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id;
+        result = 31 * result + (int) (startTime ^ (startTime >>> 32));
+        result = 31 * result + (int) (endTime ^ (endTime >>> 32));
+        return result;
+    }
 }

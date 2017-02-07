@@ -70,7 +70,7 @@ public class DatabaseDriver {
         }
     }
 
-    public List<MeasureEntity> getMeasureFrom(DiveEntity dive) {
+    public List<MeasureEntity> getMeasureFrom(DiveEntity dive) { //TODO surcharger
         List<MeasureEntity> mesures = new LinkedList<>();
         try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) as brutX," +
                 "ST_Y(location_brut) as brutY, ST_Z(location_brut) as brutZ, ST_X(location_corrected) as correctX," +
@@ -280,9 +280,9 @@ public class DatabaseDriver {
         }
     }
 
-    public class DatabaseDriverFactory {
+    public static class DatabaseDriverFactory {
 
-        public DatabaseDriver getDatabaseDriver(Configuration config) {
+        public static DatabaseDriver getDatabaseDriver(Configuration config) {
             return new DatabaseDriver(
                     config.getHost(),
                     config.getPort(),
@@ -292,5 +292,7 @@ public class DatabaseDriver {
                     config.getSrid());
         }
     }
+
+
 
 }
