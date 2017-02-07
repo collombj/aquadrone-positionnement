@@ -44,3 +44,6 @@ hs_err_pid*
 
 # Exclude build directory
 build/
+
+
+*.iml

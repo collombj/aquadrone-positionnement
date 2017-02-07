@@ -3,6 +3,14 @@
     <artifactId>lib</artifactId>
 
     <description>Maven de la librairie</description>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
     <modelVersion>4.0.0</modelVersion>
     <name>Lib</name>
     <packaging>jar</packaging>
