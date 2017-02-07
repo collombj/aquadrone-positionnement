@@ -1,6 +1,8 @@
 package fr.onema.simulator.Virtualizer.Entry;
 
-public class ReferenceEntry /*implements CSV*/{
+import fr.onema.lib.file.CSV;
+
+public class ReferenceEntry implements CSV {
     private final int timestamp;
     private final int lat;
     private final int lon;
@@ -17,11 +19,11 @@ public class ReferenceEntry /*implements CSV*/{
      * @param direction la direction que prend le point
      * @param temperature la température au niveau du point
      */
-    ReferenceEntry(int timestamp, int lat, int lon, int alt, int direction, int temperature){
-        if(timestamp < 0 || direction < 0){
+    public ReferenceEntry(int timestamp, int lat, int lon, int alt, int direction, int temperature) {
+        if (timestamp < 0 || direction < 0) {
             throw new IllegalArgumentException("Negative value for 'timestamp' or 'direction'");
-        }else{
-            this.timestamp =timestamp;
+        } else {
+            this.timestamp = timestamp;
             this.direction = direction;
         }
         this.lat = lat;
@@ -30,59 +32,41 @@ public class ReferenceEntry /*implements CSV*/{
         this.temperature = temperature;
     }
 
-    /**
-     * On récupère la valeur de 'timestamp'
-     * @return timestamp
-     */
     public int getTimestamp() {
         return timestamp;
     }
 
-    /**
-     * On récupère la valeur de 'lat'
-     * @return lat
-     */
     public int getLat() {
         return lat;
     }
 
-    /**
-     * On récupère la valeur de 'lon'
-     * @return lon
-     */
     public int getLon() {
         return lon;
     }
 
-    /**
-     * On récupère la valeur de 'alt'
-     * @return alt
-     */
     public int getAlt() {
         return alt;
     }
 
-    /**
-     * On récupère la valeur de 'direction'
-     * @return direction
-     */
     public int getDirection() {
         return direction;
     }
 
-    /**
-     * On récupère la valeur de 'temperature'
-     * @return temperature
-     */
     public int getTemperature() {
         return temperature;
     }
 
     /**
-     * On crée puis récupère une chaîne de caractères représentant une entrée CSV
+     * Sortie au format CSV
      * @return CSVString
      */
     public String toCSV() {
         return timestamp + "," + lat + "," + lon + "," + alt + "," + direction + "," + temperature;
+    }
+
+    // TODO
+    @Override
+    public String getCSVHeader() {
+        return null;
     }
 }

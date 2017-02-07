@@ -8,34 +8,45 @@ import java.util.Objects;
 /**
  * Created by you on 06/02/2017.
  */
-public class GPS {
+public class GPS { // implements Sensor
     private GPSCoordinate position;
     private int direction;
 
-    public GPS(long timestamp, int lat, int lon, int alt) {
-        Objects.requireNonNull(timestamp);
-        Objects.requireNonNull(lat);
-        Objects.requireNonNull(lon);
-        Objects.requireNonNull(alt);
+    // TODO : maybe a single constructor is better
+    private GPS(long timestamp, long lat, long lon, long alt) {
+        // TODO : set timestamp to abstract
         this.position = new GPSCoordinate(lat, lon, alt);
     }
 
-    public GPS(long timestamp, int lat, int lon, int alt, int direction) {
+    private GPS(long timestamp, long lat, long lon, long alt, int direction) {
         this(timestamp, lat, lon, alt);
-        this.direction = Objects.requireNonNull(direction);
+        this.direction = direction;
     }
 
-    public void build(msg_global_position_int msg) {
+    /***
+     * Builder de l'objet GPS
+     * @param msg Message correspondant à la mesure GPS en protocole MavLink
+     */
+    public static GPS build(msg_global_position_int msg) {
         Objects.requireNonNull(msg);
-        this.position = new GPSCoordinate(msg.lat, msg.lon, msg.alt);
-        this.direction = msg.hdg;
+        return new GPS(msg.time_boot_ms, msg.lat, msg.lon, msg.alt, msg.hdg);
     }
 
+    /**
+     * Retourne les coordonnées de la mesure
+     * @return Coordonnées de la mesure
+     */
     public GPSCoordinate getPosition() {
         return position;
     }
 
+    /***
+     * Retourne l'orientation de la mesure en degrés
+     * @return Orientation de la mesure
+     */
     public int getDirection() {
         return direction;
     }
+
+    // TODO : implement to CSV
 }
