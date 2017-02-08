@@ -5,8 +5,6 @@ import fr.onema.lib.geo.GPSCoordinate;
 import java.util.Objects;
 
 /**
- * Created by Francois Vanderperre on 06/02/2017.
- * <p>
  * Cette classe représente une mesure réalisée au cours de la plongée pour la base de données
  */
 public class MeasureEntity {
@@ -36,7 +34,7 @@ public class MeasureEntity {
      * @param rotationY         La rotation autour de l'axe Y du drone
      * @param rotationZ         La rotation autour de l'axe Z du drone
      * @param precisionCm       La precision estimée de la mesure
-     * @param measureValue
+     * @param measureValue      La valeur de la mesure.
      */
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
@@ -71,7 +69,7 @@ public class MeasureEntity {
      * @param rotationY         La rotation autour de l'axe Y du drone
      * @param rotationZ         La rotation autour de l'axe Z du drone
      * @param precisionCm       La precision estimée de la mesure
-     * @param measureValue
+     * @param measureValue      La valeur de la mesure.
      */
     public MeasureEntity(int id, long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
@@ -181,6 +179,9 @@ public class MeasureEntity {
         return precisionCm;
     }
 
+    /**
+     * @return La valeur de la mesure.
+     */
     public String getMeasureValue() {
         return measureValue;
     }
