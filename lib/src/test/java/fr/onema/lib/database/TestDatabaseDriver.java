@@ -89,7 +89,6 @@ public class TestDatabaseDriver {
 
         dbDriver.updatePosition(mesure.getId(), 350, 350, 350, 2);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
-        System.out.println(mesures.size());
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
             if (mes2 != null) {
