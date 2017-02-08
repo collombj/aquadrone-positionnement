@@ -185,9 +185,9 @@ public class DatabaseDriver {
     /**
      * Méthode permettant d'insérer des mesures dans la base de données.
      *
-     * @param measureEntity L'objet entité de représentant une mesure réalisée.
-     * @param diveID        L'identifiant de la plongée associée.
-     * @param measureInfoID L'identifiant du type de la mesure réalisée.
+     * @param measureEntity             L'objet entité de représentant une mesure réalisée.
+     * @param diveID                    L'identifiant de la plongée associée.
+     * @param measureInfoID             L'objet MeasureInformationEntity représenant une information de mesure.
      * @return L'ID de la nouvelle mesure et -1 en cas d'erreur pour lors de la récupération de l'ID.
      * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
      */
