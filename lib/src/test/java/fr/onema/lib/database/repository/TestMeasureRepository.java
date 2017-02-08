@@ -99,6 +99,7 @@ public class TestMeasureRepository {
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        repository.insertDive(dive);
         repository.updateStartTime(dive.getId(),timestamp.getTime());
         DiveEntity d2 = repository.getLastDive();
         assertTrue(d2.getStartTime() == timestamp.getTime());
@@ -110,6 +111,7 @@ public class TestMeasureRepository {
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()+25000);
+        repository.insertDive(dive);
         repository.updateEndTime(dive.getId(),timestamp.getTime());
         DiveEntity d2 = repository.getLastDive();
         assertTrue(d2.getEndTime() == timestamp.getTime());

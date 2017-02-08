@@ -39,39 +39,6 @@ public class MeasureRepository {
     }
 
     /**
-     * Cette classe sert de factory a MeasureRepository
-     */
-    public static class MeasureRepositoryBuilder {
-        /**
-         * @param config
-         *  un object de configuration contenant les informations de connexion à la base
-         * @return
-         *  un MeasureRepository utilisable en lecture et en ecriture
-         */
-        public static MeasureRepository getRepositoryWritable(Configuration config)
-                throws SQLException, ClassNotFoundException {
-            Objects.requireNonNull(config);
-            MeasureRepository db = new MeasureRepository(config);
-            db.setWritable();
-            return db;
-        }
-
-        /**
-         * @param config
-         *  un object de configuration contenant les informations de connexion à la base
-         * @return
-         *  un MeasureRepository utilisable en lecture uniquement
-         */
-        public static MeasureRepository getRepositoryReadable(Configuration config)
-                throws SQLException, ClassNotFoundException {
-            Objects.requireNonNull(config);
-            MeasureRepository db = new MeasureRepository(config);
-            db.setReadable();
-            return db;
-        }
-    }
-
-    /**
      * Cette methode insère une Dive dans la base de données
      * @param dive
      *  La Dive à insérer
@@ -141,15 +108,51 @@ public class MeasureRepository {
                 measureId, positionCorrected.lat, positionCorrected.lon, positionCorrected.alt, precisionCm);
     }
 
-
+    /**
+     * Récupère les mesures d'une plongée donnée.
+     *
+     * @param dive La plongée.
+     * @return La liste de mesures.
+     * @throws SQLException En cas d'erreur de connexion à la base.
+     */
     public List<MeasureEntity> getMeasureFrom(DiveEntity dive) throws SQLException {
         return dbDriver.getMeasureFrom(dive);
     }
+
     /**
      * Permet de fermer la connection avec la base de données.
      * Utiliser setReadable ou setWrittable pour la réouvrir.
      */
     public void closeConnection() throws SQLException {
         dbDriver.closeConnection();
+    }
+
+    /**
+     * Cette classe sert de factory a MeasureRepository
+     */
+    public static class MeasureRepositoryBuilder {
+        /**
+         * @param config un object de configuration contenant les informations de connexion à la base
+         * @return un MeasureRepository utilisable en lecture et en ecriture
+         */
+        public static MeasureRepository getRepositoryWritable(Configuration config)
+                throws SQLException, ClassNotFoundException {
+            Objects.requireNonNull(config);
+            MeasureRepository db = new MeasureRepository(config);
+            db.setWritable();
+            return db;
+        }
+
+        /**
+         * @param config un object de configuration contenant les informations de connexion à la base
+         * @return un MeasureRepository utilisable en lecture uniquement
+         */
+        public static MeasureRepository getRepositoryReadable(Configuration config)
+                throws SQLException, ClassNotFoundException {
+            Objects.requireNonNull(config);
+            MeasureRepository db = new MeasureRepository(config);
+            db.setReadable();
+            return db;
+        }
     }
 }
