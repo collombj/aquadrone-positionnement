@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -42,7 +43,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveDive() throws Exception {
-        DiveEntity dive = new DiveEntity(1, 120, 250);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         dbDriver.insertDive(dive);
         DiveEntity dive2 = dbDriver.getLastDive();
@@ -52,7 +53,7 @@ public class TestDatabaseDriver {
 
     @Test(expected = SQLException.class)
     public void testCannotWrite() throws Exception {
-        DiveEntity dive = new DiveEntity(1, 120, 250);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsReadable();
         dbDriver.insertDive(dive);
         DiveEntity dive2 = dbDriver.getLastDive();
@@ -62,12 +63,12 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveMeasure() throws Exception {
-        DiveEntity dive = new DiveEntity(2, 120, 250);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
-        dbDriver.insertDive(dive);
+        int idDive = dbDriver.insertDive(dive);
 
-        MeasureEntity mesure = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
-        dbDriver.insertMeasure(mesure, 2, 0);
+        MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
+        dbDriver.insertMeasure(mesure, idDive, 1);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
         MeasureEntity mes2 = mesures.get(0);
         if (mes2 != null) {
@@ -75,22 +76,7 @@ public class TestDatabaseDriver {
         } else {
             throw new Exception("Aucune valeur trouvée en base");
         }
-    }
-
-
-    @Test
-    public void getLastDive() throws Exception {
-        DiveEntity dive = new DiveEntity(5, 120, 250);
-        DiveEntity dive2 = new DiveEntity(6, 135, 500);
-        DiveEntity dive3 = new DiveEntity(4, 430, 250);
-        DiveEntity dive4 = new DiveEntity(3, 170, 750);
-        dbDriver.initAsWritable();
-        dbDriver.insertDive(dive2);
-        dbDriver.insertDive(dive3);
-        dbDriver.insertDive(dive4);
-
-        DiveEntity dive5 = dbDriver.getLastDive();
-        assertTrue(dive2.equals(dive5));
+        dbDriver.closeConnection();
     }
 
 
@@ -98,8 +84,8 @@ public class TestDatabaseDriver {
     public void updatePosition() throws Exception {
 
         dbDriver.initAsWritable();
-        dbDriver.updatePosition(1, 350, 350, 350, 2);
-        DiveEntity dive = new DiveEntity(2, 120, 250);
+        dbDriver.updatePosition(9, 350, 350, 350, 2);
+        DiveEntity dive = new DiveEntity(75, System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
@@ -111,27 +97,33 @@ public class TestDatabaseDriver {
                 throw new Exception("Aucune valeur trouvée en base");
             }
         } else throw new Exception("Liste de valeurs nulle");
-
+        dbDriver.closeConnection();
     }
 
     @Test
     public void startRecording() throws Exception {
-        DiveEntity dive = new DiveEntity(8, 1, 2);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
-        dbDriver.insertDive(dive);
+        int diveID = dbDriver.insertDive(dive);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        dbDriver.startRecording(1500, 8);
+        dbDriver.startRecording(timestamp.getTime(), diveID);
         DiveEntity d2 = dbDriver.getLastDive();
-        assertTrue(d2.getStartTime() == 1500);
+        assertTrue(d2.getStartTime() == timestamp.getTime());
+        dbDriver.closeConnection();
     }
 
     @Test
     public void stopRecording() throws Exception {
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
-        dbDriver.stopRecording(1500, 8);
-        DiveEntity d2 = dbDriver.getLastDive();
-        assertTrue(d2.getEndTime() == 1500);
+        int diveID = dbDriver.insertDive(dive);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
+        dbDriver.stopRecording(timestamp.getTime(), diveID);
+        DiveEntity d2 = dbDriver.getLastDive();
+        assertTrue(d2.getEndTime() == timestamp.getTime());
+        dbDriver.closeConnection();
     }
 
 

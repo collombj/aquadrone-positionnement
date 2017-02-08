@@ -22,10 +22,10 @@ public class DatabaseDriver {
     private String base;
     private String user;
     private String password;
-    private String srid;
+    private int srid;
     private Connection connector;
 
-    private DatabaseDriver(String host, String port, String base, String user, String password, String srid) {
+    private DatabaseDriver(String host, String port, String base, String user, String password, int srid) {
         Objects.requireNonNull(host);
         Objects.requireNonNull(port);
         Objects.requireNonNull(base);
@@ -84,12 +84,12 @@ public class DatabaseDriver {
                 "ST_Y(location_brut) as brutY, ST_Z(location_brut) as brutZ, ST_X(location_corrected) as correctX," +
                 "ST_Y(location_corrected) as correctY, ST_Z(location_corrected) as correctZ, accelerationX," +
                 " accelerationY, accelerationZ, rotationX, rotationY, rotationZ, precision_cm, measure_value" +
-                "  FROM Measure WHERE #dive_id=? ORDER BY id")) {
+                "  FROM Measure WHERE dive_id=? ORDER BY id")) {
             ps.setInt(1, dive.getId());
             ResultSet results = ps.executeQuery();
             while (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
-                long timestamp = Long.parseLong(results.getString("timestamp"));
+                long timestamp = results.getTimestamp("timestamp").getTime();
                 long brutX = Long.parseLong(results.getString("brutX"));
                 long brutY = Long.parseLong(results.getString("brutY"));
                 long brutZ = Long.parseLong(results.getString("brutZ"));
@@ -123,8 +123,8 @@ public class DatabaseDriver {
             ResultSet results = ps.executeQuery();
             if (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
-                long start = Long.parseLong(results.getString("start_time"));
-                long end = Long.parseLong(results.getString("end_time"));
+                long start = results.getTimestamp("start_time").getTime();
+                long end = results.getTimestamp("end_time").getTime();
                 return new DiveEntity(id, start, end);
             }
         } catch (SQLException e) {
@@ -143,21 +143,19 @@ public class DatabaseDriver {
      */
     public int insertDive(DiveEntity diveEntity) throws SQLException {
         PreparedStatement insertStatement = null;
-        String insertString = "INSERT INTO Dive VALUES (?,?)";
+        String insertString = "INSERT INTO Dive(start_time, end_time) VALUES (?,?) RETURNING ID";
 
         try {
             insertStatement = connector.prepareStatement(insertString);
 
-            insertStatement.setLong(1, diveEntity.getStartTime());
-            insertStatement.setLong(2, diveEntity.getEndTime());
+            insertStatement.setTimestamp(1, new Timestamp(diveEntity.getStartTime()));
+            insertStatement.setTimestamp(2, new Timestamp(diveEntity.getEndTime()));
 
-            insertStatement.execute();
+            ResultSet generatedKeys = insertStatement.executeQuery();
 
-            // Get the generated key from the previous insert.
-            try (ResultSet generatedKeys = insertStatement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                }
+            if (generatedKeys.next()) {
+                diveEntity.setId(generatedKeys.getInt(1));
+                return generatedKeys.getInt(1);
             }
         } finally {
             if (insertStatement != null) {
@@ -178,7 +176,21 @@ public class DatabaseDriver {
      */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) throws SQLException {
         PreparedStatement insertStatement = null;
-        String insertString = "INSERT INTO Measure VALUES (" +
+        String insertString = "INSERT INTO Measure(" +
+                "timestamp," +
+                "location_corrected," +
+                "location_brut," +
+                "accelerationx," +
+                "accelerationy," +
+                "accelerationz," +
+                "precision_cm," +
+                "measure_value," +
+                "rotationx," +
+                "rotationy," +
+                "rotationz," +
+                "dive_id," +
+                "measureinformation_id" +
+                ") VALUES (" +
                 "?" +
                 ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
                 ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
@@ -191,25 +203,26 @@ public class DatabaseDriver {
                 ",?" +
                 ",?" +
                 ",?" +
-                ",?)";
+                ",?)" +
+                "RETURNING ID";
 
         try {
             insertStatement = connector.prepareStatement(insertString);
 
             // Timestamp
-            insertStatement.setLong(1, measureEntity.getTimestamp());
+            insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
 
             // location_corrected
             insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
             insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
             insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            insertStatement.setString(5, srid);
+            insertStatement.setInt(5, srid);
 
             // location_brut
             insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
             insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
             insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
-            insertStatement.setString(9, srid);
+            insertStatement.setInt(9, srid);
 
             //acceleration XYZ
             insertStatement.setInt(10, measureEntity.getAccelerationX());
@@ -233,15 +246,17 @@ public class DatabaseDriver {
             // measure_information_id
             insertStatement.setInt(19, measureInfoID);
 
-            insertStatement.execute();
+            ResultSet generatedKeys = insertStatement.executeQuery();
 
-            try (ResultSet generatedKeys = insertStatement.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                }
+
+            if (generatedKeys.next()) {
+                measureEntity.setId(generatedKeys.getInt(1));
+                return generatedKeys.getInt(1);
             }
 
-        } finally {
+        } finally
+
+        {
             if (insertStatement != null) {
                 insertStatement.close();
             }
@@ -255,7 +270,7 @@ public class DatabaseDriver {
             ps.setLong(1, lon);
             ps.setLong(2, lat);
             ps.setLong(3, alt);
-            ps.setString(4, srid);
+            ps.setInt(4, srid);
             ps.setInt(5, precision);
             ps.setInt(6, measureId);
             ps.execute();
@@ -268,8 +283,8 @@ public class DatabaseDriver {
 
     public void startRecording(long timestamp, int diveId) {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET start_time = ? WHERE id = ?")) {
-            ps.setLong(1, timestamp);
-            ps.setLong(2, diveId);
+            ps.setTimestamp(1, new Timestamp(timestamp));
+            ps.setInt(2, diveId);
             ps.execute();
         } catch (SQLException e) {
             System.out.println("Failed updating dive n°" + diveId);
@@ -279,8 +294,8 @@ public class DatabaseDriver {
 
     public void stopRecording(long timestamp, int diveId) {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET end_time = ? WHERE id = ?")) {
-            ps.setLong(1, timestamp);
-            ps.setLong(2, diveId);
+            ps.setTimestamp(1, new Timestamp(timestamp));
+            ps.setInt(2, diveId);
             ps.execute();
         } catch (SQLException e) {
             System.out.println("Failed updating dive n°" + diveId);
@@ -298,10 +313,9 @@ public class DatabaseDriver {
                     config.getDb(),
                     config.getUser(),
                     config.getPasswd(),
-                    config.getSrid());
+                    Integer.parseInt(config.getSrid()));
         }
     }
-
 
 
 }

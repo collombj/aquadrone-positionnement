@@ -14,6 +14,17 @@ public class DiveEntity {
 
     /**
      * Constructeur
+     *
+     * @param startTime la timestamp à laquelle a commencé la plongée, en millisecondes
+     * @param endTime   la timestamp à laquelle s'est terminée la plongée, en millisecondes
+     */
+    public DiveEntity(long startTime, long endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    /**
+     * Constructeur
      * @param id
      *      ce paramètre correspond a l'identifiant de la plongée pour la base de données
      * @param startTime
@@ -36,6 +47,13 @@ public class DiveEntity {
      */
     public int getId() {
         return id;
+    }
+
+    /**
+     * @param id
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
     /**

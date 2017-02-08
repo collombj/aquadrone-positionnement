@@ -26,6 +26,40 @@ public class MeasureEntity {
     /**
      * Constructeur
      *
+     * @param timestamp         La timestamp de la mesure, en millisecondes
+     * @param locationBrut      Les coordonnées GPS de la mesure calculées
+     * @param locationCorrected Les coordonnées GPS de la mesure après correction
+     * @param accelerationX     L'accélération selon l'axe X du drone
+     * @param accelerationY     L'accélération selon l'axe Y du drone
+     * @param accelerationZ     L'accélération selon l'axe Z du drone
+     * @param rotationX         La rotation autour de l'axe X du drone
+     * @param rotationY         La rotation autour de l'axe Y du drone
+     * @param rotationZ         La rotation autour de l'axe Z du drone
+     * @param precisionCm       La precision estimée de la mesure
+     * @param measureValue
+     */
+    public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
+                         int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
+                         int rotationZ, int precisionCm, String measureValue) {
+        Objects.requireNonNull(locationBrut);
+        Objects.requireNonNull(locationCorrected);
+        Objects.requireNonNull(measureValue);
+        this.timestamp = timestamp;
+        this.locationBrut = locationBrut;
+        this.locationCorrected = locationCorrected;
+        this.accelerationX = accelerationX;
+        this.accelerationY = accelerationY;
+        this.accelerationZ = accelerationZ;
+        this.rotationX = rotationX;
+        this.rotationY = rotationY;
+        this.rotationZ = rotationZ;
+        this.precisionCm = precisionCm;
+        this.measureValue = measureValue;
+    }
+
+    /**
+     * Constructeur
+     *
      * @param id                L'identifiant de la mesure en base
      * @param timestamp         La timestamp de la mesure, en millisecondes
      * @param locationBrut      Les coordonnées GPS de la mesure calculées
@@ -68,6 +102,9 @@ public class MeasureEntity {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
     /**
      * @return La timestamp de la mesure, en millisecondes
