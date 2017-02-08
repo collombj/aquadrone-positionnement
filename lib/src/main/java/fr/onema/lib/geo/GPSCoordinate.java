@@ -20,4 +20,25 @@ public class GPSCoordinate {
         this.lon = lon;
         this.alt = alt;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        GPSCoordinate that = (GPSCoordinate) o;
+
+        if (lat != that.lat) return false;
+        if (lon != that.lon) return false;
+        return alt == that.alt;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (lat ^ (lat >>> 32));
+        result = 31 * result + (int) (lon ^ (lon >>> 32));
+        result = 31 * result + (int) (alt ^ (alt >>> 32));
+        return result;
+    }
 }
