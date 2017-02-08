@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.Properties;
 
 /**
- * Created by Francois Vanderperre on 07/02/2017.
- * <p>
  * Cette classe permet de gérer la connexion à une base de données et de faire les opérations usuelles sur celle ci
+ * @author francois & loic
+ * @since 08-02-2017
  */
 public class DatabaseDriver {
     private String host;
@@ -41,44 +41,61 @@ public class DatabaseDriver {
         this.srid = srid;
     }
 
-    public void initAsReadable() {
+    /**
+     * Initialise un accès à la base de données en lecture.
+     *
+     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
+     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
+     */
+    public void initAsReadable() throws SQLException, ClassNotFoundException {
         Properties props = new Properties();
         props.setProperty("readOnly", "true");
         initConnection(props);
     }
 
-    public void initAsWritable() {
+    /**
+     * Initialise un accès à la base de données en écriture.
+     *
+     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
+     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
+     */
+    public void initAsWritable() throws SQLException, ClassNotFoundException {
         Properties props = new Properties();
         props.setProperty("readOnly", "false");
         initConnection(props);
     }
 
-    private void initConnection(Properties props) {
-        try {
-            Class.forName("org.postgresql.Driver");
-            String url = "jdbc:postgresql://" + host + ":" + port + "/" + base;
-            props.setProperty("user", user);
-            props.setProperty("password", password);
-            connector = DriverManager.getConnection(url, props);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Postgresql driver not found");
-            e.printStackTrace();
-        } catch (SQLException e) {
-            System.out.println("Failed to connect to database");
-            e.printStackTrace();
-        }
+    /**
+     * Initialise une connexion à la base de données.
+     *
+     * @param props Le fichier de configuration à utiliser pour la connexion.
+     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
+     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
+     */
+    private void initConnection(Properties props) throws ClassNotFoundException, SQLException {
+        Class.forName("org.postgresql.Driver");
+        String url = "jdbc:postgresql://" + host + ":" + port + "/" + base;
+        props.setProperty("user", user);
+        props.setProperty("password", password);
+        connector = DriverManager.getConnection(url, props);
     }
 
-    public void closeConnection() {
-        try {
-            connector.close();
-        } catch (SQLException e) {
-            System.out.println("Failed to close connection to database");
-            e.printStackTrace();
-        }
+    /**
+     * Ferme une connexion à la base de données.
+     *
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public void closeConnection() throws SQLException {
+        connector.close();
     }
 
-    public List<MeasureEntity> getMeasureFrom(DiveEntity dive) { //TODO surcharger
+    /**
+     * Permet de récupérer les mesures associés à une plongée.
+     *
+     * @param dive La plongée recherché.
+     * @return Un liste comportant toutes les mesures associés à la plongée.
+     */
+    public List<MeasureEntity> getMeasureFrom(DiveEntity dive) throws SQLException {
         List<MeasureEntity> mesures = new LinkedList<>();
         try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) as brutX," +
                 "ST_Y(location_brut) as brutY, ST_Z(location_brut) as brutZ, ST_X(location_corrected) as correctX," +
@@ -111,14 +128,17 @@ public class DatabaseDriver {
                         rotationX, rotationY, rotationZ, precisionCm, measureValue));
 
             }
-        } catch (SQLException e) {
-            System.out.println("Failed to retrieve the last dive");
-            e.printStackTrace();
         }
         return mesures;
     }
 
-    public DiveEntity getLastDive() {
+    /**
+     * Récupère la dernière plongée en base.
+     *
+     * @return La dernière plongée en base.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public DiveEntity getLastDive() throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement("SELECT * FROM Dive ORDER BY id DESC LIMIT 1")) {
             ResultSet results = ps.executeQuery();
             if (results.next()) {
@@ -127,9 +147,6 @@ public class DatabaseDriver {
                 long end = results.getTimestamp("end_time").getTime();
                 return new DiveEntity(id, start, end);
             }
-        } catch (SQLException e) {
-            System.out.println("Failed to retrieve the last dive");
-            e.printStackTrace();
         }
         return null;
     }
@@ -264,7 +281,17 @@ public class DatabaseDriver {
         return -1;
     }
 
-    public void updatePosition(int measureId, long lat, long lon, long alt, int precision) {
+    /**
+     * Mets à jour la position d'une mesure.
+     *
+     * @param measureId L'ID de la mesure.
+     * @param lat       La nouvelle latitude de la mesure.
+     * @param lon       La nouvelle longitude de la mesure.
+     * @param alt       La nouvelle altitude de la mesure.
+     * @param precision La nouvelle valeur de précision de la mesure.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public void updatePosition(int measureId, long lat, long lon, long alt, int precision) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Measure SET location_corrected = " +
                 "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?")) {
             ps.setLong(1, lon);
@@ -275,36 +302,50 @@ public class DatabaseDriver {
             ps.setInt(6, measureId);
             ps.execute();
 
-        } catch (SQLException e) {
-            System.out.println("Failed correcting mesure n°" + measureId);
-            e.printStackTrace();
         }
     }
 
-    public void startRecording(long timestamp, int diveId) {
+    /**
+     * Démarre un enregistrement en remplissant la valeur de début de plongée en base.
+     *
+     * @param timestamp Le timestamp correspondant au début de la plongée.
+     * @param diveId    L'ID de la plongée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public void startRecording(long timestamp, int diveId) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET start_time = ? WHERE id = ?")) {
             ps.setTimestamp(1, new Timestamp(timestamp));
             ps.setInt(2, diveId);
             ps.execute();
-        } catch (SQLException e) {
-            System.out.println("Failed updating dive n°" + diveId);
-            e.printStackTrace();
         }
     }
 
-    public void stopRecording(long timestamp, int diveId) {
+    /**
+     * Arrête un enregistrement en remplissant la valeur de fin de plongée en base.
+     *
+     * @param timestamp Le timestamp correspondant à la fin de la plongée.
+     * @param diveId    L'ID de la plongée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public void stopRecording(long timestamp, int diveId) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET end_time = ? WHERE id = ?")) {
             ps.setTimestamp(1, new Timestamp(timestamp));
             ps.setInt(2, diveId);
             ps.execute();
-        } catch (SQLException e) {
-            System.out.println("Failed updating dive n°" + diveId);
-            e.printStackTrace();
         }
     }
 
+    /**
+     * Classe permettant de créer un DatabaseDriver.
+     */
     public static class DatabaseDriverFactory {
 
+        /**
+         * Constructeur de DatabaseDriver, se base sur un fichier de configuration.
+         *
+         * @param config Le fichier de configuration souhaité.
+         * @return Un DatabaseDriver.
+         */
         public static DatabaseDriver getDatabaseDriver(Configuration config) {
             Objects.requireNonNull(config);
             return new DatabaseDriver(

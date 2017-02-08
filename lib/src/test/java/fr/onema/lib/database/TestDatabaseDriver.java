@@ -13,9 +13,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Acer on 07/02/2017.
- */
 
 
 public class TestDatabaseDriver {
