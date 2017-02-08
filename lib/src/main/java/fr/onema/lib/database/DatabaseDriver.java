@@ -8,6 +8,7 @@ import fr.onema.lib.tools.Configuration;
 import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
@@ -25,6 +26,13 @@ public class DatabaseDriver {
     private Connection connector;
 
     private DatabaseDriver(String host, String port, String base, String user, String password, String srid) {
+        Objects.requireNonNull(host);
+        Objects.requireNonNull(port);
+        Objects.requireNonNull(base);
+        Objects.requireNonNull(user);
+        Objects.requireNonNull(password);
+        Objects.requireNonNull(srid);
+
         this.host = host;
         this.port = port;
         this.base = base;
@@ -283,6 +291,7 @@ public class DatabaseDriver {
     public static class DatabaseDriverFactory {
 
         public static DatabaseDriver getDatabaseDriver(Configuration config) {
+            Objects.requireNonNull(config);
             return new DatabaseDriver(
                     config.getHost(),
                     config.getPort(),

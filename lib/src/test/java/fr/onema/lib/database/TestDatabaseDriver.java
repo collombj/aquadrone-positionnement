@@ -6,6 +6,7 @@ import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -14,10 +15,21 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by Acer on 07/02/2017.
  */
+
+
 public class TestDatabaseDriver {
-    DatabaseDriver dbDriver = DatabaseDriver.DatabaseDriverFactory.getDatabaseDriver(new Configuration("settingsTest.proporties"));
+    Configuration configuration = new Configuration("settingsTest.properties");
+    DatabaseDriver dbDriver = DatabaseDriver.DatabaseDriverFactory.getDatabaseDriver(configuration);
+
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
+
+    @Test
+    public void testCreation() throws IOException {
+        assertTrue(configuration != null);
+        configuration.setCorrection(1, 1, 1);
+        assertTrue(configuration.getHost() != null);
+    }
 
 
     @Test
@@ -84,22 +96,27 @@ public class TestDatabaseDriver {
 
     @Test
     public void updatePosition() throws Exception {
+
+        dbDriver.initAsWritable();
         dbDriver.updatePosition(1, 350, 350, 350, 2);
         DiveEntity dive = new DiveEntity(2, 120, 250);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
-        MeasureEntity mes2 = mesures.get(0);
-        if (mes2 != null) {
-            assertTrue(mes2.getLocationCorrected().lon == 350);
-            assertTrue(mes2.getLocationCorrected().lat == 350);
-            assertTrue(mes2.getLocationCorrected().alt == 350);
-        } else {
-            throw new Exception("Aucune valeur trouvée en base");
-        }
+        if (mesures != null && mesures.size() > 0) {
+            MeasureEntity mes2 = mesures.get(0);
+            if (mes2 != null) {
+                assertTrue(mes2.getLocationCorrected().lon == 350);
+                assertTrue(mes2.getLocationCorrected().lat == 350);
+                assertTrue(mes2.getLocationCorrected().alt == 350);
+            } else {
+                throw new Exception("Aucune valeur trouvée en base");
+            }
+        } else throw new Exception("Liste de valeurs nulle");
+
     }
 
     @Test
     public void startRecording() throws Exception {
-        DiveEntity dive = new DiveEntity(8, 0, 0);
+        DiveEntity dive = new DiveEntity(8, 1, 2);
         dbDriver.initAsWritable();
         dbDriver.insertDive(dive);
 

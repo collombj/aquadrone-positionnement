@@ -1,6 +1,7 @@
 package fr.onema.lib.tools;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collections;
@@ -33,11 +34,30 @@ public class Configuration {
      * Constructeur avec un paramètre pour choisir le fichier de configuration à utiliser
      * @param settingPath Le chemin du fichier de configuration
      */
-    public Configuration(String settingPath){
+    public Configuration(String settingPath) { //TODO Set les champs de la classe
         if(settingPath == null){
             throw new IllegalArgumentException("No path was specified");
         }else {
             path = settingPath;
+            OrderedProperties properties = new OrderedProperties();
+
+            try (FileInputStream input = new FileInputStream(path)) {
+                properties.load(input);
+                input.close();
+
+                host = properties.getProperty("db.host");
+                port = properties.getProperty("db.port");
+                db = properties.getProperty("db.name");
+                user = properties.getProperty("db.user");
+                passwd = properties.getProperty("db.passwd");
+                notifyKey = properties.getProperty("db.notify-key");
+                srid = properties.getProperty("geo.srid");
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
