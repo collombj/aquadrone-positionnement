@@ -4,6 +4,7 @@ import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -22,9 +23,14 @@ public class TestDatabaseDriver {
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
+    @Before
+    public void setUp() throws Exception {
+        DatabaseTools.clean(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+    }
+
     @Test
     public void testCreation() throws IOException {
-        System.err.println("testCreation");
         assertTrue(configuration != null);
         configuration.setCorrection(1, 1, 1);
         assertTrue(configuration.getHost() != null);
@@ -33,7 +39,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void testConnection() throws Exception {
-        System.err.println("testConnection");
         dbDriver.initAsReadable();
         dbDriver.closeConnection();
         dbDriver.initAsWritable();
@@ -42,7 +47,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveDive() throws Exception {
-        System.err.println("insertAndRetrieveDive");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         dbDriver.insertDive(dive);
@@ -53,7 +57,6 @@ public class TestDatabaseDriver {
 
     @Test(expected = SQLException.class)
     public void testCannotWrite() throws Exception {
-        System.err.println("testCannotWrite");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsReadable();
         dbDriver.insertDive(dive);
@@ -64,7 +67,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveMeasure() throws Exception {
-        System.err.println("insertAndRetrieveMeasure");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int idDive = dbDriver.insertDive(dive);
@@ -84,8 +86,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void updatePosition() throws Exception {
-        System.err.println("updatePosition");
-
         dbDriver.initAsWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         int diveID = dbDriver.insertDive(dive);
@@ -110,7 +110,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void startRecording() throws Exception {
-        System.err.println("startRecording");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int diveID = dbDriver.insertDive(dive);
@@ -124,7 +123,6 @@ public class TestDatabaseDriver {
 
     @Test
     public void stopRecording() throws Exception {
-        System.err.println("stopRecordings");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int diveID = dbDriver.insertDive(dive);
