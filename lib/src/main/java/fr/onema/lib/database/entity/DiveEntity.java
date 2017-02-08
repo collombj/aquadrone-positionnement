@@ -76,13 +76,17 @@ public class DiveEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         DiveEntity that = (DiveEntity) o;
 
-        if (id != that.id) return false;
-        if (startTime != that.startTime) return false;
+        if (id != that.id)
+            return false;
+        if (startTime != that.startTime)
+            return false;
         return endTime == that.endTime;
 
     }
