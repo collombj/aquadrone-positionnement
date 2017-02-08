@@ -4,7 +4,6 @@ import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -29,6 +28,7 @@ public class TestMeasureRepository {
 
     @Test
     public void testCreation() throws IOException {
+        System.out.println("testCreation");
         assertTrue(configuration != null);
         assertTrue(configuration.getHost() != null);
     }
@@ -36,6 +36,7 @@ public class TestMeasureRepository {
 
     @Test
     public void testConnection() throws Exception {
+        System.out.println("testConnection");
         repository.closeConnection();
         repository.setReadable();
         repository.closeConnection();
@@ -44,6 +45,7 @@ public class TestMeasureRepository {
 
     @Test
     public void insertAndRetrieveDive() throws Exception {
+        System.out.println("insertAndRetrieveDive");
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         repository.insertDive(dive);
@@ -54,6 +56,7 @@ public class TestMeasureRepository {
 
     @Test
     public void insertAndRetrieveMeasure() throws Exception {
+        System.out.println("insertAndRetrieveMeasure");
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         repository.insertDive(dive);
@@ -73,6 +76,7 @@ public class TestMeasureRepository {
 
     @Test
     public void updatePosition() throws Exception {
+        System.out.println("updatePosition");
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         repository.insertDive(dive);
@@ -97,6 +101,7 @@ public class TestMeasureRepository {
 
     @Test
     public void startRecording() throws Exception {
+        System.out.println("startRecording");
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
@@ -109,6 +114,7 @@ public class TestMeasureRepository {
 
     @Test
     public void stopRecording() throws Exception {
+        System.out.println("stopRecording");
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis()+25000);
