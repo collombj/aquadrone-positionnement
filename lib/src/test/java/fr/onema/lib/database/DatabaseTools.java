@@ -159,7 +159,7 @@ public final class DatabaseTools {
     public static void insertFakeMeasureInformation(String host, int port, String base, String user, String password) throws SQLException, ClassNotFoundException {
         Connection connection = getConnection(host, port, base, user, password);
         connection.prepareStatement("INSERT INTO measure_information (type, display, unit, name) VALUES " +
-                "(\"Integer\", \"{0} °C\", \"Celsius\", \"temperature\");").executeUpdate();
+                "(\"int\", \"{0} °C\", \"Celsius\", \"temperature\");").executeUpdate();
         connection.close();
     }
 
