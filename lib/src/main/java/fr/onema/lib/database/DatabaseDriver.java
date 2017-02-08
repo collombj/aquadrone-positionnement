@@ -338,7 +338,7 @@ public class DatabaseDriver {
     /**
      * Classe permettant de créer un DatabaseDriver.
      */
-    public static class DatabaseDriverFactory {
+    public static class DatabaseDriverBuilder {
 
         /**
          * Constructeur de DatabaseDriver, se base sur un fichier de configuration.
