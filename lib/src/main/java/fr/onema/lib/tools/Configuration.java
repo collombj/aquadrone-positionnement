@@ -27,7 +27,7 @@ public class Configuration {
      * Constructeur sans paramètre de Configuration
      */
     public Configuration(){
-        path = "settings.properties";
+        path = "settingsTest.properties";
     }
 
     /**

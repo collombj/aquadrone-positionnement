@@ -19,8 +19,8 @@ public class ConfigurationTest {
 
     @Test
     public void testGetGivenPath(){
-        Configuration c = new Configuration("test.properties");
-        assertEquals(c.getPath(), "test.properties");
+        Configuration c = new Configuration("settingsTest.properties");
+        assertEquals(c.getPath(), "settingsTest.properties");
     }
 
     @Test
@@ -28,11 +28,11 @@ public class ConfigurationTest {
         try {
             Configuration c = new Configuration();
             c.setCorrection(523,256 ,5545);
-            assertEquals(c.getPath(), "settings.properties");
-            assertEquals(c.getHost(), "1.2.3.4");
-            assertEquals(c.getPort(), "12275");
-            assertEquals(c.getUser(), "toto");
-            assertEquals(c.getPasswd(), "cacahuete");
+            assertEquals(c.getPath(), "settingsTest.properties");
+            assertEquals(c.getHost(), "localhost");
+            assertEquals(c.getPort(), "5432");
+            assertEquals(c.getUser(), "postgres");
+            assertEquals(c.getPasswd(), "postgres");
             assertEquals(c.getNotifyKey(), "32569");
         } catch(IOException ex){
             fail("Unexpected IOException");
