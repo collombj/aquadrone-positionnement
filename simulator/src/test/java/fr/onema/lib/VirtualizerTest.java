@@ -12,6 +12,7 @@ public class VirtualizerTest {
     public void testNullFileManager(){
         Virtualizer v = new Virtualizer(null, 100, "null");
         v.start();
+
     }
 
 
