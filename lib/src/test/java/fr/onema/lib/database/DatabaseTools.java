@@ -140,26 +140,26 @@ public final class DatabaseTools {
                 "--INSERT INTO public.dive (start_time, end_time) VALUES (?, ?);\n" +
                 "--INSERT INTO public.measure_information (type, display, unit, name) VALUES (?, ?, ?, ?);\n" +
                 "--INSERT INTO public.measure (\"timestamp\", location_brut, acceleration, measure_value, dive_id, measureinformation_id)\n" +
-                "--VALUES (time, ST_SetSRID(ST_MakePoint(X, Y, Z), 4326), ST_MakePoint(aX, aY, aZ), temp, dive_id, measure_id);\n").executeUpdate();
+                "--VALUES (time, ST_SetSRID(ST_MakePoint(X, Y, Z), 4326), ST_MakePoint(aX, aY, aZ), temp, dive_id, measure_id);\n").execute();
         connection.close();
     }
 
     public static void clean(String host, int port, String base, String user, String password) throws SQLException, ClassNotFoundException {
         Connection connection = getConnection(host, port, base, user, password);
-        connection.prepareStatement("TRUNCATE dive CASCADE; TRUNCATE measure CASCADE; TRUNCATE measure_information CASCADE").executeUpdate();
+        connection.prepareStatement("TRUNCATE dive CASCADE; TRUNCATE measure CASCADE; TRUNCATE measure_information CASCADE").execute();
         connection.close();
     }
 
     public static void dropStructure(String host, int port, String base, String user, String password) throws SQLException, ClassNotFoundException {
         Connection connection = getConnection(host, port, base, user, password);
-        connection.prepareStatement("DROP TABLE dive CASCADE; DROP TABLE measure CASCADE; DROP TABLE measure_information CASCADE").executeUpdate();
+        connection.prepareStatement("DROP TABLE IF EXISTS dive CASCADE; DROP TABLE IF EXISTS measure CASCADE; DROP TABLE IF EXISTS measure_information CASCADE").execute();
         connection.close();
     }
 
     public static void insertFakeMeasureInformation(String host, int port, String base, String user, String password) throws SQLException, ClassNotFoundException {
         Connection connection = getConnection(host, port, base, user, password);
-        connection.prepareStatement("INSERT INTO measure_information (\"type\", \"display\", \"unit\", \"name\") VALUES " +
-                "(\"int\", \"{0} °C\", \"Celsius\", \"temperature\");").executeUpdate();
+        connection.prepareStatement("INSERT INTO measure_information (type, display, unit, name) VALUES " +
+                "('Integer', '{0} °C', 'Celsius', 'temperature');").execute();
         connection.close();
     }
 

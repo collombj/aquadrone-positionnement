@@ -25,7 +25,8 @@ public class TestDatabaseDriver {
 
     @Before
     public void setUp() throws Exception {
-        DatabaseTools.clean(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.dropStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.createStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
     }
 
