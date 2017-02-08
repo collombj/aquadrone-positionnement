@@ -8,9 +8,9 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 public class VirtualizerEntry implements CSV {
     private final long timestamp;
-    private final int GPSLat;
-    private final int GPSLon;
-    private final int GPSAlt;
+    private int GPSLat;
+    private int GPSLon;
+    private int GPSAlt;
     private final short xacc;
     private final short yacc;
     private final short zacc;
@@ -22,6 +22,7 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
+    private final boolean hasGPS;
 
     /**
      * Constructeur de Virtualizer
@@ -57,6 +58,38 @@ public class VirtualizerEntry implements CSV {
         this.zmag = zmag;
         this.pressure = pressure;
         this.temperature = temperature;
+        this.hasGPS = true;
+    }
+
+    /**
+     * Constructeur de Virtualizer sans le GPS
+     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
+     * @param xacc Acceleration en x
+     * @param yacc Acceleration en y
+     * @param zacc Acceleration en z
+     * @param xgyro Rotation en x
+     * @param ygyro Rotation en y
+     * @param zgyro Rotation en z
+     * @param xmag Orientation magnétique en x
+     * @param ymag Orientation magnétique en y
+     * @param zmag Orientation magnétique en z
+     * @param pressure Pression
+     * @param temperature Temperature
+     */
+    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+        this.timestamp = timestamp;
+        this.xacc = xacc;
+        this.yacc = yacc;
+        this.zacc = zacc;
+        this.xgyro = xgyro;
+        this.ygyro = ygyro;
+        this.zgyro = zgyro;
+        this.xmag = xmag;
+        this.ymag = ymag;
+        this.zmag = zmag;
+        this.pressure = pressure;
+        this.temperature = temperature;
+        this.hasGPS = false;
     }
 
     /**
@@ -70,7 +103,6 @@ public class VirtualizerEntry implements CSV {
         msg.lat = this.GPSLat;
         msg.lon = this.GPSLon;
         msg.alt = this.GPSAlt;
-        // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
         msg.eph = Short.MAX_VALUE; // Dilution horizontale
         msg.epv = Short.MAX_VALUE; // Dilution verticale
         msg.vel = Short.MAX_VALUE; // vitesse sol calculée par le gps
@@ -238,7 +270,13 @@ public class VirtualizerEntry implements CSV {
         return temperature;
     }
 
-     /**
+    /**
+     * Récupère le boolean de la présence du GPS
+     * @return boolean
+     */
+    public boolean getHasGPS() { return hasGPS; }
+
+    /**
      * Renvoi une string des valeurs au format CSV
      * @return la chaine de caractère CSV
      */
