@@ -24,7 +24,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void testCreation() throws IOException {
-        System.out.println("testCreation");
+        System.err.println("testCreation");
         assertTrue(configuration != null);
         configuration.setCorrection(1, 1, 1);
         assertTrue(configuration.getHost() != null);
@@ -33,7 +33,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void testConnection() throws Exception {
-        System.out.println("testConnection");
+        System.err.println("testConnection");
         dbDriver.initAsReadable();
         dbDriver.closeConnection();
         dbDriver.initAsWritable();
@@ -42,7 +42,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveDive() throws Exception {
-        System.out.println("insertAndRetrieveDive");
+        System.err.println("insertAndRetrieveDive");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         dbDriver.insertDive(dive);
@@ -53,7 +53,7 @@ public class TestDatabaseDriver {
 
     @Test(expected = SQLException.class)
     public void testCannotWrite() throws Exception {
-        System.out.println("testCannotWrite");
+        System.err.println("testCannotWrite");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsReadable();
         dbDriver.insertDive(dive);
@@ -64,7 +64,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void insertAndRetrieveMeasure() throws Exception {
-        System.out.println("insertAndRetrieveMeasure");
+        System.err.println("insertAndRetrieveMeasure");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int idDive = dbDriver.insertDive(dive);
@@ -84,7 +84,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void updatePosition() throws Exception {
-        System.out.println("updatePosition");
+        System.err.println("updatePosition");
 
         dbDriver.initAsWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
@@ -110,7 +110,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void startRecording() throws Exception {
-        System.out.println("startRecording");
+        System.err.println("startRecording");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int diveID = dbDriver.insertDive(dive);
@@ -124,7 +124,7 @@ public class TestDatabaseDriver {
 
     @Test
     public void stopRecording() throws Exception {
-        System.out.println("stopRecordings");
+        System.err.println("stopRecordings");
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         dbDriver.initAsWritable();
         int diveID = dbDriver.insertDive(dive);
