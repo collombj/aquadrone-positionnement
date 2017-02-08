@@ -13,19 +13,20 @@ import java.util.Properties;
 
 /**
  * Cette classe permet de gérer la connexion à une base de données et de faire les opérations usuelles sur celle ci
+ *
  * @author francois & loic
  * @since 08-02-2017
  */
 public class DatabaseDriver {
-    private String host;
-    private String port;
-    private String base;
-    private String user;
-    private String password;
-    private int srid;
+    private final String host;
+    private final int port;
+    private final String base;
+    private final String user;
+    private final String password;
+    private final int srid;
     private Connection connector;
 
-    private DatabaseDriver(String host, String port, String base, String user, String password, int srid) {
+    private DatabaseDriver(String host, int port, String base, String user, String password, int srid) {
         Objects.requireNonNull(host);
         Objects.requireNonNull(port);
         Objects.requireNonNull(base);
@@ -42,12 +43,26 @@ public class DatabaseDriver {
     }
 
     /**
-     * Initialise un accès à la base de données en lecture.
+     * Constructeur de DatabaseDriver, se base sur un fichier de configuration.
      *
-     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
-     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
+     * @param config Le fichier de configuration souhaité.
+     * @return Un DatabaseDriver.
      */
-    public void initAsReadable() throws SQLException, ClassNotFoundException {
+    public static DatabaseDriver build(Configuration config) {
+        Objects.requireNonNull(config);
+        return new DatabaseDriver(
+                config.getDatabaseInformation().getHostname(),
+                config.getDatabaseInformation().getPort(),
+                config.getDatabaseInformation().getBase(),
+                config.getDatabaseInformation().getUsername(),
+                config.getDatabaseInformation().getPassword(),
+                config.getGeo().getSrid());
+    }
+
+    /**
+     * Initialise un accès à la base de données en lecture.
+     */
+    public void initAsReadable() {
         Properties props = new Properties();
         props.setProperty("readOnly", "true");
         initConnection(props);
@@ -55,11 +70,8 @@ public class DatabaseDriver {
 
     /**
      * Initialise un accès à la base de données en écriture.
-     *
-     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
-     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
      */
-    public void initAsWritable() throws SQLException, ClassNotFoundException {
+    public void initAsWritable() {
         Properties props = new Properties();
         props.setProperty("readOnly", "false");
         initConnection(props);
@@ -69,15 +81,17 @@ public class DatabaseDriver {
      * Initialise une connexion à la base de données.
      *
      * @param props Le fichier de configuration à utiliser pour la connexion.
-     * @throws SQLException           Dans le cas ou une erreur de connexion est détéctée.
-     * @throws ClassNotFoundException Dans le cas ou le driver PSQL n'est pas trouvé.
      */
-    private void initConnection(Properties props) throws ClassNotFoundException, SQLException {
-        Class.forName("org.postgresql.Driver");
-        String url = "jdbc:postgresql://" + host + ":" + port + "/" + base;
-        props.setProperty("user", user);
-        props.setProperty("password", password);
-        connector = DriverManager.getConnection(url, props);
+    private void initConnection(Properties props) {
+        try {
+            Class.forName("org.postgresql.Driver");
+            String url = "jdbc:postgresql://" + host + ":" + port + "/" + base;
+            props.setProperty("user", user);
+            props.setProperty("password", password);
+            connector = DriverManager.getConnection(url, props);
+        } catch (ClassNotFoundException | SQLException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
@@ -97,9 +111,9 @@ public class DatabaseDriver {
      */
     public List<MeasureEntity> getMeasureFrom(DiveEntity dive) throws SQLException {
         List<MeasureEntity> mesures = new LinkedList<>();
-        try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) as brutX," +
-                "ST_Y(location_brut) as brutY, ST_Z(location_brut) as brutZ, ST_X(location_corrected) as correctX," +
-                "ST_Y(location_corrected) as correctY, ST_Z(location_corrected) as correctZ, accelerationX," +
+        try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) AS brutX," +
+                "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
+                "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
                 " accelerationY, accelerationZ, rotationX, rotationY, rotationZ, precision_cm, measure_value" +
                 "  FROM Measure WHERE dive_id=? ORDER BY id")) {
             ps.setInt(1, dive.getId());
@@ -185,9 +199,9 @@ public class DatabaseDriver {
     /**
      * Méthode permettant d'insérer des mesures dans la base de données.
      *
-     * @param measureEntity             L'objet entité de représentant une mesure réalisée.
-     * @param diveID                    L'identifiant de la plongée associée.
-     * @param measureInfoID             L'objet MeasureInformationEntity représenant une information de mesure.
+     * @param measureEntity L'objet entité de représentant une mesure réalisée.
+     * @param diveID        L'identifiant de la plongée associée.
+     * @param measureInfoID L'objet MeasureInformationEntity représenant une information de mesure.
      * @return L'ID de la nouvelle mesure et -1 en cas d'erreur pour lors de la récupération de l'ID.
      * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
      */
@@ -334,29 +348,4 @@ public class DatabaseDriver {
             ps.execute();
         }
     }
-
-    /**
-     * Classe permettant de créer un DatabaseDriver.
-     */
-    public static class DatabaseDriverBuilder {
-
-        /**
-         * Constructeur de DatabaseDriver, se base sur un fichier de configuration.
-         *
-         * @param config Le fichier de configuration souhaité.
-         * @return Un DatabaseDriver.
-         */
-        public static DatabaseDriver getDatabaseDriver(Configuration config) {
-            Objects.requireNonNull(config);
-            return new DatabaseDriver(
-                    config.getHost(),
-                    config.getPort(),
-                    config.getDb(),
-                    config.getUser(),
-                    config.getPasswd(),
-                    Integer.parseInt(config.getSrid()));
-        }
-    }
-
-
 }

@@ -19,14 +19,14 @@ public class MeasureRepository {
     private DatabaseDriver dbDriver;
 
     private MeasureRepository(Configuration config) {
-        dbDriver = DatabaseDriver.DatabaseDriverBuilder.getDatabaseDriver(config);
+        dbDriver = DatabaseDriver.build(config);
     }
 
     /**
      * Cette methode rend possible l'utilisation de la base pour des opérations de lecture et d'écriture.
      * A n'utiliser que si la connexion a été fermée préalablement
      */
-    public void setWritable() throws SQLException, ClassNotFoundException {
+    public void setWritable() {
         dbDriver.initAsWritable();
     }
 
@@ -34,7 +34,7 @@ public class MeasureRepository {
      *Cette methode rend possible l'utilisation de la base pour des opérations de lecture  uniquement
      *A n'utiliser que si la connexion a été fermée préalablement
      */
-    public void setReadable() throws SQLException, ClassNotFoundException {
+    public void setReadable() {
         dbDriver.initAsReadable();
     }
 
@@ -131,6 +131,11 @@ public class MeasureRepository {
      * Cette classe sert de factory a MeasureRepository
      */
     public static class MeasureRepositoryBuilder {
+
+        private MeasureRepositoryBuilder() {
+            // avoid instantiation
+        }
+
         /**
          * @param config un object de configuration contenant les informations de connexion à la base
          * @return un MeasureRepository utilisable en lecture et en ecriture

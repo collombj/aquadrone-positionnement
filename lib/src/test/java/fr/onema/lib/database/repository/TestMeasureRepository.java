@@ -8,7 +8,7 @@ import fr.onema.lib.tools.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -19,28 +19,25 @@ import static org.junit.Assert.assertTrue;
  * Created by Acer on 08/02/2017.
  */
 public class TestMeasureRepository {
-    Configuration configuration = new Configuration("settingsTest.properties");
-    MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(configuration);
+    private final Configuration configuration;
+    private final MeasureRepository repository;
 
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
-    public TestMeasureRepository() throws SQLException, ClassNotFoundException {
+    public TestMeasureRepository() throws FileNotFoundException, SQLException, ClassNotFoundException {
+        this.configuration = Configuration.build("settingsTest.properties");
+        this.repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(configuration);
     }
 
     @Before
     public void setUp() throws Exception {
-        DatabaseTools.dropStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-        DatabaseTools.createStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-        DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-    }
+        Configuration.Database configuration = this.configuration.getDatabaseInformation();
 
-    @Test
-    public void testCreation() throws IOException {
-        assertTrue(configuration != null);
-        assertTrue(configuration.getHost() != null);
+        DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
+        DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
+        DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
     }
-
 
     @Test
     public void testConnection() throws Exception {
@@ -88,7 +85,7 @@ public class TestMeasureRepository {
         MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
         repository.insertMeasure(mesure, dive.getId(), 1);
 
-        repository.updateMeasure(mesure.getId(),new GPSCoordinate(3230,3230,3230),25);
+        repository.updateMeasure(mesure.getId(), new GPSCoordinate(3230, 3230, 3230), 25);
         List<MeasureEntity> mesures = repository.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
@@ -109,7 +106,7 @@ public class TestMeasureRepository {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         repository.insertDive(dive);
-        repository.updateStartTime(dive.getId(),timestamp.getTime());
+        repository.updateStartTime(dive.getId(), timestamp.getTime());
         DiveEntity d2 = repository.getLastDive();
         assertTrue(d2.getStartTime() == timestamp.getTime());
         repository.closeConnection();
@@ -119,9 +116,9 @@ public class TestMeasureRepository {
     public void stopRecording() throws Exception {
         repository.setWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis()+25000);
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis() + 25000);
         repository.insertDive(dive);
-        repository.updateEndTime(dive.getId(),timestamp.getTime());
+        repository.updateEndTime(dive.getId(), timestamp.getTime());
         DiveEntity d2 = repository.getLastDive();
         assertTrue(d2.getEndTime() == timestamp.getTime());
         repository.closeConnection();
