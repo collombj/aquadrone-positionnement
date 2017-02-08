@@ -17,7 +17,7 @@ public class GeoMaths {
     private GeoMaths(){}
 
     /**
-     * Cettr méthode calcule la distance cartésienne entre deux points
+     * Cette méthode calcule la distance cartésienne entre deux points
      *
      * @param pos1  un point {@link CartesianCoordinate}
      * @param pos2  un point {@link CartesianCoordinate}
@@ -31,7 +31,7 @@ public class GeoMaths {
     }
 
     /**
-     * Converti des degrés décimaux en radians
+     * Convertis des degrés décimaux en radians
      *
      * @param deg l'angle en degrés décimaux
      *
@@ -42,7 +42,7 @@ public class GeoMaths {
     }
 
     /**
-     * Converti des radians en degrés decimaux
+     * Convertis des radians en degrés decimaux
      *
      * @param rad l'angle en radians
      *
@@ -61,7 +61,7 @@ public class GeoMaths {
      * @param alt l'altitude
      * @return la valeur de XYZ associée à ces coordonnées
      */
-    public static CartesianCoordinate computeXYZfromLatLonAlt(double lat, double lon, double alt) {
+    private static CartesianCoordinate computeXYZfromLatLonAlt(double lat, double lon, double alt) {
         double cosLat = Math.cos(lat);
         double sinLat = Math.sin(lat);
         double cosLon = Math.cos(lon);
@@ -128,7 +128,7 @@ public class GeoMaths {
      *
      * @param velocityRef vitesse précédente
      * @param velocityCurrent vitesse courante
-     * @param timestamp temps entre les deux valeurs de vitesse (en s)
+     * @param timestamp temps entre les deux valeurs de vitesse (en ms)
      * @return  Les données d'acceleration {@link Accelerometer}
      */
     public static Accelerometer computeAccelerometerData(CartesianVelocity velocityRef, CartesianVelocity velocityCurrent, long timestamp) {
@@ -139,10 +139,12 @@ public class GeoMaths {
             throw new IllegalArgumentException("Cannot compute the acceleration with a timestamp equals to 0");
         }
 
-        double accelerationX = ((velocityCurrent.vx - velocityRef.vx / timestamp) * MS2_TO_G) * 1_000;
-        double accelerationY = ((velocityCurrent.vy - velocityRef.vy / timestamp) * MS2_TO_G) * 1_000;
-        double accelerationZ = ((velocityCurrent.vz - velocityRef.vz / timestamp) * MS2_TO_G) * 1_000;
+        double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
+        double accelerationY = (((velocityCurrent.vy - velocityRef.vy) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
+        double accelerationZ = (((velocityCurrent.vz - velocityRef.vz) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
 
         return new Accelerometer((int)accelerationX, (int)accelerationY, (int)accelerationZ);
     }
+
+
 }
