@@ -45,14 +45,14 @@ public class Main {
      */
     private static final String JAR_NAME = "simulator";
 
-    private static final String LONG_ARGUMENT_SIGN = "\t--";
+    private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
 
     /**
      * Exemple d'utilisation de l'application avec différents paramètres
      */
     private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv fusion.csv" +
             LONG_ARGUMENT_SIGN + RUN_ARGUMENT + " simulation.csv [hostname]" +
-            LONG_ARGUMENT_SIGN + COMPARE_OPTION + " fusion.csv configuration.properties resultat.csv\n";
+            LONG_ARGUMENT_SIGN + COMPARE_OPTION + " fusion.csv configuration.properties resultat.csv\n\n\n";
 
     private Main() {
         // Avoid instantiation
