@@ -4,6 +4,7 @@ import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;

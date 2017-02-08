@@ -81,9 +81,15 @@ public class TestDatabaseDriver {
     public void updatePosition() throws Exception {
 
         dbDriver.initAsWritable();
-        dbDriver.updatePosition(9, 350, 350, 350, 2);
-        DiveEntity dive = new DiveEntity(75, System.currentTimeMillis(), System.currentTimeMillis() + 1000);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
+        int diveID = dbDriver.insertDive(dive);
+        MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
+        dbDriver.insertMeasure(mesure, diveID, 1);
+
+
+        dbDriver.updatePosition(mesure.getId(), 350, 350, 350, 2);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
+        System.out.println(mesures.size());
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
             if (mes2 != null) {
