@@ -54,7 +54,7 @@ public class GPS extends Sensor {
 
     @Override
     public String toCSV() {
-        return super.getTimestamp() + "," + getPosition().lat + "," + getPosition().lon + "," + getPosition().alt + "," + getDirection();
+        return getTimestamp() + "," + getPosition().lat + "," + getPosition().lon + "," + getPosition().alt + "," + getDirection();
     }
 
     @Override
