@@ -31,35 +31,12 @@ public class VirtualizerEntry implements CSV {
      * @param GPSLat Latitude du GPS
      * @param GPSLon Longitude du GPS
      * @param GPSAlt Altitude du GPS
-     * @param xacc Acceleration en x
-     * @param yacc Acceleration en y
-     * @param zacc Acceleration en z
-     * @param xgyro Rotation en x
-     * @param ygyro Rotation en y
-     * @param zgyro Rotation en z
-     * @param xmag Orientation magnétique en x
-     * @param ymag Orientation magnétique en y
-     * @param zmag Orientation magnétique en z
-     * @param pressure Pression
-     * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int GPSLat, int GPSLon, int GPSAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
-        this.timestamp = timestamp;
+        this(timestamp,xacc,yacc,zacc,xgyro,ygyro,zgyro,xmag,ymag,zmag,pressure,temperature);
         this.GPSLat = GPSLat;
         this.GPSLon = GPSLon;
         this.GPSAlt = GPSAlt;
-        this.xacc = xacc;
-        this.yacc = yacc;
-        this.zacc = zacc;
-        this.xgyro = xgyro;
-        this.ygyro = ygyro;
-        this.zgyro = zgyro;
-        this.xmag = xmag;
-        this.ymag = ymag;
-        this.zmag = zmag;
-        this.pressure = pressure;
-        this.temperature = temperature;
-        this.hasGPS = true;
     }
 
     /**
@@ -104,7 +81,6 @@ public class VirtualizerEntry implements CSV {
         msg.lat = this.GPSLat;
         msg.lon = this.GPSLon;
         msg.alt = this.GPSAlt;
-        // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
         msg.eph = Short.MAX_VALUE; // Dilution horizontale
         msg.epv = Short.MAX_VALUE; // Dilution verticale
         msg.vel = Short.MAX_VALUE; // vitesse sol calculée par le gps
