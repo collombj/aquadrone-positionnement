@@ -1,9 +1,11 @@
 package fr.onema.lib.database.repository;
 
+import fr.onema.lib.database.DatabaseTools;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -24,6 +26,13 @@ public class TestMeasureRepository {
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
     public TestMeasureRepository() throws SQLException, ClassNotFoundException {
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        DatabaseTools.dropStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.createStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
     }
 
     @Test
