@@ -29,7 +29,7 @@ public class FileManager {
     private final String virtualizedOutputFilePath;
     private final String resultsOutputFilePath;
     private final String resultsCSVHeader = "timestamp,corrected.latitute,corrected.longitude,corrected.altitude," +
-            "ref.latitude,ref.longitude,ref.altitude,ref.direction,difference.x,difference.y,difference.z," +
+            "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
 
     /***
@@ -130,6 +130,7 @@ public class FileManager {
      */
     public void openFile() {
         File f = new File(resultsOutputFilePath);
+        f.delete();
         try (FileWriter fw = new FileWriter(f, false)) {
             fw.write(resultsCSVHeader);
             fw.close();
@@ -146,7 +147,7 @@ public class FileManager {
      * @param margin Marge d'erreur acceptable entrée par l'utilisateur au début de la génération
      */
     public void appendResults(ReferenceEntry re, MeasureEntity m, double margin) {
-        File f = new File(resultsCSVHeader);
+        File f = new File(resultsOutputFilePath);
         try (FileWriter fw = new FileWriter(f, true)) {
             CartesianCoordinate ref = GeoMaths.computeXYZfromLatLonAlt(re.getLat(),re.getLon(),re.getAlt());
             CartesianCoordinate adjusted = GeoMaths.computeXYZfromLatLonAlt(m.getLocationCorrected().lat, m.getLocationCorrected().lon, m.getLocationCorrected().alt);
@@ -157,8 +158,8 @@ public class FileManager {
             boolean error = diffAbsolute > margin ? true : false;
             fw.write("\n" + re.getTimestamp() + "," + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon
                     + "," + m.getLocationCorrected().alt + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt()
-                    + "," + re.getDirection() + "," + diffX + "," + diffY + "," + diffZ + "," + diffAbsolute
-                    + "," + m.getPrecisionCm() + "," + margin + "," + error);
+                    + "," + re.getDirection() + "," + re.getTemperature() + "," + diffX + "," + diffY + "," + diffZ
+                    + "," + diffAbsolute + "," + m.getPrecisionCm() + "," + margin + "," + error);
             fw.close();
         } catch (IOException e) {
             // TODO : exception handling

@@ -7,6 +7,7 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_global_position_int;
@@ -32,6 +33,19 @@ public class FileManagerTest {
         v.delete();
         File res = new File(resultsFile);
         res.delete();
+        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
+        msg_global_position_int msg = new msg_global_position_int();
+        msg.time_boot_ms = 1;
+        msg.lat = 2;
+        msg.lon = 3;
+        msg.alt = 4;
+        msg.hdg = 5;
+        msg_scaled_pressure msg2 = new msg_scaled_pressure();
+        msg2.time_boot_ms = 0;
+        msg2.temperature = 6;
+        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        fm.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, (short)5, (short)6, (short)7, (short)8, (short)9,
+                (short)10, (short)11, (short)12, (short)13, 14, (short)15));
     }
 
     @Test
@@ -42,6 +56,7 @@ public class FileManagerTest {
         assertEquals(r.getLat(), 2);
         assertEquals(r.getLon(), 3);
         assertEquals(r.getAlt(), 4);
+        assertEquals(r.getDirection(), (float)5, 0);
         assertEquals(r.getTemperature(), 6);
     }
 
@@ -50,8 +65,8 @@ public class FileManagerTest {
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         VirtualizerEntry v = fm.readVirtualizedEntries().get(0);
         assertEquals(v.getTimestamp(), 1);
-        assertEquals(v.getGPSLon(), 2);
-        assertEquals(v.getGPSLat(), 3);
+        assertEquals(v.getGPSLon(), 3);
+        assertEquals(v.getGPSLat(), 2);
         assertEquals(v.getGPSAlt(), 4);
         assertEquals(v.getXacc(),5);
         assertEquals(v.getYacc(),6);
@@ -83,20 +98,27 @@ public class FileManagerTest {
     @Test
     public void appendVirtualized() throws Exception {
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
-        fm.appendVirtualized(new VirtualizerEntry(0,1,2,3,(short)4,(short)5,(short)6,(short)7,(short)8,(short)9,(short)10,(short)11,(short)12,13,(short) 14));
+        fm.appendVirtualized(new VirtualizerEntry(0, 1, 2, 3, (short)4, (short)5, (short)6,
+                (short)7, (short)8, (short)9,(short)10,(short)11,(short)12,13,(short) 14));
     }
 
-    // TODO : complete
-    /*
     @Test
     public void appendResults() throws Exception {
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
-        ReferenceEntry re = new ReferenceEntry(0,4,5,6,);
-        MeasureEntity m = new MeasureEntity(0, new GPSCoordinate(0,0,0), new GPSCoordinate(1,2,3),)
-        long timestamp, GPSCoordinate locationBrut, fr.onema.lib.geo.GPSCoordinate locationCorrected,
-        int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
-        int rotationZ, int precisionCm, String measureValue
-        fm.appendResults(new ReferenceEntry(0,1,2,3,(float)4,(short)5),m, 12);
+        fm.openFile();
+        ReferenceEntry re = new ReferenceEntry(0,4,5,6,(float)7,(short)8);
+        MeasureEntity m = new MeasureEntity(
+                0, new GPSCoordinate(4,5,6), new GPSCoordinate(1,2,3), 0, 0, 0, 0, 0, 0, 13, "test");
+        fm.appendResults(re, m, 14);
     }
-    */
+
+    @After
+    public void delete() {
+        File ref = new File(refFile);
+        ref.delete();
+        File v = new File(virtualizedFile);
+        v.delete();
+        File res = new File(resultsFile);
+        res.delete();
+    }
 }
