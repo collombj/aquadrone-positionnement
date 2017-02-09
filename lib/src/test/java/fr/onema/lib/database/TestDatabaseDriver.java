@@ -4,6 +4,7 @@ import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,6 +22,13 @@ public class TestDatabaseDriver {
 
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
+
+    @Before
+    public void setUp() throws Exception {
+        DatabaseTools.dropStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.createStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+        DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
+    }
 
     @Test
     public void testCreation() throws IOException {
@@ -79,10 +87,14 @@ public class TestDatabaseDriver {
 
     @Test
     public void updatePosition() throws Exception {
-
         dbDriver.initAsWritable();
-        dbDriver.updatePosition(9, 350, 350, 350, 2);
-        DiveEntity dive = new DiveEntity(75, System.currentTimeMillis(), System.currentTimeMillis() + 1000);
+        DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
+        int diveID = dbDriver.insertDive(dive);
+        MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
+        dbDriver.insertMeasure(mesure, diveID, 1);
+
+
+        dbDriver.updatePosition(mesure.getId(), 350, 350, 350, 2);
         List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
