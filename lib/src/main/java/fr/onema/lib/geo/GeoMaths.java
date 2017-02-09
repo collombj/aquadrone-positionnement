@@ -9,47 +9,63 @@ import java.util.Objects;
  */
 // TODO : complete
 public class GeoMaths {
-    private static final double DEG_2_RAD = Math.PI/180;
-    private static final double RAD_2_DEG = 180/Math.PI;
+    private static final double DEG_2_RAD = Math.PI / 180;
+    private static final double RAD_2_DEG = 180 / Math.PI;
     private static final int R = 6_378_137; //Rayon terrestre à l'équateur en mètres
     private static final double MS2_TO_G = 0.101972;
 
-    private GeoMaths(){}
+    private GeoMaths() {
+    }
 
     /**
      * Cette méthode calcule la distance cartésienne entre deux points
      *
-     * @param pos1  un point {@link CartesianCoordinate}
-     * @param pos2  un point {@link CartesianCoordinate}
+     * @param pos1 un point {@link CartesianCoordinate}
+     * @param pos2 un point {@link CartesianCoordinate}
      * @return la distance entre les deux points
      */
     public static double cartesianDistance(CartesianCoordinate pos1, CartesianCoordinate pos2) {
         Objects.requireNonNull(pos1);
         Objects.requireNonNull(pos2);
 
-        return Math.sqrt(Math.pow(pos2.x - pos1.x,2) + Math.pow(pos2.y - pos1.y,2) + Math.pow(pos2.z - pos1.z,2));
+        return Math.sqrt(Math.pow(pos2.x - pos1.x, 2) + Math.pow(pos2.y - pos1.y, 2) + Math.pow(pos2.z - pos1.z, 2));
+    }
+
+    /**
+     * Calcul la distance de deux coordonnées gps
+     * @param a premiere coordonnée GPS {@link GPSCoordinate}
+     * @param b seconde coordonnée GPS {@link GPSCoordinate}
+     * @return la distance double en m
+     */
+    public static double gpsDistance(GPSCoordinate a, GPSCoordinate b) {
+        Objects.requireNonNull(a);
+        Objects.requireNonNull(b);
+        CartesianCoordinate a2 = computeXYZfromLatLonAlt(a.lat, a.lon, a.alt);
+        CartesianCoordinate b2 = computeXYZfromLatLonAlt(b.lat, b.lon, b.alt);
+
+
+        return cartesianDistance(a2,b2);
+
     }
 
     /**
      * Convertis des degrés décimaux en radians
      *
      * @param deg l'angle en degrés décimaux
-     *
      * @return l'angle équivalent exprimé en radians
      */
     public static double deg2rad(double deg) {
-        return deg* DEG_2_RAD;
+        return deg * DEG_2_RAD;
     }
 
     /**
      * Convertis des radians en degrés decimaux
      *
      * @param rad l'angle en radians
-     *
      * @return l'agnel équivalent exprimé en degrés décimaux
      */
     public static double rad2deg(double rad) {
-        return rad* RAD_2_DEG;
+        return rad * RAD_2_DEG;
     }
 
 
@@ -73,29 +89,29 @@ public class GeoMaths {
         double y = (R * c + alt) * cosLat * sinLon;
         double z = (R * s + alt) * sinLat;
 
-        return new CartesianCoordinate(x,y,z);
+        return new CartesianCoordinate(x, y, z);
     }
 
     /**
      * Calcule la position cartésienne d'un point GPS dans le référentiel GPS demandé
      *
      * @param refPoint (exprimé en deg*1e7)
-     * @param point (exprimé en deg*1e7)
+     * @param point    (exprimé en deg*1e7)
      * @return la position cartésienne courante selon le point de référence demandé {@link CartesianCoordinate}
      */
     public static CartesianCoordinate computeCartesianPosition(GPSCoordinate refPoint, GPSCoordinate point) {
         Objects.requireNonNull(refPoint);
         Objects.requireNonNull(point);
 
-        double latRefRad = deg2rad(refPoint.lat/10_000_000.);
-        double lonRefRad = deg2rad(refPoint.lon/10_000_000.);
-        double altRefM = refPoint.alt/1_000.;
+        double latRefRad = deg2rad(refPoint.lat / 10_000_000.);
+        double lonRefRad = deg2rad(refPoint.lon / 10_000_000.);
+        double altRefM = refPoint.alt / 1_000.;
 
         CartesianCoordinate refPointCartesian = computeXYZfromLatLonAlt(latRefRad, lonRefRad, altRefM);
 
-        double latRad = deg2rad(point.lat/10_000_000.);
-        double lonRad = deg2rad(point.lon/10_000_000.);
-        double altM = point.alt/1_000.;
+        double latRad = deg2rad(point.lat / 10_000_000.);
+        double lonRad = deg2rad(point.lon / 10_000_000.);
+        double altM = point.alt / 1_000.;
 
         CartesianCoordinate pointCartesian = computeXYZfromLatLonAlt(latRad, lonRad, altM);
 
@@ -103,18 +119,19 @@ public class GeoMaths {
                 pointCartesian.z - refPointCartesian.z);
     }
 
+
     /**
      * Retourne la vitesse en m/s d'une coordonnée (par rapport à sa référence)
      * La coordonnée équivaut au vecteur vitesse dans le cas recherché
      *
      * @param coordinate la coordonnée qui est le vecteur vitesse
-     * @param timestamp temps écoulé en ms depuis la derniere mesure (timestampCourrant - timestampPrecedent)
+     * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourrant - timestampPrecedent)
      * @return La vitesse en m/s sur chaque axe {@link CartesianVelocity}
      */
     public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate coordinate, long timestamp) {
         Objects.requireNonNull(coordinate);
 
-        double frac =1_000./timestamp;
+        double frac = 1_000. / timestamp;
         double vx = coordinate.x * frac;
         double vy = coordinate.y * frac;
         double vz = coordinate.z * frac;
@@ -126,24 +143,24 @@ public class GeoMaths {
     /**
      * Calcule l'acceleration courante a partir de la vitesse courante et de la vitesse précédente
      *
-     * @param velocityRef vitesse précédente
+     * @param velocityRef     vitesse précédente
      * @param velocityCurrent vitesse courante
-     * @param timestamp temps entre les deux valeurs de vitesse (en ms)
-     * @return  Les données d'acceleration {@link Accelerometer}
+     * @param timestamp       temps entre les deux valeurs de vitesse (en ms)
+     * @return Les données d'acceleration {@link Accelerometer}
      */
     public static Accelerometer computeAccelerometerData(CartesianVelocity velocityRef, CartesianVelocity velocityCurrent, long timestamp) {
         Objects.requireNonNull(velocityRef);
         Objects.requireNonNull(velocityCurrent);
 
-        if(timestamp == 0) {
+        if (timestamp == 0) {
             throw new IllegalArgumentException("Cannot compute the acceleration with a timestamp equals to 0");
         }
 
-        double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
-        double accelerationY = (((velocityCurrent.vy - velocityRef.vy) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
-        double accelerationZ = (((velocityCurrent.vz - velocityRef.vz) / (timestamp/1000.)) * MS2_TO_G) * 1_000;
+        double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
+        double accelerationY = (((velocityCurrent.vy - velocityRef.vy) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
+        double accelerationZ = (((velocityCurrent.vz - velocityRef.vz) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
 
-        return new Accelerometer((int)accelerationX, (int)accelerationY, (int)accelerationZ);
+        return new Accelerometer((int) accelerationX, (int) accelerationY, (int) accelerationZ);
     }
 
 
