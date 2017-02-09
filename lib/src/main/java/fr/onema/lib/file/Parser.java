@@ -4,23 +4,26 @@ package fr.onema.lib.file;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
+// TODO : complete
 public class Parser {
-    public ReferenceEntry parseReference(String line) {
+    // TODO : complete
+    public static ReferenceEntry parseReference(String line) {
         String[] s = line.split(",");
-        if(s.length != 19) {
+        if (s.length != 6) {
             throw new IllegalArgumentException();
         }
         return new ReferenceEntry(Long.parseLong(s[0]),
-                Integer.parseInt(s[2]),
                 Integer.parseInt(s[1]),
+                Integer.parseInt(s[2]),
                 Integer.parseInt(s[3]),
-                Float.parseFloat(s[18]),
-                Short.parseShort(s[14]));
+                Float.parseFloat(s[4]),
+                Short.parseShort(s[5]));
     }
 
-    public VirtualizerEntry parseVirtualizer(String line) {
+    // TODO : complete
+    public static VirtualizerEntry parseVirtualizer(String line) {
         String[] s = line.split(",");
-        if(s.length != 19) {
+        if(s.length != 15) {
             throw new IllegalArgumentException();
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
@@ -39,5 +42,4 @@ public class Parser {
                 Float.parseFloat(s[13]),
                 Short.parseShort(s[14]));
     }
-
 }

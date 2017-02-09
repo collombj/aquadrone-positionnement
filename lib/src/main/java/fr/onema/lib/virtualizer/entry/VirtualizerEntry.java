@@ -22,6 +22,7 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
+    public static String header = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature";
     private final boolean hasGPS;
 
     /**
@@ -103,6 +104,7 @@ public class VirtualizerEntry implements CSV {
         msg.lat = this.GPSLat;
         msg.lon = this.GPSLon;
         msg.alt = this.GPSAlt;
+        // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
         msg.eph = Short.MAX_VALUE; // Dilution horizontale
         msg.epv = Short.MAX_VALUE; // Dilution verticale
         msg.vel = Short.MAX_VALUE; // vitesse sol calculée par le gps
@@ -282,7 +284,7 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return this.timestamp + "," + this.GPSLon + "," + this.GPSLat + "," + this.GPSAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature + ",0,0,0,0";
+        return this.timestamp + "," + this.GPSLon + "," + this.GPSLat + "," + this.GPSAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature;
     }
 
 
@@ -292,7 +294,7 @@ public class VirtualizerEntry implements CSV {
       */
     @Override
     public String getCSVHeader() {
-        return "timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature,Latitude,Longitude,Altitude,Direction";
+        return "timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature";
     }
 
 }

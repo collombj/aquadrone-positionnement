@@ -10,6 +10,7 @@ public class ReferenceEntry implements CSV {
     private final int alt;
     private final float direction;
     private final short temperature;
+    public static String header = "timestamp,latitude,longitude,altitude,direction,temperature";
 
     /**
      * Le constructeur de classe, pour attribuer une valeur aux attributs
@@ -81,10 +82,14 @@ public class ReferenceEntry implements CSV {
         return temperature;
     }
 
-    /**
-     * Renvoi une string des valeurs au format CSV
-     * @return la chaine de caractère CSV
+    /***
+     * Format CSV modifié pour correspondance avec fichier de sortie computed
+     * @return La représentation CSV pour fichier computed
      */
+    public String toCSVforComputedFormat() {
+        return lat + "," + lon + "," + alt + "," + direction;
+    }
+
     @Override
     public String toCSV() {
         return this.timestamp + "," + this.lat + "," + this.lon + "," + this.alt + "," + this.direction + "," + this.temperature;
@@ -98,5 +103,4 @@ public class ReferenceEntry implements CSV {
     public String getCSVHeader() {
         return "timestamp,Latitude,Longitude,Altitude,Direction,Temperature";
     }
-
 }
