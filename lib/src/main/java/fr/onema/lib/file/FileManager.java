@@ -105,7 +105,7 @@ public class FileManager {
         try (FileWriter fw = new FileWriter(f, true)) {
             int lineNumber = getLineNumber(f);
             if (!f.exists() || lineNumber == 0) {
-                fw.write(ReferenceEntry.header);
+                fw.write(ReferenceEntry.HEADER);
             }
             fw.write("\n" + gps.getTimestamp() + "," + gps.getPosition().lat + "," + gps.getPosition().lon + "," + gps.getPosition().alt + "," + gps.getDirection() + "," + temp.getValue());
             fw.close();
@@ -123,7 +123,7 @@ public class FileManager {
         try (FileWriter fw = new FileWriter(f, true)) {
             int lineNumber = getLineNumber(f);
             if (!f.exists() || lineNumber == 0) {
-                fw.write(VirtualizerEntry.header);
+                fw.write(VirtualizerEntry.HEADER);
             }
             fw.write("\n" + ve.toCSV());
             fw.close();

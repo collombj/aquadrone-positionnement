@@ -10,7 +10,7 @@ public class ReferenceEntry implements CSV {
     private final int alt;
     private final float direction;
     private final short temperature;
-    public static String header = "timestamp,latitude,longitude,altitude,direction,temperature";
+    public static final String HEADER = "timestamp,latitude,longitude,altitude,direction,temperature";
 
     /**
      * Le constructeur de classe, pour attribuer une valeur aux attributs

@@ -8,9 +8,9 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 public class VirtualizerEntry implements CSV {
     private final long timestamp;
-    private int GPSLat;
-    private int GPSLon;
-    private int GPSAlt;
+    private int gpsLat;
+    private int gpsLon;
+    private int gpsAlt;
     private final short xacc;
     private final short yacc;
     private final short zacc;
@@ -22,13 +22,13 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
-    public static String header = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature";
+    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature";
     private final boolean hasGPS;
 
     /**
      * Constructeur de Virtualizer
      * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
-     * @param GPSLat Latitude du GPS
+     * @param gpsLat Latitude du GPS
      * @param GPSLon Longitude du GPS
      * @param GPSAlt Altitude du GPS
      * @param xacc Acceleration en x
@@ -43,11 +43,11 @@ public class VirtualizerEntry implements CSV {
      * @param pressure Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, int GPSLat, int GPSLon, int GPSAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
-        this.GPSLat = GPSLat;
-        this.GPSLon = GPSLon;
-        this.GPSAlt = GPSAlt;
+        this.gpsLat = gpsLat;
+        this.gpsLon = gpsLon;
+        this.gpsAlt = gpsAlt;
         this.xacc = xacc;
         this.yacc = yacc;
         this.zacc = zacc;
@@ -101,9 +101,9 @@ public class VirtualizerEntry implements CSV {
         msg_gps_raw_int msg = new msg_gps_raw_int();
         msg.time_usec = System.currentTimeMillis();
         msg.fix_type = 6;
-        msg.lat = this.GPSLat;
-        msg.lon = this.GPSLon;
-        msg.alt = this.GPSAlt;
+        msg.lat = this.gpsLat;
+        msg.lon = this.gpsLon;
+        msg.alt = this.gpsAlt;
         // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
         msg.eph = Short.MAX_VALUE; // Dilution horizontale
         msg.epv = Short.MAX_VALUE; // Dilution verticale
@@ -162,26 +162,26 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS
-     * @return GPSLat
+     * @return gpsLat
      */
-    public int getGPSLat() {
-        return GPSLat;
+    public int getGpsLat() {
+        return gpsLat;
     }
 
     /**
      * Récupère la longitude du GPS
-     * @return GPSLon
+     * @return gpsLon
      */
-    public int getGPSLon() {
-        return GPSLon;
+    public int getGpsLon() {
+        return gpsLon;
     }
 
     /**
      * Récupère l'altitude du GPS
-     * @return GPSAlt
+     * @return gpsAlt
      */
-    public int getGPSAlt() {
-        return GPSAlt;
+    public int getGpsAlt() {
+        return gpsAlt;
     }
 
     /**
@@ -284,7 +284,7 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return this.timestamp + "," + this.GPSLon + "," + this.GPSLat + "," + this.GPSAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature;
+        return this.timestamp + "," + this.gpsLon + "," + this.gpsLat + "," + this.gpsAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature;
     }
 
 
