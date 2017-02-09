@@ -16,7 +16,7 @@ public class NetworkSender {
     private VirtualizerEntry entry;
     private ArrayBlockingQueue queue;
     private DatagramChannel client;
-    private final static byte buffer[] = new byte[8000];
+    private final static byte buffer[] = new byte[265];
 
     /**
      * Constructeur de la classe NetworkSender
