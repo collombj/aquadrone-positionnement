@@ -7,7 +7,7 @@ import fr.onema.lib.tools.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -15,87 +15,85 @@ import java.util.List;
 import static org.junit.Assert.assertTrue;
 
 
-
 public class TestDatabaseDriver {
-    Configuration configuration = new Configuration("settingsTest.properties");
-    DatabaseDriver dbDriver = DatabaseDriver.DatabaseDriverBuilder.getDatabaseDriver(configuration);
+    private final Configuration configuration;
+    private final DatabaseDriver driver;
 
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
+    public TestDatabaseDriver() throws FileNotFoundException {
+        this.configuration = Configuration.build("settingsTest.properties");
+        driver = DatabaseDriver.build(configuration);
+    }
+
     @Before
     public void setUp() throws Exception {
-        DatabaseTools.dropStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-        DatabaseTools.createStructure(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-        DatabaseTools.insertFakeMeasureInformation(configuration.getHost(), Integer.parseInt(configuration.getPort()), configuration.getDb(), configuration.getUser(), configuration.getPasswd());
-    }
+        Configuration.Database configuration = this.configuration.getDatabaseInformation();
 
-    @Test
-    public void testCreation() throws IOException {
-        assertTrue(configuration != null);
-        configuration.setCorrection(1, 1, 1);
-        assertTrue(configuration.getHost() != null);
+        DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
+        DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
+        DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
     }
-
 
     @Test
     public void testConnection() throws Exception {
-        dbDriver.initAsReadable();
-        dbDriver.closeConnection();
-        dbDriver.initAsWritable();
-        dbDriver.closeConnection();
+        driver.initAsReadable();
+        driver.closeConnection();
+        driver.initAsWritable();
+        driver.closeConnection();
     }
 
     @Test
     public void insertAndRetrieveDive() throws Exception {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        dbDriver.initAsWritable();
-        dbDriver.insertDive(dive);
-        DiveEntity dive2 = dbDriver.getLastDive();
+        driver.initAsWritable();
+        driver.insertDive(dive);
+        DiveEntity dive2 = driver.getLastDive();
         assertTrue(dive.equals(dive2));
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
     @Test(expected = SQLException.class)
     public void testCannotWrite() throws Exception {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        dbDriver.initAsReadable();
-        dbDriver.insertDive(dive);
-        DiveEntity dive2 = dbDriver.getLastDive();
+        driver.initAsReadable();
+        driver.insertDive(dive);
+        DiveEntity dive2 = driver.getLastDive();
         assertTrue(dive.equals(dive2));
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
     @Test
     public void insertAndRetrieveMeasure() throws Exception {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        dbDriver.initAsWritable();
-        int idDive = dbDriver.insertDive(dive);
+        driver.initAsWritable();
+        int idDive = driver.insertDive(dive);
 
         MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
-        dbDriver.insertMeasure(mesure, idDive, 1);
-        List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
+        driver.insertMeasure(mesure, idDive, 1);
+        List<MeasureEntity> mesures = driver.getMeasureFrom(dive);
         MeasureEntity mes2 = mesures.get(0);
         if (mes2 != null) {
             assertTrue(mesure.equals(mes2));
         } else {
             throw new Exception("Aucune valeur trouvée en base");
         }
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
 
     @Test
     public void updatePosition() throws Exception {
-        dbDriver.initAsWritable();
+        driver.initAsWritable();
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        int diveID = dbDriver.insertDive(dive);
+        int diveID = driver.insertDive(dive);
         MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
-        dbDriver.insertMeasure(mesure, diveID, 1);
+        driver.insertMeasure(mesure, diveID, 1);
 
 
-        dbDriver.updatePosition(mesure.getId(), 350, 350, 350, 2);
-        List<MeasureEntity> mesures = dbDriver.getMeasureFrom(dive);
+        driver.updatePosition(mesure.getId(), 350, 350, 350, 2);
+        List<MeasureEntity> mesures = driver.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
             if (mes2 != null) {
@@ -106,33 +104,33 @@ public class TestDatabaseDriver {
                 throw new Exception("Aucune valeur trouvée en base");
             }
         } else throw new Exception("Liste de valeurs nulle");
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
     @Test
     public void startRecording() throws Exception {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        dbDriver.initAsWritable();
-        int diveID = dbDriver.insertDive(dive);
+        driver.initAsWritable();
+        int diveID = driver.insertDive(dive);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        dbDriver.startRecording(timestamp.getTime(), diveID);
-        DiveEntity d2 = dbDriver.getLastDive();
+        driver.startRecording(timestamp.getTime(), diveID);
+        DiveEntity d2 = driver.getLastDive();
         assertTrue(d2.getStartTime() == timestamp.getTime());
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
     @Test
     public void stopRecording() throws Exception {
         DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 1000);
-        dbDriver.initAsWritable();
-        int diveID = dbDriver.insertDive(dive);
+        driver.initAsWritable();
+        int diveID = driver.insertDive(dive);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
-        dbDriver.stopRecording(timestamp.getTime(), diveID);
-        DiveEntity d2 = dbDriver.getLastDive();
+        driver.stopRecording(timestamp.getTime(), diveID);
+        DiveEntity d2 = driver.getLastDive();
         assertTrue(d2.getEndTime() == timestamp.getTime());
-        dbDriver.closeConnection();
+        driver.closeConnection();
     }
 
 
