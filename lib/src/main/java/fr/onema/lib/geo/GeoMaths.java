@@ -6,9 +6,11 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
+ * Classe Helper pour toutes les opérations géographiques/mathématiques
+ *
+ *
  * Created by julien on 06/02/2017.
  */
-// TODO : complete
 public class GeoMaths {
     private static final double DEG_2_RAD = Math.PI / 180;
     private static final double RAD_2_DEG = 180 / Math.PI;
