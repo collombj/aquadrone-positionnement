@@ -335,6 +335,20 @@ public class DatabaseDriver {
     }
 
     /**
+     * Envoie une notification.
+     *
+     * @param message Le message à envoyer via la notification.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     */
+    public void sendNotification(String message) throws SQLException {
+        Objects.requireNonNull(message);
+        try (PreparedStatement ps = connector.prepareStatement("NOTIFY ?;")) {
+            ps.setString(1, message);
+            ps.execute();
+        }
+    }
+
+    /**
      * Arrête un enregistrement en remplissant la valeur de fin de plongée en base.
      *
      * @param timestamp Le timestamp correspondant à la fin de la plongée.
