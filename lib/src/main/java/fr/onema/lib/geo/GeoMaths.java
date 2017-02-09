@@ -77,7 +77,7 @@ public class GeoMaths {
      * @param alt l'altitude
      * @return la valeur de XYZ associée à ces coordonnées
      */
-    private static CartesianCoordinate computeXYZfromLatLonAlt(double lat, double lon, double alt) {
+    public static CartesianCoordinate computeXYZfromLatLonAlt(double lat, double lon, double alt) {
         double cosLat = Math.cos(lat);
         double sinLat = Math.sin(lat);
         double cosLon = Math.cos(lon);
