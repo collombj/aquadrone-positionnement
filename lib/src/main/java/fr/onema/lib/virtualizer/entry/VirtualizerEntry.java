@@ -29,8 +29,8 @@ public class VirtualizerEntry implements CSV {
      * Constructeur de Virtualizer
      * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
      * @param gpsLat Latitude du GPS
-     * @param GPSLon Longitude du GPS
-     * @param GPSAlt Altitude du GPS
+     * @param gpsLon Longitude du GPS
+     * @param gpsAlt Altitude du GPS
      * @param xacc Acceleration en x
      * @param yacc Acceleration en y
      * @param zacc Acceleration en z

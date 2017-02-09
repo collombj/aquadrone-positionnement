@@ -45,61 +45,54 @@ public class NetworkSenderTest {
     @Test
     public void sendMessage() throws IOException, InterruptedException {
         ArrayBlockingQueue<String> list = new ArrayBlockingQueue<String>(10);
-        Thread thread1 = new Thread(){
-            public void run() {
+        Thread thread1 = new Thread(() -> {
 
-                NetworkSender sender = new NetworkSender(1241, "127.0.0.1");
-                try {
-                    Thread.sleep(1000);
-                    sender.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
-                MAVLinkMessage msg = virtual.getIMUMessage();
-                try {
-                    list.put(msg.toString());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                sender.send(msg);
-                sender.closeConnection();
+            NetworkSender sender = new NetworkSender(1241, "127.0.0.1");
+            try {
+                sender.openConnection();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        };
 
-        Thread thread2 = new Thread(){
-            public void run() {
-                DatagramChannel server = null;
-                try {
-                    server = DatagramChannel.open();
-                    server.bind(new InetSocketAddress(1241));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ByteBuffer buff = ByteBuffer.allocate(8096);
-                InetSocketAddress exp = null;
-                try {
-                    server.receive(buff);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                buff.flip();
-                try {
-                    list.put(Charset.forName("utf-8").decode(buff).toString());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    server.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+            MAVLinkMessage msg = virtual.getIMUMessage();
+            try {
+                list.put(msg.toString());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        };
+
+            sender.send(msg);
+            sender.closeConnection();
+        });
+
+        Thread thread2 = new Thread(() -> {
+            DatagramChannel server = null;
+            try {
+                server = DatagramChannel.open();
+                server.bind(new InetSocketAddress(1241));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            ByteBuffer buff = ByteBuffer.allocate(265);
+            InetSocketAddress exp = null;
+            try {
+                server.receive(buff);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            buff.flip();
+            try {
+                list.put(Charset.forName("utf-8").decode(buff).toString());
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            try {
+                server.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
         thread1.start();
         thread2.start();
