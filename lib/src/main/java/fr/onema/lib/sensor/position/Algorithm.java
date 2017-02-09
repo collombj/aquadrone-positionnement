@@ -62,8 +62,8 @@ public abstract class Algorithm {
      * @param defaut position de défaut
      * @return la nouvelle position
      */
-    public Position correctPosition(Position first, Position defaut,GPS gps) {
-        return new Position();
+    public void correctPosition(Position first, Position defaut,GPS gps) {
+        //return new Position(entities);
     }
 
     // TODO : complete

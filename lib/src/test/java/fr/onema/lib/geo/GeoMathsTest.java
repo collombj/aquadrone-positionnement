@@ -35,6 +35,21 @@ public class GeoMathsTest {
         assertEquals(1.0, GeoMaths.cartesianDistance(pos1, pos2));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testGPSDistanceNonNull1() {
+        GPSCoordinate pos1 = new GPSCoordinate(1,2,3);
+        GPSCoordinate pos2 = null;
+        GeoMaths.gpsDistance(pos1, pos2);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGPSDistanceNonNull2() {
+        GPSCoordinate pos1 = null;
+        GPSCoordinate pos2 = new GPSCoordinate(1,2,3) ;
+        GeoMaths.gpsDistance(pos1, pos2);
+
+    }
+
     @Test
     public void testDeg2Rad() {
         assertEquals(0.0174533, GeoMaths.deg2rad(1), 0.001);

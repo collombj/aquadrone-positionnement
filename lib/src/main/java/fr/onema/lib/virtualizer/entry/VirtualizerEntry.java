@@ -8,9 +8,9 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 public class VirtualizerEntry implements CSV {
     private final long timestamp;
-    private final int GPSLat;
-    private final int GPSLon;
-    private final int GPSAlt;
+    private int GPSLat;
+    private int GPSLon;
+    private int GPSAlt;
     private final short xacc;
     private final short yacc;
     private final short zacc;
@@ -22,24 +22,26 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
+    public static String header = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature";
+    private final boolean hasGPS;
 
     /**
      * Constructeur de Virtualizer
-     * @param timestamp
-     * @param GPSLat
-     * @param GPSLon
-     * @param GPSAlt
-     * @param xacc
-     * @param yacc
-     * @param zacc
-     * @param xgyro
-     * @param ygyro
-     * @param zgyro
-     * @param xmag
-     * @param ymag
-     * @param zmag
-     * @param pressure
-     * @param temperature
+     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
+     * @param GPSLat Latitude du GPS
+     * @param GPSLon Longitude du GPS
+     * @param GPSAlt Altitude du GPS
+     * @param xacc Acceleration en x
+     * @param yacc Acceleration en y
+     * @param zacc Acceleration en z
+     * @param xgyro Rotation en x
+     * @param ygyro Rotation en y
+     * @param zgyro Rotation en z
+     * @param xmag Orientation magnétique en x
+     * @param ymag Orientation magnétique en y
+     * @param zmag Orientation magnétique en z
+     * @param pressure Pression
+     * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int GPSLat, int GPSLon, int GPSAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
@@ -57,6 +59,38 @@ public class VirtualizerEntry implements CSV {
         this.zmag = zmag;
         this.pressure = pressure;
         this.temperature = temperature;
+        this.hasGPS = true;
+    }
+
+    /**
+     * Constructeur de Virtualizer sans le GPS
+     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
+     * @param xacc Acceleration en x
+     * @param yacc Acceleration en y
+     * @param zacc Acceleration en z
+     * @param xgyro Rotation en x
+     * @param ygyro Rotation en y
+     * @param zgyro Rotation en z
+     * @param xmag Orientation magnétique en x
+     * @param ymag Orientation magnétique en y
+     * @param zmag Orientation magnétique en z
+     * @param pressure Pression
+     * @param temperature Temperature
+     */
+    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+        this.timestamp = timestamp;
+        this.xacc = xacc;
+        this.yacc = yacc;
+        this.zacc = zacc;
+        this.xgyro = xgyro;
+        this.ygyro = ygyro;
+        this.zgyro = zgyro;
+        this.xmag = xmag;
+        this.ymag = ymag;
+        this.zmag = zmag;
+        this.pressure = pressure;
+        this.temperature = temperature;
+        this.hasGPS = false;
     }
 
     /**
@@ -238,13 +272,29 @@ public class VirtualizerEntry implements CSV {
         return temperature;
     }
 
+    /**
+     * Récupère le boolean de la présence du GPS
+     * @return boolean
+     */
+    public boolean getHasGPS() { return hasGPS; }
+
+    /**
+     * Renvoi une string des valeurs au format CSV
+     * @return la chaine de caractère CSV
+     */
     @Override
     public String toCSV() {
-        return null;
+        return this.timestamp + "," + this.GPSLon + "," + this.GPSLat + "," + this.GPSAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature;
     }
 
+
+     /**
+      * Renvoi une string des champs au format CSV
+      * @return la chaine de caractère CSV
+      */
     @Override
     public String getCSVHeader() {
-        return null;
+        return "timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature";
     }
+
 }
