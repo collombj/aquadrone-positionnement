@@ -1,8 +1,6 @@
 package fr.onema.lib.File;
 
 import fr.onema.lib.file.FileManager;
-import fr.onema.lib.sensor.Temperature;
-import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
@@ -33,9 +31,9 @@ public class FileManagerTest {
         FileManager fm = new FileManager(workingDir + "/src/test/java/fr/onema/lib/File/rawInput.csv", workingDir + "/src/test/java/fr/onema/lib/File/virtualizedOutput.csv", workingDir + "/src/test/java/fr/onema/lib/File/computedOutput.csv");
         VirtualizerEntry v = fm.readVirtualizedEntries().get(0);
         assertEquals(v.getTimestamp(), 1);
-        assertEquals(v.getGPSLon(), 2);
-        assertEquals(v.getGPSLat(), 3);
-        assertEquals(v.getGPSAlt(), 4);
+        assertEquals(v.getGpsLon(), 2);
+        assertEquals(v.getGpsLat(), 3);
+        assertEquals(v.getGpsAlt(), 4);
         assertEquals(v.getXacc(),5);
         assertEquals(v.getYacc(),6);
         assertEquals(v.getZacc(),7);

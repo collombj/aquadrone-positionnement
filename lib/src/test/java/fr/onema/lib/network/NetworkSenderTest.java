@@ -90,11 +90,9 @@ public class NetworkSenderTest {
         sender.start();
 
         NetworkSender networkSender = new NetworkSender(1241, "127.0.0.1");
-
         VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
         MAVLinkMessage msg = virtual.getIMUMessage();
         networkSender.add(virtual);
-
         assertEquals(msg.toString(), list.take());
     }
 }
