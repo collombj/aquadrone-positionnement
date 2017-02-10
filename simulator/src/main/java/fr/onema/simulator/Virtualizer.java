@@ -69,11 +69,11 @@ public class Virtualizer {
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
         entries.forEach(x -> {
-            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), speed, TimeUnit.MILLISECONDS);
+            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), 1000/speed, TimeUnit.MILLISECONDS);
             try {
                 scheduled.get();
             } catch (InterruptedException |ExecutionException e) {
-                LOGGER.log(Level.SEVERE, "Worker interrupted during the sending");
+                LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
             }
         });
 
@@ -117,7 +117,7 @@ public class Virtualizer {
                     })
             );
         } catch (IOException | SQLException e) {
-            throw new ComparisonException(e.getCause());
+            throw new ComparisonException(e);
         }
     }
 
