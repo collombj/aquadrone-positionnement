@@ -14,9 +14,9 @@ public class NetworkSender {
     private final int port;
     private final String host;
     private VirtualizerEntry entry;
-    private ArrayBlockingQueue queue;
+    private ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramChannel client;
-    private final static byte buffer[] = new byte[8000];
+    private Thread sender;
 
     /**
      * Constructeur de la classe NetworkSender
@@ -26,7 +26,8 @@ public class NetworkSender {
     public NetworkSender(int port, String host) {
         this.port = port;
         this.host = host;
-        queue = new ArrayBlockingQueue(100);
+        queue = new ArrayBlockingQueue<>(100);
+        startThread();
     }
 
     /**
@@ -35,52 +36,24 @@ public class NetworkSender {
      */
     public void add(VirtualizerEntry entry) {
         this.entry = entry;
-        Thread listener = new Thread(){
-            public void run() {
-                while (!Thread.interrupted()) {
-                    if (entry.getHasGPS() == true) {
-                        MAVLinkMessage msgGPS = entry.getGPSMessage();
-                        try {
-                            queue.put(msgGPS);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    MAVLinkMessage msgIMU = entry.getIMUMessage();
-                    MAVLinkMessage msgPressure = entry.getPressureMessage();
-                    MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
-                    try {
-                        queue.put(msgIMU);
-                        queue.put(msgPressure);
-                        queue.put(msgTemperature);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                closeConnection();
-            }
-        };
-        Thread sender = new Thread(){
-            public void run() {
+            if (entry.getHasGPS() == true) {
+                MAVLinkMessage msgGPS = entry.getGPSMessage();
                 try {
-                    openConnection();
-                } catch (IOException e) {
-
+                    queue.put(msgGPS);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                while (!Thread.interrupted()) {
-                    MAVLinkMessage msg;
-                    try {
-                        msg = (MAVLinkMessage) queue.take();
-                        send(msg);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                closeConnection();
             }
-        };
-        new Thread(listener).start();
-        new Thread(sender).start();
+        MAVLinkMessage msgIMU = entry.getIMUMessage();
+        MAVLinkMessage msgPressure = entry.getPressureMessage();
+        MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
+        try {
+            queue.put(msgIMU);
+            queue.put(msgPressure);
+            queue.put(msgTemperature);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -92,7 +65,7 @@ public class NetworkSender {
         try {
             client.send(buff,dest);
         } catch (IOException e) {
-            e.printStackTrace();
+            // TODO
         }
     }
 
@@ -111,7 +84,7 @@ public class NetworkSender {
         try {
             client.close();
         } catch (IOException e) {
-
+            // TODO
         }
     }
 
@@ -137,5 +110,46 @@ public class NetworkSender {
      */
     public DatagramChannel getChannel() {
         return client;
+    }
+
+    public void startThread() {
+        sender = new Thread(() -> {
+            try {
+                openConnection();
+            } catch (IOException e) {
+                // TODO
+            }
+            while (!Thread.interrupted()) {
+                MAVLinkMessage msg;
+                try {
+                    msg = queue.take();
+                    send(msg);
+                } catch (InterruptedException e) {
+                    // TODO
+                }
+            }
+            closeConnection();
+        });
+        sender.start();
+    }
+
+    /**
+     * Getter pour la thread sender
+     * @return la thread
+     */
+    public Thread getSender() {
+        return sender;
+    }
+
+    /**
+     * getter de la blocking queue
+     * @return la blocking queue
+     */
+    public ArrayBlockingQueue getQueue() {
+        return queue;
+    }
+
+    public void interruptThread() {
+        this.sender.interrupt();
     }
 }
