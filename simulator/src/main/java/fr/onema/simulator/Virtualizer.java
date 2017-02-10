@@ -103,16 +103,37 @@ public class Virtualizer {
             List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
             listMeasures.forEach(x ->
                     listRefEntry.forEach(y -> {
-                        if (x.getTimestamp() == y.getTimestamp()) {
-                            int realLat = y.getLat();
-                            int realLon = y.getLon();
-                            int realAlt = y.getAlt();
-                            GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
-                            GPSCoordinate calculatedPoint = x.getLocationCorrected();
-                            double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
-                    /*if (distance > errorAllowed) {
-                        //TODO Sauvegarder dans errorFile
-                    }*/
+                        try{
+                            if (x.getTimestamp() == y.getTimestamp()) {
+                                Objects.requireNonNull(x.getMeasureValue());
+                                long timestamp = x.getTimestamp();
+                                short xRot = (short) x.getAccelerationX();
+                                short yRot = (short) x.getAccelerationY();
+                                short zRot = (short) x.getAccelerationZ();
+                                short xAcc = (short) x.getRotationX();
+                                short yAcc = (short) x.getRotationY();
+                                short zAcc = (short) x.getRotationZ();
+                                //TODO A modifier si on utilise l'orientation magnétique
+                                short xMag = 0;//Non utilisé pour le moment
+                                short yMag = 0;//Non utilisé pour le moment
+                                short zMag = 0;//Non utilisé pour le moment
+                                //TODO Vérifier que getMeasureValue() correspond à la pression
+                                float pressure = Float.parseFloat(x.getMeasureValue());
+                                short temperature = (short) y.getTemperature();
+
+                                int realLat = y.getLat();
+                                int realLon = y.getLon();
+                                int realAlt = y.getAlt();
+                                GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
+                                GPSCoordinate calculatedPoint = x.getLocationCorrected();
+                                double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
+                                if (distance > errorAllowed) {
+                                    VirtualizerEntry entry = new VirtualizerEntry(timestamp, xAcc, yAcc, zAcc, xRot, yRot, zRot, xMag, yMag, zMag, pressure, temperature);
+                                    errorFile.appendVirtualized(entry);
+                                }
+                            }
+                        }catch(IOException e){
+                            LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
                         }
                     })
             );
