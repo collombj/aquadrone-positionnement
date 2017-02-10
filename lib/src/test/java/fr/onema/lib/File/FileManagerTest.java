@@ -65,8 +65,8 @@ public class FileManagerTest {
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         VirtualizerEntry v = fm.readVirtualizedEntries().get(0);
         assertEquals(v.getTimestamp(), 1);
-        assertEquals(v.getGpsLon(), 2);
-        assertEquals(v.getGpsLat(), 3);
+        assertEquals(v.getGpsLon(), 3);
+        assertEquals(v.getGpsLat(), 2);
         assertEquals(v.getGpsAlt(), 4);
         assertEquals(v.getXacc(),5);
         assertEquals(v.getYacc(),6);
