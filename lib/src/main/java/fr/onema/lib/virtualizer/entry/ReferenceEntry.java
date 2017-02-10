@@ -92,7 +92,7 @@ public class ReferenceEntry implements CSV {
 
     @Override
     public String toCSV() {
-        return this.timestamp + "," + this.lat + "," + this.lon + "," + this.alt + "," + this.direction + "," + this.temperature;
+        return timestamp + "," + lat + "," + lon + "," + alt + "," + direction + "," + temperature;
     }
 
     /**
@@ -101,6 +101,6 @@ public class ReferenceEntry implements CSV {
      */
     @Override
     public String getCSVHeader() {
-        return "timestamp,Latitude,Longitude,Altitude,Direction,Temperature";
+        return HEADER;
     }
 }
