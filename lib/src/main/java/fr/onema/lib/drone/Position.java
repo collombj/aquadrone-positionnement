@@ -17,6 +17,7 @@ public class Position {
     private GPSCoordinate positionBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
+    private GPS gps;
     private IMU imu;
     private Pressure pressure;
     private List<Measure> measures;
@@ -44,6 +45,10 @@ public class Position {
         return timestamp;
     }
 
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public GPSCoordinate getPositionBrut() {
         return positionBrut;
     }
@@ -56,9 +61,12 @@ public class Position {
         return direction;
     }
 
-
     public IMU getImu() {
         return imu;
+    }
+
+    public void setImu(IMU imu) {
+        this.imu = imu;
     }
 
     public int getxRotationp() {
@@ -77,21 +85,16 @@ public class Position {
         return pressure;
     }
 
+    public void setPressure(Pressure pressure) {
+        this.pressure = pressure;
+    }
+
     public List<Measure> getMeasures() {
         return measures;
     }
 
-
-    public void setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-    }
-
-    public void setImu(IMU imu) {
-        this.imu = imu;
-    }
-
-    public void setPressure(Pressure pressure) {
-        this.pressure = pressure;
+    public void setGps(GPS gps) {
+        this.gps = gps;
     }
 
     /**
@@ -155,5 +158,15 @@ public class Position {
         // TODO
     }
 
+    public boolean hasGPS() {
+        return this.gps != null;
+    }
 
+    public boolean hasPressure() {
+        return this.pressure != null;
+    }
+
+    public boolean hasIMU() {
+        return this.imu != null;
+    }
 }
