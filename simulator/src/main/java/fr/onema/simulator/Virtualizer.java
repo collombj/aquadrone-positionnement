@@ -12,11 +12,16 @@ import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
+import java.io.IOException;
 import java.sql.SQLException;
-import java.sql.Time;
-import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Created by Jérôme on 08/02/2017.
@@ -31,20 +36,21 @@ public class Virtualizer {
     private long start;
     private long stop;
 
+    private static final Logger LOGGER = Logger.getLogger(Virtualizer.class.getName());
+
     /**
      * Constructeur qui initialise un FileManager, un entier de vitesse et un nom de simulation
-     * @param filePathInput FileManager
-     * @param speed valeur de la vitesse
+     *
+     * @param filePathInput  FileManager
+     * @param speed          valeur de la vitesse
      * @param simulationName Nom de la simulation
-     * @param host Adresse de l'hôte
-     * @param port Port sur lequel on se connecte à l'hôte
+     * @param host           Adresse de l'hôte
+     * @param port           Port sur lequel on se connecte à l'hôte
      */
-    public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port){
+    public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port) {
         Objects.requireNonNull(filePathInput);
-        Objects.requireNonNull(speed);
         Objects.requireNonNull(simulationName);
         Objects.requireNonNull(host);
-        Objects.requireNonNull(port);
 
         this.fileManager = filePathInput;
         this.speed = speed;
@@ -56,70 +62,63 @@ public class Virtualizer {
     /**
      * Lance une simulation
      */
-    public void start(){
-        Objects.requireNonNull(fileManager);
-        start = Time.from(Instant.now()).getTime()/1000; //Pour avoir un start en secondes
-        List<VirtualizerEntry> entries=fileManager.readVirtualizedEntries();
+    public void start() throws IOException {
+        start = System.currentTimeMillis() / 1000; //Pour avoir un start en secondes
+        List<VirtualizerEntry> entries = fileManager.readVirtualizedEntries();
         NetworkSender sender = new NetworkSender(port, host);
-        entries.forEach(x-> {
-            sender.add(x);
-            try{
-                wait(speed);
-            }catch(InterruptedException e){
-                //Do nothing
+        ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
+
+        entries.forEach(x -> {
+            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), speed, TimeUnit.MILLISECONDS);
+            try {
+                scheduled.get();
+            } catch (InterruptedException |ExecutionException e) {
+                LOGGER.log(Level.SEVERE, "Worker interrupted during the sending");
             }
         });
-        stop = Time.from(Instant.now()).getTime()/1000; //Pour avoir un stop en secondes
+
+        stop = System.currentTimeMillis() / 1000; //Pour avoir un stop en secondes
     }
 
     /**
      * Récupère la durée de la simulation
+     *
      * @return la durée
      */
-    public long getDuration(){
-        Objects.requireNonNull(getStart());
-        Objects.requireNonNull(getStop());
-        return getStop()-getStart();
+    public long getDuration() {
+        return getStop() - getStart();
     }
 
-    /**
-     * Attend 1 seconde divisée par la vitesse d'obtention de données
-     * @param speed Vitesse d'obtention de données
-     * @throws InterruptedException La fonction sleep a été interrompue
-     */
-    private void wait(int speed) throws InterruptedException{
-        int sleepTime = 1000/speed;
-        Thread.sleep(sleepTime);
-    }
-
-    public void compare(FileManager sourceFile, FileManager errorFile, Configuration config, int errorAllowed)
-            throws SQLException, ClassNotFoundException {
+    public void compare(FileManager sourceFile, FileManager errorFile, Configuration config, int errorAllowed) throws ComparisonException {
         Objects.requireNonNull(sourceFile);
         Objects.requireNonNull(errorFile);
         Objects.requireNonNull(config);
-        Objects.requireNonNull(errorAllowed);
 
         DatabaseDriver driver = DatabaseDriver.build(config);
         driver.initAsReadable();
-        List<ReferenceEntry> listRefEntry = sourceFile.readReferenceEntries();
-        MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
-        DiveEntity dive = repository.getLastDive();
-        List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
-        listMeasures.forEach(x ->
-            listRefEntry.forEach(y -> {
-                if (x.getTimestamp() == y.getTimestamp()) {
-                    int realLat = y.getLat();
-                    int realLon = y.getLon();
-                    int realAlt = y.getAlt();
-                    GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
-                    GPSCoordinate calculatedPoint = x.getLocationCorrected();
-                    double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
+        try {
+            List<ReferenceEntry> listRefEntry = sourceFile.readReferenceEntries();
+            MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
+            DiveEntity dive = repository.getLastDive();
+            List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
+            listMeasures.forEach(x ->
+                    listRefEntry.forEach(y -> {
+                        if (x.getTimestamp() == y.getTimestamp()) {
+                            int realLat = y.getLat();
+                            int realLon = y.getLon();
+                            int realAlt = y.getAlt();
+                            GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
+                            GPSCoordinate calculatedPoint = x.getLocationCorrected();
+                            double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
                     /*if (distance > errorAllowed) {
                         //TODO Sauvegarder dans errorFile
                     }*/
-                }
-            })
-        );
+                        }
+                    })
+            );
+        } catch (IOException | SQLException e) {
+            throw new ComparisonException(e.getCause());
+        }
     }
 
 
