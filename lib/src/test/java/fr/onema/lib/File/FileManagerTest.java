@@ -7,9 +7,7 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.mavlink.messages.ardupilotmega.msg_global_position_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
@@ -24,16 +22,16 @@ public class FileManagerTest {
     private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/virtualizedOutput.csv";
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/resultsOutput.csv";
+    private final static FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
 
-    @Before
-    public void prepare() throws Exception {
+    @BeforeClass
+    public static void prepare() throws Exception {
         File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);
         v.delete();
         File res = new File(resultsFile);
         res.delete();
-        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         msg_global_position_int msg = new msg_global_position_int();
         msg.time_boot_ms = 1;
         msg.lat = 2;
@@ -50,7 +48,6 @@ public class FileManagerTest {
 
     @Test
     public void readReferenceEntries() throws Exception {
-        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         ReferenceEntry r = fm.readReferenceEntries().get(0);
         assertEquals(r.getTimestamp(), 1);
         assertEquals(r.getLat(), 2);
@@ -62,7 +59,6 @@ public class FileManagerTest {
 
     @Test
     public void readVirtualizedEntries() throws Exception {
-        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         VirtualizerEntry v = fm.readVirtualizedEntries().get(0);
         assertEquals(v.getTimestamp(), 1);
         assertEquals(v.getGpsLon(), 3);
@@ -82,7 +78,6 @@ public class FileManagerTest {
 
     @Test
     public void appendRaw() throws Exception {
-        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         msg_global_position_int msg = new msg_global_position_int();
         msg.time_boot_ms = 0;
         msg.lat = 1;
@@ -97,7 +92,6 @@ public class FileManagerTest {
 
     @Test
     public void appendVirtualized() throws Exception {
-        FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         fm.appendVirtualized(new VirtualizerEntry(0, 1, 2, 3, (short)4, (short)5, (short)6,
                 (short)7, (short)8, (short)9,(short)10,(short)11,(short)12,13,(short) 14));
     }
@@ -105,15 +99,15 @@ public class FileManagerTest {
     @Test
     public void appendResults() throws Exception {
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
-        fm.openFile();
+        fm.openFileForResults();
         ReferenceEntry re = new ReferenceEntry(0,4,5,6,(float)7,(short)8);
         MeasureEntity m = new MeasureEntity(
                 0, new GPSCoordinate(4,5,6), new GPSCoordinate(1,2,3), 0, 0, 0, 0, 0, 0, 13, "test");
         fm.appendResults(re, m, 14);
     }
 
-    @After
-    public void delete() {
+    @AfterClass
+    public static void delete() {
         File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);

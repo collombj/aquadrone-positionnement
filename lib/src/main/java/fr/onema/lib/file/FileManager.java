@@ -49,6 +49,16 @@ public class FileManager {
     }
 
     /***
+     * Constructeur du FileManager
+     * @param inputFilePath Chemin d'accès vers le fichier brut d'entrée
+     * @param virtualizedOutputFilePath Chemin d'accès vers le fichier de sorties des données virtualisées
+     */
+    public FileManager(String inputFilePath, String virtualizedOutputFilePath) {
+        // TODO : find a better solution
+        this(inputFilePath, virtualizedOutputFilePath, "");
+    }
+
+    /***
      * Transforme les valeurs du fichier brut CSV en Liste
      * @return Liste contenant les valeurs ReferenceEntry
      */
@@ -121,7 +131,7 @@ public class FileManager {
     /**
      * Open results.csv to write header
      */
-    public void openFile() throws IOException {
+    public void openFileForResults() throws IOException {
         File f = new File(resultsOutputFilePath);
         f.delete();
         try (FileWriter fw = new FileWriter(f, false)) {
