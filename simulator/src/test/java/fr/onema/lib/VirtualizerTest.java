@@ -10,8 +10,6 @@ import java.io.IOException;
 import static org.junit.Assert.*;
 
 /**
- * //TODO: FINIR LES TESTS
- *
  * Created by Jérôme on 09/02/2017.
  */
 public class VirtualizerTest {
@@ -44,6 +42,7 @@ public class VirtualizerTest {
         Virtualizer v = new Virtualizer(fm,100,"aaa","test",0);
     }
 
+    /*Les fichiers ne sont pas versionnés, donc test juste en local
     @Test
     public void testGetters(){
         String workingDir = System.getProperty("user.dir").replace("simulator", "lib");
@@ -77,5 +76,5 @@ public class VirtualizerTest {
         }catch(Exception e){
             fail(e.getMessage());
         }
-    }
+    }*/
 }
