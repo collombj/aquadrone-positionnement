@@ -52,6 +52,10 @@ public class Virtualizer {
         Objects.requireNonNull(simulationName);
         Objects.requireNonNull(host);
 
+        if(speed == 0 || port == 0){
+            throw new IllegalArgumentException("Speed and port cannot be zero");
+        }
+
         this.fileManager = filePathInput;
         this.speed = speed;
         this.simulationName = simulationName;
@@ -63,7 +67,7 @@ public class Virtualizer {
      * Lance une simulation
      */
     public void start() throws IOException {
-        start = System.currentTimeMillis() / 1000; //Pour avoir un start en secondes
+        start = System.currentTimeMillis(); //Pour avoir un start en millisecondes (Tellement rapide que start = stop sinon)
         List<VirtualizerEntry> entries = fileManager.readVirtualizedEntries();
         NetworkSender sender = new NetworkSender(port, host);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
@@ -77,11 +81,19 @@ public class Virtualizer {
             }
         });
 
-        stop = System.currentTimeMillis() / 1000; //Pour avoir un stop en secondes
+        stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes (Tellement rapide que start = stop sinon)
+    }
+
+    private String getRecapitulatif(FileManager file) throws IOException {
+        Objects.requireNonNull(file);
+        List<VirtualizerEntry> entries = file.readVirtualizedEntries();
+        StringBuilder sb = new StringBuilder();
+        entries.forEach(x -> sb.append(x.toCSV()).append("\n"));
+        return sb.toString();
     }
 
     /**
-     * Récupère la durée de la simulation
+     * Récupère la durée de la simulation en millisecondes
      *
      * @return la durée
      */
@@ -89,7 +101,7 @@ public class Virtualizer {
         return getStop() - getStart();
     }
 
-    public void compare(FileManager sourceFile, FileManager errorFile, Configuration config, int errorAllowed) throws ComparisonException {
+    public String compare(FileManager sourceFile, FileManager errorFile, Configuration config, int errorAllowed) throws ComparisonException {
         Objects.requireNonNull(sourceFile);
         Objects.requireNonNull(errorFile);
         Objects.requireNonNull(config);
@@ -101,44 +113,43 @@ public class Virtualizer {
             MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
             DiveEntity dive = repository.getLastDive();
             List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
-            listMeasures.forEach(x ->
-                    listRefEntry.forEach(y -> {
-                        try{
-                            if (x.getTimestamp() == y.getTimestamp()) {
-                                Objects.requireNonNull(x.getMeasureValue());
-                                long timestamp = x.getTimestamp();
-                                short xRot = (short) x.getAccelerationX();
-                                short yRot = (short) x.getAccelerationY();
-                                short zRot = (short) x.getAccelerationZ();
-                                short xAcc = (short) x.getRotationX();
-                                short yAcc = (short) x.getRotationY();
-                                short zAcc = (short) x.getRotationZ();
-                                //TODO A modifier si on utilise l'orientation magnétique
-                                short xMag = 0;//Non utilisé pour le moment
-                                short yMag = 0;//Non utilisé pour le moment
-                                short zMag = 0;//Non utilisé pour le moment
-                                //TODO Vérifier que getMeasureValue() correspond à la pression
-                                float pressure = Float.parseFloat(x.getMeasureValue());
-                                short temperature = (short) y.getTemperature();
-
-                                int realLat = y.getLat();
-                                int realLon = y.getLon();
-                                int realAlt = y.getAlt();
-                                GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
-                                GPSCoordinate calculatedPoint = x.getLocationCorrected();
-                                double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
-                                if (distance > errorAllowed) {
-                                    VirtualizerEntry entry = new VirtualizerEntry(timestamp, xAcc, yAcc, zAcc, xRot, yRot, zRot, xMag, yMag, zMag, pressure, temperature);
-                                    errorFile.appendVirtualized(entry);
-                                }
-                            }
-                        }catch(IOException e){
-                            LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
-                        }
-                    })
-            );
+            listMeasures.forEach(x -> listRefEntry.forEach(y -> sendMessage(errorFile, y, x, errorAllowed)));
+            return getRecapitulatif(errorFile);
         } catch (IOException | SQLException e) {
             throw new ComparisonException(e);
+        }
+    }
+
+    private void sendMessage(FileManager errFile, ReferenceEntry ref, MeasureEntity measure, int errVal) {
+        try {
+            Objects.requireNonNull(measure.getMeasureValue());
+            long timestamp = measure.getTimestamp();
+            short xRot = (short) measure.getAccelerationX();
+            short yRot = (short) measure.getAccelerationY();
+            short zRot = (short) measure.getAccelerationZ();
+            short xAcc = (short) measure.getRotationX();
+            short yAcc = (short) measure.getRotationY();
+            short zAcc = (short) measure.getRotationZ();
+            //TODO A modifier si on utilise l'orientation magnétique
+            short xMag = 0;//Non utilisé pour le moment
+            short yMag = 0;//Non utilisé pour le moment
+            short zMag = 0;//Non utilisé pour le moment
+            //TODO Récupérer la valeur de pression
+            float pressure = 0; //Trouver la valeur
+            short temperature = (short) ref.getTemperature();
+
+            int realLat = ref.getLat();
+            int realLon = ref.getLon();
+            int realAlt = ref.getAlt();
+            GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
+            GPSCoordinate calculatedPoint = measure.getLocationCorrected();
+            double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
+            if (distance > errVal) {
+                VirtualizerEntry entry = new VirtualizerEntry(timestamp, xAcc, yAcc, zAcc, xRot, yRot, zRot, xMag, yMag, zMag, pressure, temperature);
+                errFile.appendVirtualized(entry);
+            }
+        }catch(IOException e){
+            LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
         }
     }
 
@@ -186,5 +197,27 @@ public class Virtualizer {
      */
     private long getStop() {
         return stop;
+    }
+
+    /**
+     * Récupère le port vers la base
+     *
+     * @return port
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Récupère le host de la base
+     *
+     * @return host
+     */
+    public String getHost() {
+        return host;
+    }
+
+    public static Logger getLogs() {
+        return LOGGER;
     }
 }
