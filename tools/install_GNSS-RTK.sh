@@ -4,7 +4,8 @@ wifiName="Slave"
 wifiPassword="emlidreach"
 interfaceWln="wlan0"
 interfaceEth="eth0"
-ipRTK="192.168.42.1"
+ipRTKSlave="192.168.42.1"
+ipRTKMaster="192.168.2.1"
 portSynchroRTK="9000"
 portExportRTK="9001"
 
@@ -39,5 +40,6 @@ echo '1' | tee /proc/sys/net/ipv4/conf/$interfaceWln/forwarding > /dev/null 2>&1
 echo '1' | tee /proc/sys/net/ipv4/conf/$interfaceEth/forwarding > /dev/null 2>&1
 
 iptables -F
-iptables -A PREROUTING -t nat -i $interfaceWln -p tcp --dport $portSynchroRTK -j DNAT --to $ipRTK:$portSynchroRTK
-iptables -A PREROUTING -t nat -i $interfaceWln -p tcp --dport $portExportRTK -j DNAT --to $ipRTK:$portExportRTK
+iptables -A PREROUTING -t nat -i $interfaceWln -p tcp --dport $portSynchroRTK -j DNAT --to $ipRTKMaster:$portSynchroRTK
+iptables -A PREROUTING -t nat -i $interfaceEth -p tcp --dport $portExportRTK -j DNAT --to $ipRTK:$portExportRTK
+iptables-save
