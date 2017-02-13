@@ -35,6 +35,21 @@ public class GeoMathsTest {
         assertEquals(1.0, GeoMaths.cartesianDistance(pos1, pos2));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void testGPSDistanceNonNull1() {
+        GPSCoordinate pos1 = new GPSCoordinate(1,2,3);
+        GPSCoordinate pos2 = null;
+        GeoMaths.gpsDistance(pos1, pos2);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testGPSDistanceNonNull2() {
+        GPSCoordinate pos1 = null;
+        GPSCoordinate pos2 = new GPSCoordinate(1,2,3) ;
+        GeoMaths.gpsDistance(pos1, pos2);
+
+    }
+
     @Test
     public void testDeg2Rad() {
         assertEquals(0.0174533, GeoMaths.deg2rad(1), 0.001);
@@ -137,5 +152,37 @@ public class GeoMathsTest {
         assertEquals(1.0*0.101972*1000, accelerometer.getxAcceleration(), 1);
         assertEquals(-1*0.1019*1000, accelerometer.getyAcceleration(), 1);
         assertEquals(-3.0*0.1019*1000, accelerometer.getzAcceleration(), 1);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testComputeGPSCoordinateNonNull1() {
+        GPSCoordinate gps = null;
+        CartesianCoordinate cc = new CartesianCoordinate(1,2,3);
+
+        GeoMaths.computeGPSCoordinateFromCartesian(gps, cc);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testComputeGPSCoordinateNonNull2() {
+        GPSCoordinate gps = new GPSCoordinate(1,2,3);
+        CartesianCoordinate cc = null;
+
+        GeoMaths.computeGPSCoordinateFromCartesian(gps, cc);
+    }
+
+    @Test
+    public void testComputeGPSCoordinate() {
+
+        GPSCoordinate ref = new GPSCoordinate(450_000_000, 450_000_000, 130_000);
+        GPSCoordinate test = new GPSCoordinate(450_000_500, 450_000_500, 130_000);
+
+
+        CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(ref, test);
+
+        GPSCoordinate gpsCoordinate = GeoMaths.computeGPSCoordinateFromCartesian(ref, cartesianCoordinate);
+
+        assertEquals(test.lat, gpsCoordinate.lat);
+        assertEquals(test.lon, gpsCoordinate.lon);
+        assertEquals(test.alt, gpsCoordinate.alt);
     }
 }
