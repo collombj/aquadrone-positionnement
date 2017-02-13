@@ -19,7 +19,8 @@ public class Main extends Application {
 
     private void initRootLayout(Stage primaryStage) throws java.io.IOException {
         rootLayout = FXMLLoader.load(getClass().getResource("view/RootLayout.fxml"));
-        primaryStage.setScene(new Scene(rootLayout));
+        Scene rootScene = new Scene(rootLayout);
+        primaryStage.setScene(rootScene);
         primaryStage.show();
     }
 

@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
@@ -13,10 +14,23 @@ import java.io.IOException;
 public class RootLayoutController {
 
     @FXML
+    private TitledPane stateTitledPane;
+
+    @FXML
+    private TitledPane sensorsTitledPane;
+
+    @FXML
+    private void resizeParent() {
+        Stage root = (Stage)sensorsTitledPane.getScene().getWindow();
+        root.sizeToScene();
+        root.show();
+    }
+
+    @FXML
     private Button configurationButton;
 
     @FXML
-    private void testAction(ActionEvent event) throws IOException {
+    private void accessConfiguration(ActionEvent event) throws IOException {
         Stage stage;
         Stage root;
         root = (Stage)configurationButton.getScene().getWindow();

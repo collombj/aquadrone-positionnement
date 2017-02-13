@@ -18,7 +18,7 @@
     <children>
         <VBox>
             <children>
-                <TitledPane animated="false" text="Etat">
+                <TitledPane fx:id="stateTitledPane" animated="false" onMouseClicked="#resizeParent" text="Etat">
                     <content>
                         <AnchorPane>
                             <children>
@@ -137,7 +137,7 @@
                         </AnchorPane>
                     </content>
                 </TitledPane>
-                <TitledPane animated="false" text="Capteurs">
+                <TitledPane fx:id="sensorsTitledPane" animated="false" onMouseClicked="#resizeParent" text="Capteurs">
                     <content>
                         <AnchorPane prefWidth="298.0">
                             <children>
@@ -157,7 +157,7 @@
                 </TitledPane>
                 <HBox alignment="CENTER" maxHeight="35.0" minHeight="35.0" prefHeight="35.0">
                     <children>
-                        <Button fx:id="configurationButton" maxWidth="160.0" mnemonicParsing="false" onAction="#testAction" prefWidth="140.0" text="Configuration">
+                        <Button fx:id="configurationButton" maxWidth="160.0" mnemonicParsing="false" onAction="#accessConfiguration" prefWidth="140.0" text="Configuration">
                             <HBox.margin>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </HBox.margin>
