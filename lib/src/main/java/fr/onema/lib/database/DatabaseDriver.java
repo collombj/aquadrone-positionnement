@@ -342,9 +342,8 @@ public class DatabaseDriver {
      */
     public void sendNotification(String message) throws SQLException {
         Objects.requireNonNull(message);
-        try (PreparedStatement ps = connector.prepareStatement("NOTIFY ?;")) {
-            ps.setString(1, message);
-            ps.execute();
+        try (Statement ps = connector.createStatement()) {
+            ps.execute("NOTIFY " + message );
         }
     }
 
