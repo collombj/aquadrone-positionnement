@@ -42,17 +42,11 @@ public class DatabaseWorker implements Worker {
 
     public DatabaseWorker(Configuration configuration) {
         dbWorkerThread = new Thread(() -> {
-            try {
-                MeasureRepository repository =
-                        MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(configuration);
-                while (!Thread.currentThread().isInterrupted()) {
-                    DatabaseAction action = actionQueue.poll();
-                    action.getAction().accept(repository, action.getObj());
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
+            MeasureRepository repository =
+                    MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(configuration);
+            while (!Thread.currentThread().isInterrupted()) {
+                DatabaseAction action = actionQueue.poll();
+                action.getAction().accept(repository, action.getObj());
             }
         });
     }
@@ -155,7 +149,7 @@ public class DatabaseWorker implements Worker {
      *
      */
     private BiConsumer<MeasureRepository, Object[]> _startRecording = (repository, args) -> {
-        if (args.length != 2 || !(args[0] instanceof Long) || !(args[1] instanceof Integer) ) {
+        if (args.length != 2 || !(args[0] instanceof Long) || !(args[1] instanceof Integer)) {
             System.out.println("Error DatabaseWorker.startRecording : invalid args");
             return;
         }
