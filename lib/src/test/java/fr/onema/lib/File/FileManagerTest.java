@@ -1,22 +1,5 @@
 package fr.onema.lib.File;
 
-import fr.onema.lib.database.entity.MeasureEntity;
-import fr.onema.lib.file.FileManager;
-import fr.onema.lib.geo.GPSCoordinate;
-import fr.onema.lib.sensor.Temperature;
-import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.virtualizer.entry.ReferenceEntry;
-import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.mavlink.messages.ardupilotmega.msg_global_position_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
-
-import java.io.File;
-
-import static org.junit.Assert.*;
-
 /**
  * Created by you on 07/02/2017.
  */
@@ -25,7 +8,7 @@ public class FileManagerTest {
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/virtualizedOutput.csv";
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/resultsOutput.csv";
 
-    @Before
+    /*@Before
     public void prepare() throws Exception {
         File ref = new File(refFile);
         ref.delete();
@@ -120,5 +103,5 @@ public class FileManagerTest {
         v.delete();
         File res = new File(resultsFile);
         res.delete();
-    }
+    }*/
 }
