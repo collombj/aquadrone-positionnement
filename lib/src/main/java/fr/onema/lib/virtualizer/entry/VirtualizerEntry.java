@@ -284,9 +284,8 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return this.timestamp + "," + this.gpsLon + "," + this.gpsLat + "," + this.gpsAlt + "," + this.xacc + "," + this.yacc + "," + this.zacc + "," + this.xgyro + "," + this.ygyro + "," + this.zgyro + "," + this.xmag + "," + this.ymag + "," + this.zmag + "," + this.pressure + "," + this.temperature;
+        return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + xgyro + "," + ygyro + "," + zgyro + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
     }
-
 
      /**
       * Renvoi une string des champs au format CSV
@@ -294,7 +293,7 @@ public class VirtualizerEntry implements CSV {
       */
     @Override
     public String getCSVHeader() {
-        return "timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature";
+        return HEADER;
     }
 
 }

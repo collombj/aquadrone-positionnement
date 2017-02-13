@@ -14,14 +14,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Theo on 08/02/2017.
- */
 public class NetworkSenderTest {
+    public static final String ASCII = "ASCII";
+
     @Test
-    public void constructorNotNull() {
-        NetworkSender networkSender = new NetworkSender(5, "test");
+    public void constructorNotNull() throws IOException {
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        networkSender.openConnection();
         assertNotNull(networkSender);
+        networkSender.closeConnection();
     }
 
     @Test
@@ -31,75 +32,73 @@ public class NetworkSenderTest {
         networkSender.openConnection();
         assertNotNull(networkSender.getChannel());
         networkSender.closeConnection();
+        server.close();
     }
 
     @Test
     public void closeConnectionNotNull() throws IOException {
-        NetworkSender networkSender = new NetworkSender(1240, "127.0.0.1");
-        ServerSocket server = new ServerSocket(1240);
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        ServerSocket server = new ServerSocket(1239);
         networkSender.openConnection();
         networkSender.closeConnection();
+        server.close();
         assertFalse(networkSender.getChannel().isConnected());
+    }
+
+    @Test
+    public void threadStarted() throws IOException {
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        networkSender.openConnection();
+        assertTrue(networkSender.getSender().isAlive());
+        networkSender.closeConnection();
+    }
+
+    @Test
+    public void addTest() throws IOException {
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        networkSender.openConnection();
+        VirtualizerEntry vir = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        networkSender.add(vir);
+        networkSender.getQueue().contains(vir);
+        networkSender.closeConnection();
     }
 
     @Test
     public void sendMessage() throws IOException, InterruptedException {
         ArrayBlockingQueue<String> list = new ArrayBlockingQueue<String>(10);
-        Thread thread1 = new Thread(() -> {
-
-            NetworkSender sender = new NetworkSender(1241, "127.0.0.1");
-            try {
-                sender.openConnection();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
-            MAVLinkMessage msg = virtual.getIMUMessage();
-            try {
-                list.put(msg.toString());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
-            sender.send(msg);
-            sender.closeConnection();
+        Thread sender = new Thread(() -> {
+                DatagramChannel server = null;
+                try {
+                    server = DatagramChannel.open();
+                    server.bind(new InetSocketAddress(1239));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ByteBuffer buff = ByteBuffer.allocate(1024);
+                try {
+                    server.receive(buff);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                buff.flip();
+                try {
+                    list.put(Charset.forName(ASCII).decode(buff).toString());
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    server.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
         });
+        sender.start();
 
-        Thread thread2 = new Thread(() -> {
-            DatagramChannel server = null;
-            try {
-                server = DatagramChannel.open();
-                server.bind(new InetSocketAddress(1241));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ByteBuffer buff = ByteBuffer.allocate(265);
-            InetSocketAddress exp = null;
-            try {
-                server.receive(buff);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            buff.flip();
-            try {
-                list.put(Charset.forName("utf-8").decode(buff).toString());
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            try {
-                server.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-        thread1.start();
-        thread2.start();
-        String s1 = list.take();
-        String s2 = list.take();
-        thread1.interrupt();
-        thread2.interrupt();
-        assertEquals(s1,s2);
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        MAVLinkMessage msg = virtual.getIMUMessage();
+        networkSender.add(virtual);
+        assertEquals(msg.toString(), list.take());
+        networkSender.closeConnection();
     }
 }

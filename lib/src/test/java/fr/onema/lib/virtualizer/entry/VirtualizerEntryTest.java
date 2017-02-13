@@ -75,8 +75,8 @@ public class VirtualizerEntryTest {
 
     @Test
     public void getCSVHeaderTest() {
-        VirtualizerEntry ref = new VirtualizerEntry(1,1,1,1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
-        assertEquals("timestamp,GPSLongitude,GPSLatitude,GPSAltitude,AccelerationX,AccelerationY,AccelerationZ,RotationX,RotationY,RotationZ,CapX,CapY,CapZ,Pression,Temperature", ref.getCSVHeader());
+        VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
+        assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
     }
 
 }
