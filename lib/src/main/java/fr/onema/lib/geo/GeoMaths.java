@@ -134,7 +134,6 @@ public class GeoMaths {
      */
     public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate coordinate, long timestamp) {
         Objects.requireNonNull(coordinate);
-
         double frac = 1_000. / timestamp;
         double vx = coordinate.x * frac;
         double vy = coordinate.y * frac;
@@ -157,7 +156,7 @@ public class GeoMaths {
         Objects.requireNonNull(velocityCurrent);
 
         if (timestamp == 0) {
-            throw new IllegalArgumentException("Cannot compute the acceleration with a timestamp equals to 0");
+            return new Accelerometer(0,0,0);
         }
 
         double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;

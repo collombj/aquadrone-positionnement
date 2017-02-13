@@ -1,8 +1,10 @@
 package fr.onema.simulator;
 
 import fr.onema.lib.file.FileManager;
+import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -35,22 +37,25 @@ public class Generator {
      * Permet de convertir les données du fichier d'entrée en données virtualisées et les écrire dans le fichier spécifié
      */
     public void convert() {
-        inputReferencies.forEach(e -> {
-            GPS g = GPS.build(e.getTimestamp(), e.getLat(), e.getLon(), e.getAlt(), e.getDirection());
-            // TODO : gestion CartesianVelocity, faire évoluer ReferenceEntry ?
-            // TODO : faire évoluer CSV ? (gestion plus poussée des GPS msg_global_position_int ?
+        for (ReferenceEntry e : inputReferencies) {
             IMU i = previous == null
-                    ? IMU.build(new CartesianVelocity(0,0,0), 0,
-                    new GPSCoordinate(e.getLat(), e.getLon(), e.getAlt()), e.getTimestamp(),
-                    new GPSCoordinate(e.getLat(), e.getLon(), e.getAlt()))
-                    : IMU.build(new CartesianVelocity(0,0,0), previous.getTimestamp(),
-                    new GPSCoordinate(previous.getLat(),previous.getLon(),previous.getAlt()), e.getTimestamp(),
-                    new GPSCoordinate(e.getLat(), e.getLon(), e.getAlt()));
+                    ? IMU.build(new CartesianVelocity(0,0,0),
+                    e.getTimestamp(),
+                    new GPSCoordinate(e.getLat() * 10_000_000, e.getLon() * 10_000_000, e.getAlt() * 1_000),
+                    e.getTimestamp(),
+                    new GPSCoordinate(e.getLat() * 10_000_000, e.getLon() * 10_000_000, e.getAlt() * 1_000))
+                    : IMU.build(GeoMaths.computeVelocityFromCartesianCoordinate(
+                    GeoMaths.computeXYZfromLatLonAlt(e.getLat(), e.getLon(), e.getAlt())
+                    , e.getTimestamp() - previous.getTimestamp())
+                    , previous.getTimestamp()
+                    , new GPSCoordinate(previous.getLat() * 10_000_000, previous.getLon() * 10_000_000, previous.getAlt() * 1_000)
+                    , e.getTimestamp()
+                    , new GPSCoordinate(e.getLat() * 10_000_000, e.getLon() * 10_000_000, e.getAlt() * 1_000));
             previous = e;
             Temperature t = Temperature.build(e.getTimestamp(), e.getTemperature());
             Pressure p = Pressure.build(e.getTimestamp(), e.getAlt(), e.getTemperature());
             try {
-                fileManager.appendVirtualized(new VirtualizerEntry(g.getTimestamp(), e.getLat(), e.getLon(), e.getAlt(),
+                fileManager.appendVirtualized(new VirtualizerEntry(e.getTimestamp(), e.getLat(), e.getLon(), e.getAlt(),
                         (short) i.getAccelerometer().getxAcceleration(),
                         (short) i.getAccelerometer().getyAcceleration(),
                         (short) i.getAccelerometer().getzAcceleration(),
@@ -64,7 +69,8 @@ public class Generator {
                         (short) t.getValueTemperature()));
             } catch (IOException e1) {
                 // TODO : exception handling
+                e1.printStackTrace();
             }
-        });
+        }
     }
 }
