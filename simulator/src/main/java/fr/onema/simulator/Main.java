@@ -1,6 +1,13 @@
 package fr.onema.simulator;
 
+import fr.onema.lib.file.FileManager;
+import fr.onema.lib.virtualizer.entry.ReferenceEntry;
+import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.apache.commons.cli.*;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
  * Point d'entrée du Simulateur
@@ -50,9 +57,13 @@ public class Main {
     /**
      * Exemple d'utilisation de l'application avec différents paramètres
      */
-    private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv fusion.csv" +
+    private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv" +
             LONG_ARGUMENT_SIGN + RUN_ARGUMENT + " simulation.csv [hostname]" +
             LONG_ARGUMENT_SIGN + COMPARE_OPTION + " fusion.csv configuration.properties resultat.csv\n\n\n";
+
+    private static final int NUMBER_OF_ARGS_GENERATION = 2;
+    private static final int NUMBER_OF_ARGS_RUN = 1;
+    private static final int NUMBER_OF_ARGS_COMPARE = 3;
 
     private Main() {
         // Avoid instantiation
@@ -168,15 +179,17 @@ public class Main {
     private static void generationAction(String[] values) {
         String referenceFilePath = values[0];
         String virtualizedFilePath = values[1];
-        String mergedFilePath = values[2];
 
         System.out.println("Generation avec" +
                 " Ref=" + referenceFilePath +
-                " Virtu=" + virtualizedFilePath +
-                " Merged=" + mergedFilePath
+                " Virtu=" + virtualizedFilePath
         );
-
-        // TODO : Add generation call
+        try {
+            Generator g = new Generator(referenceFilePath, virtualizedFilePath);
+            g.convert();
+        } catch (IOException e) {
+            FileManager.LOGGER.log(Level.SEVERE, "Problème concernant les fichiers d'entrées");
+        }
     }
 
     /**
@@ -191,7 +204,7 @@ public class Main {
                 .desc("Permet de generer les fichiers pour la virtualisation du flux MAVLink en provenance du Drone " +
                         "et le fichier de comparaison des positions calculees"
                 )
-                .numberOfArgs(3)
+                .numberOfArgs(NUMBER_OF_ARGS_GENERATION)
                 .build();
 
         Option runOption = Option.builder(RUN_ARGUMENT_SHORT)
@@ -200,7 +213,7 @@ public class Main {
                 .desc("Permet d'executer une simulation avec un fichier de virtualisation. L'hote/IP est optionnel " +
                         "(valeur par defaut : localhost)"
                 )
-                .numberOfArgs(1)
+                .numberOfArgs(NUMBER_OF_ARGS_RUN)
                 .build();
 
         Option compareOption = Option.builder(COMPARE_OPTION_SHORT)
@@ -208,7 +221,7 @@ public class Main {
                 .argName(COMPARE_OPTION)
                 .desc("Permet de comparer les positions calculees par l'algorithme de positionnement et les positions " +
                         "esperees.")
-                .numberOfArgs(3)
+                .numberOfArgs(NUMBER_OF_ARGS_COMPARE)
                 .build();
 
         return new Options()
