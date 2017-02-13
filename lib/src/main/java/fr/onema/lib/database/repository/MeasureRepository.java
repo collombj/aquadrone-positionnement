@@ -12,7 +12,7 @@ import java.util.Objects;
 
 /**
  * Created by Francois Vanderperre on 08/02/2017.
- *
+ * <p>
  * Cette classe pour but de permettre à l'application d'envoyer des objets vers la base de données et d'en recevoir
  */
 public class MeasureRepository {
@@ -40,6 +40,7 @@ public class MeasureRepository {
 
     /**
      * Cette methode insère une Dive dans la base de données
+     *
      * @param dive La Dive à insérer
      * @return La Dive dont l'identifiant a été mis à jour avec son index en base de données
      */
@@ -50,6 +51,7 @@ public class MeasureRepository {
 
     /**
      * Cette méthode renvoie la dernière Dive qui a été insérée en base de données
+     *
      * @return La dernière Dive qui a été insérée dans la base de données
      */
     public DiveEntity getLastDive() throws SQLException {
@@ -142,8 +144,7 @@ public class MeasureRepository {
          * @param config un object de configuration contenant les informations de connexion à la base
          * @return un MeasureRepository utilisable en lecture et en ecriture
          */
-        public static MeasureRepository getRepositoryWritable(Configuration config)
-                throws SQLException, ClassNotFoundException {
+        public static MeasureRepository getRepositoryWritable(Configuration config) {
             Objects.requireNonNull(config);
             MeasureRepository db = new MeasureRepository(config);
             db.setWritable();
@@ -154,8 +155,7 @@ public class MeasureRepository {
          * @param config un object de configuration contenant les informations de connexion à la base
          * @return un MeasureRepository utilisable en lecture uniquement
          */
-        public static MeasureRepository getRepositoryReadable(Configuration config)
-                throws SQLException, ClassNotFoundException {
+        public static MeasureRepository getRepositoryReadable(Configuration config) {
             Objects.requireNonNull(config);
             MeasureRepository db = new MeasureRepository(config);
             db.setReadable();

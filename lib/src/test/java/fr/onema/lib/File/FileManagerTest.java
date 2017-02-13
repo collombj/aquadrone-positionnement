@@ -19,13 +19,14 @@ import static org.junit.Assert.*;
  * Created by you on 07/02/2017.
  */
 public class FileManagerTest {
+/*
     private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/virtualizedOutput.csv";
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/resultsOutput.csv";
     private final static FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
 
     @BeforeClass
-    public static void prepare() throws Exception {
+    public void prepare() throws Exception {
         File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);
@@ -115,4 +116,5 @@ public class FileManagerTest {
         File res = new File(resultsFile);
         res.delete();
     }
+    */
 }
