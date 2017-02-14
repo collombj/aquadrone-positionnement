@@ -123,7 +123,7 @@ public class FileManager {
      */
     public void openFileForResults() throws IOException {
         File f = new File(resultsOutputFilePath);
-        if (!f.delete()) {
+        if (f.exists() && !f.delete()) {
             throw new IOException("Cannot delete " + f.getCanonicalPath() + " file");
         }
         try (FileWriter fw = new FileWriter(f, false)) {
