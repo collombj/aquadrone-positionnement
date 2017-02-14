@@ -5,9 +5,6 @@ import org.mavlink.messages.MAVLinkMessage;
 
 import java.io.IOException;
 import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.charset.Charset;
 import java.util.concurrent.ArrayBlockingQueue;
 
 public class NetworkSender {
@@ -26,11 +23,12 @@ public class NetworkSender {
      * @param port le port de l'hôte
      * @param host l'adresse de l'hôte
      */
-    public NetworkSender(int port, String host) {
+    public NetworkSender(int port, String host) throws IOException {
         this.port = port;
         this.host = host;
         queue = new ArrayBlockingQueue<>(100);
         startThread();
+        openConnection();
     }
 
     /**
@@ -39,13 +37,12 @@ public class NetworkSender {
      */
     public void add(VirtualizerEntry entry) {
         this.entry = entry;
-            if (entry.getHasGPS() == true) {
+            if (entry.getHasGPS()) {
                MAVLinkMessage msgGPS = entry.getGPSMessage();
-               System.out.println("gps");
                 try {
                     queue.put(msgGPS);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    // TODO
                 }
             }
         MAVLinkMessage msgIMU = entry.getIMUMessage();
@@ -76,13 +73,14 @@ public class NetworkSender {
         dsocket = new DatagramSocket();
         buffer = new byte[1000];
         packet = new DatagramPacket(buffer, buffer.length);
-        hostAddress = InetAddress.getByName("127.0.0.1");
+        hostAddress = InetAddress.getByName(host);
     }
 
     /**
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
+        sender.interrupt();
         dsocket.close();
     }
 
@@ -108,11 +106,6 @@ public class NetworkSender {
      */
     public void startThread() {
         sender = new Thread(() -> {
-            try {
-                openConnection();
-            } catch (IOException e) {
-                // TODO
-            }
             while (!Thread.interrupted()) {
                 MAVLinkMessage msg;
                 try {
@@ -124,7 +117,6 @@ public class NetworkSender {
                     // TODO
                 }
             }
-            closeConnection();
         });
         sender.start();
     }
