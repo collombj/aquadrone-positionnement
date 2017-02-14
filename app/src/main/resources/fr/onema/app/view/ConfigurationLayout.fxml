@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.Slider?>
-<?import javafx.scene.control.Spinner?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
-
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.76-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fr.onema.app.view.ConfigurationController">
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.111"
+            fx:controller="fr.onema.app.view.ConfigurationController">
     <children>
         <VBox>
             <children>
@@ -33,7 +27,10 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider fx:id="verticalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="verticalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0"
+                                        min="-50.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSlider"
+                                        onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0"
+                                        showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -72,7 +69,10 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider fx:id="horizontalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="horizontalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0"
+                                        min="-50.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSlider"
+                                        onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0"
+                                        showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -111,7 +111,10 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider fx:id="depthSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="depthSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0"
+                                        min="-50.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSlider"
+                                        onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0"
+                                        showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
