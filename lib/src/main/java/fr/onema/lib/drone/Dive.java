@@ -17,25 +17,13 @@ import static fr.onema.lib.drone.Dive.State.RECORD;
  */
 public class Dive {
 
+    private final List<Position> positions = new ArrayList<>();
+    private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
     private DiveEntity diveEntity;
-
     private State state;
     private int numberOfmovement;
-
     private GPSCoordinate lastVitesse;
-
-    private final List<Position> positions = new ArrayList<>();
     private List<MeasureEntity> measures = new ArrayList<>();
-    private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
-
-    /**
-     * Les différents états de la plongée
-     */
-    enum State {
-        OFF,
-        ON,
-        RECORD
-    }
 
     /**
      * @param timestamp
@@ -54,12 +42,11 @@ public class Dive {
         //faire le calcul de position
         position.calculate(positions.get(positions.size()), lastVitesse);
         for (MeasureEntity measure : position.getMeasureEntities()) {
-            dbWorker.insertMeasure(measure, diveEntity.getId(), 0);//FIXME changer l id de la mesure
+            dbWorker.insertMeasure(measure, diveEntity.getId(), 1);//FIXME changer l id de la mesure
             measures.add(measure);
         }
         positions.add(position);
     }
-
 
     /**
      *
@@ -94,6 +81,15 @@ public class Dive {
      */
     public void newMovement() {
         numberOfmovement++;
+    }
+
+    /**
+     * Les différents états de la plongée
+     */
+    enum State {
+        OFF,
+        ON,
+        RECORD
     }
 
 

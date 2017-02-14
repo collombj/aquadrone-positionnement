@@ -2,6 +2,7 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 
@@ -22,6 +23,7 @@ public class Position {
     private GPSCoordinate positionBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
+    private GPS gps;
     private IMU imu;
     private Pressure pressure;
     private List<Measure> measures = new ArrayList<>();
@@ -197,7 +199,6 @@ public class Position {
         this.gps = gps;
     }
 
-    public void calculate(Position position, GPSCoordinate velocity) {
     /**
      * Ajoute une mesure à cette position.
      *
@@ -208,18 +209,14 @@ public class Position {
 
     }
 
-
     /**
      * Procède au calcule de la position actuelle grâce à la position précedente.
      * Afin de ce faire, il est nécessaire d'avoir un GPS, IMU, Pressure associé à la position précédente.
      *
      * @param previousPosition La position précédente.
+     * @param velocity La vitesse de la position précédente.
      */
-    public void calculate(Position previousPosition) {
-        // TODO
-    }
-
-    public void recalculate() {
+    public void calculate(Position previousPosition, GPSCoordinate velocity) {
         // TODO
     }
 
