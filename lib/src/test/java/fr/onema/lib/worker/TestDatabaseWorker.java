@@ -29,11 +29,11 @@ public class TestDatabaseWorker {
 
     public TestDatabaseWorker() throws Exception {
         this.configuration = Configuration.build("settingsTest.properties");
-        dbWorker = new DatabaseWorker(configuration);
-        repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(configuration);
-        dbWorker.start();
-    }
 
+        DatabaseWorker.getInstance().init(configuration);
+        dbWorker = DatabaseWorker.getInstance();
+        repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(configuration);
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -41,10 +41,9 @@ public class TestDatabaseWorker {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-    }
 
-    @Test
-    public void simulTraitement() throws Exception {
+
+        dbWorker.start();
         dbWorker.newDive(dive);
         Thread.sleep(1000);
         dbWorker.insertMeasure(entity, dive.getId(), 1);
@@ -53,11 +52,10 @@ public class TestDatabaseWorker {
         dbWorker.startRecording(start, dive.getId());
         dbWorker.stopRecording(end, dive.getId());
         dbWorker.sendNotification("notification");
-
     }
 
-    @After
-    public void afterEffect() throws Exception {
+    @Test
+    public void simulTraitement() throws Exception {
         Thread.sleep(1000);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
@@ -71,6 +69,11 @@ public class TestDatabaseWorker {
         assertTrue(entity.getId() == entity2.getId());
 
         assertTrue(entity2.getLocationCorrected().equals(correct));
+
+    }
+
+    @After
+    public void afterEffect() throws Exception {
         dbWorker.stop();
     }
 }

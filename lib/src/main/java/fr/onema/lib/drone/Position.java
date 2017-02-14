@@ -2,38 +2,39 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
-import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by strock on 07/02/2017.
  */
 public class Position {
-    private List<MeasureEntity> entities;
+    private List<MeasureEntity> entities = new ArrayList<>();
     private long timestamp;
     private GPSCoordinate positionBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
     private IMU imu;
     private Pressure pressure;
-    private List<Measure> measures;
+    private List<Measure> measures = new ArrayList<>();
 
 
     /**
-     *constructeur permet d'insérer les valeurs de bases
+     * constructeur permet d'insérer les valeurs de bases
+     *
      * @param timestamp
      * @param positionBrut
      * @param direction
      */
-    public Position(long timestamp, GPSCoordinate positionBrut, int direction,IMU imu) {
+    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu) {
         //// TODO: insert GPS 
         this.timestamp = timestamp;
         this.positionBrut = positionBrut;
         this.direction = direction;
-        this.imu=imu;
+        this.imu = imu;
     }
 
     public List<MeasureEntity> getEntities() {
@@ -96,6 +97,7 @@ public class Position {
 
     /**
      * ajjoutte une mesure à cette position
+     *
      * @param newMeasure nouvelle mesure {@link Measure}
      */
     public void add(Measure newMeasure) {
@@ -105,9 +107,10 @@ public class Position {
 
     /**
      * retourne la liste de mesure avec les positions pour l'insert ou l'update de données.
+     *
      * @return liste de mesure
      */
-    public List<MeasureEntity> save() {
+    public List<MeasureEntity> getMeasureEntities() {//TODO FIXME
         if (entities.isEmpty()) {
 
 
@@ -117,7 +120,7 @@ public class Position {
                 for (Measure measure : measures) {
                     //TODO attendre merge pour supprimer id et la position recalculé
                     //TODO lien vers le entity information
-                    entities.add(new MeasureEntity(0, timestamp, positionBrut, positionRecalculated,
+                    entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
                             imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
                             getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
 
@@ -147,11 +150,7 @@ public class Position {
     }
 
 
-    public void calculate(Position position) {
-        // TODO
-    }
-
-    public void recalculate() {
+    public void calculate(Position position, GPSCoordinate velocity) {
         // TODO
     }
 

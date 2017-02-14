@@ -18,8 +18,9 @@ import java.util.function.BiConsumer;
  */
 public class DatabaseWorker implements Worker {
 
-    private final Thread dbWorkerThread;
-    private final LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private Thread dbWorkerThread;
+    private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private static DatabaseWorker INSTANCE = new DatabaseWorker();
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -98,7 +99,7 @@ public class DatabaseWorker implements Worker {
         }
     };
     /**
-     * Cette méthode est utlisée par le thread pour notifier la base
+     * Cette méthode est utilisée par le thread pour notifier la base
      */
     private BiConsumer<MeasureRepository, Object[]> sendNotificationAux = (repository, args) -> {
         if (args.length != 1 || !(args[0] instanceof String)) {
@@ -113,12 +114,19 @@ public class DatabaseWorker implements Worker {
         }
     };
 
+
     /**
-     * Constructeur
+     * Le constructeur est privé pour garantir l'unicité du singleton
+     */
+    private DatabaseWorker(){}
+
+    /**
+     * Initialise le singlet
+     * ATTENTION : Doit etre appelée avant toute utilisation du databaseworker
      *
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
-    public DatabaseWorker(Configuration configuration) {
+    public void init(Configuration configuration) {
         dbWorkerThread = new Thread(() -> {
             try {
                 MeasureRepository repository =
@@ -133,6 +141,16 @@ public class DatabaseWorker implements Worker {
                 System.out.println("database thread interrupted");
             }
         });
+    }
+
+
+    /**
+     * Permet d'obtenir la seule instance de databaseworker
+     *
+     * @return l'instance de databaseworker
+     */
+    public static DatabaseWorker getInstance() {
+        return INSTANCE;
     }
 
     /**
