@@ -16,14 +16,14 @@ public class RootLayoutController {
     private TitledPane sensorsTitledPane;
 
     @FXML
+    private Button configurationButton;
+
+    @FXML
     private void resizeParent() {
         Stage root = (Stage)sensorsTitledPane.getScene().getWindow();
         root.sizeToScene();
         root.show();
     }
-
-    @FXML
-    private Button configurationButton;
 
     @FXML
     private void accessConfiguration(ActionEvent event) throws IOException {

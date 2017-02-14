@@ -30,20 +30,20 @@
                             <children>
                                 <Label text="Nord">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="16.0" top="5.0" />
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="verticalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                        <Insets bottom="5.0" left="20.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Slider>
                                 <Label text="Sud">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="11.0" top="5.0" />
+                                        <Insets bottom="5.0" left="5.0" right="12.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Spinner editable="true" prefWidth="60.0">
+                                <Spinner fx:id="verticalSpinner" onMouseClicked="#updateSliderFromSpinner" prefWidth="90.0">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -69,12 +69,12 @@
                             <children>
                                 <Label text="Ouest">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="12.0" top="5.0" />
+                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="horizontalSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
-                                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                        <Insets bottom="5.0" left="15.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Slider>
                                 <Label text="Est">
@@ -82,7 +82,7 @@
                                         <Insets bottom="5.0" left="5.0" right="16.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Spinner editable="true" prefWidth="60.0">
+                                <Spinner fx:id="horizontalSpinner" onMouseClicked="#updateSliderFromSpinner" prefWidth="90.0">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -111,7 +111,7 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Slider blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
+                                <Slider fx:id="depthSlider" blockIncrement="1.0" majorTickUnit="10.0" max="50.0" min="-50.0" minorTickCount="1" onMouseDragged="#updateSpinnerFromSlider" prefWidth="280.0" showTickLabels="true" showTickMarks="true" snapToTicks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -121,7 +121,7 @@
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
                                 </Label>
-                                <Spinner editable="true" prefWidth="60.0">
+                                <Spinner fx:id="depthSpinner" onMouseClicked="#updateSliderFromSpinner" prefWidth="90.0">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -139,9 +139,9 @@
                     </VBox.margin>
                 </VBox>
             <Separator prefWidth="200.0" />
-                <HBox alignment="CENTER" maxHeight="30.0">
+                <HBox alignment="CENTER" maxHeight="35.0" minHeight="35.0" prefHeight="35.0">
                     <children>
-                        <Button maxWidth="140.0" mnemonicParsing="false" prefWidth="140.0" text="Réinitialiser" />
+                        <Button fx:id="resetButton" maxWidth="140.0" mnemonicParsing="false" onAction="#resetConfigurationLayout" prefWidth="140.0" text="Réinitialiser" />
                         <Button mnemonicParsing="false" text="Appliquer à la plongée suivante">
                             <HBox.margin>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
