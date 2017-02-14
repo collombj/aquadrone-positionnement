@@ -3,7 +3,6 @@ package fr.onema.lib.drone;
 import fr.onema.lib.database.entity.DiveEntity;
 
 import java.sql.Timestamp;
-import java.util.concurrent.BlockingQueue;
 
 /**
  * Created by loics on 10/02/2017.
@@ -48,7 +47,7 @@ public class Dive {
         );
     }
 
-    public void add(Position currentPos, BlockingQueue<Measure> measuresWaiting) {
+    public void add(Position currentPos) {
         this.lastPosition.calculate(currentPos);
     }
 

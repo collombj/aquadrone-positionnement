@@ -37,6 +37,10 @@ public class Position {
         this.imu=imu;
     }
 
+    public Position(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     public List<MeasureEntity> getEntities() {
         return entities;
     }
