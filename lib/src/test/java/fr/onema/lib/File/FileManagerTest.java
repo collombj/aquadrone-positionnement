@@ -68,9 +68,9 @@ public class FileManagerTest {
         assertEquals(v.getXacc(),5);
         assertEquals(v.getYacc(),6);
         assertEquals(v.getZacc(),7);
-        assertEquals(v.getXgyro(),8);
-        assertEquals(v.getYgyro(),9);
-        assertEquals(v.getZgyro(),10);
+        assertEquals(v.getRoll(),8.0,0.1);
+        assertEquals(v.getPitch(),9.0,0.1);
+        assertEquals(v.getYaw(),10.0,0.1);
         assertEquals(v.getXmag(),11);
         assertEquals(v.getYmag(),12);
         assertEquals(v.getZmag(),13);
