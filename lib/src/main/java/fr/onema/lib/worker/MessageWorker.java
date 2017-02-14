@@ -27,12 +27,13 @@ public class MessageWorker implements Worker {
 
     private static final long INTERVAL = 250;
     private static final long FIX_THRESHOLD = 5;
+
     // The lists of measures fetched from the MAVLinkMessages
-    private final BlockingQueue<Measure> measuresWaiting = new ArrayBlockingQueue<>(Integer.MAX_VALUE);
+    private final BlockingQueue<Measure> measuresWaiting = new ArrayBlockingQueue<>(50);
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
-    private final BlockingQueue<MAVLinkMessage> messages = new ArrayBlockingQueue<>(Integer.MAX_VALUE);
+    private final BlockingQueue<MAVLinkMessage> messages = new ArrayBlockingQueue<>(200);
     // Worker thread that treats the MAVLinkMessages
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Represents the dive currently associated
@@ -45,7 +46,7 @@ public class MessageWorker implements Worker {
     private Boolean mavLinkConnection;
     private long firstInfo = 0;
 
-    public MessageWorker() {
+    MessageWorker() {
         this.dive = null;
         this.inDive = false;
         this.currentPos = null;
@@ -53,12 +54,16 @@ public class MessageWorker implements Worker {
         this.mavLinkConnection = false;
     }
 
-    public void newMessage(MAVLinkMessage message) throws InterruptedException {
+    void newMessage(MAVLinkMessage message) throws InterruptedException {
         this.messages.put(Objects.requireNonNull(message));
     }
 
-    public void clearWaitingList() {
+    void clearWaitingList() {
         this.measuresWaiting.clear();
+    }
+
+    boolean isWaitingListEmpty() {
+        return this.measuresWaiting.isEmpty();
     }
 
     public void add(Temperature temperature) throws InterruptedException {
@@ -108,7 +113,7 @@ public class MessageWorker implements Worker {
                 case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT: // ID -> msg_global_position_int -> GPS SIGNAL RECEIVED!
                     msg_gps_raw_int gpsData = (msg_gps_raw_int) mavLinkMessage;
                     if (gpsData.fix_type < FIX_THRESHOLD)
-                        return; // IGNORE the value coz not precise enough.
+                        return; // IGNORE the value : lack of precision.
                     addOrCreateToPosition(gpsData.time_usec, gpsData.getClass().getCanonicalName());
                     processGPSData(GPS.build(gpsData), gpsData);
                     break; // GPS
@@ -131,6 +136,8 @@ public class MessageWorker implements Worker {
 
         }
 
+        // If the measure is within the right (250ms). We will add it to the current position.
+        // If we get the same measure kind within the 250ms we will create another position to store it in.
         private void addOrCreateToPosition(long timestamp, String sensorName) {
             if (firstInfo == 0) {
                 firstInfo = timestamp;

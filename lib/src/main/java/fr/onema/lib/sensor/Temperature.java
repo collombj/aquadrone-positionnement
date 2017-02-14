@@ -12,7 +12,7 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 public class Temperature extends Sensor implements Measure {
     private int valueTemperature;
 
-    private Temperature(long timestamp, int temperature) {
+    public Temperature(long timestamp, int temperature) {
         super(timestamp);
         this.valueTemperature = temperature;
     }

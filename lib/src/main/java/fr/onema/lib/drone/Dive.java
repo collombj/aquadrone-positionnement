@@ -40,7 +40,11 @@ public class Dive {
      */
     public void add(Position position) {
         //faire le calcul de position
-        position.calculate(positions.get(positions.size()), lastVitesse);
+        if(positions.isEmpty()) {
+            position.calculate(null, lastVitesse);
+        } else {
+            position.calculate(positions.get(positions.size()-1), lastVitesse);
+        }
         for (MeasureEntity measure : position.getMeasureEntities()) {
             dbWorker.insertMeasure(measure, diveEntity.getId(), 1);//FIXME changer l id de la mesure
             measures.add(measure);

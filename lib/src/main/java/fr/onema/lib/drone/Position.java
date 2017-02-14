@@ -19,24 +19,27 @@ import java.util.List;
 public class Position {
 
     private List<MeasureEntity> entities = new ArrayList<>();
+    private List<Measure> measures = new ArrayList<>();
+
     private long timestamp;
     private GPSCoordinate positionBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
+
     private GPS gps;
     private IMU imu;
     private Pressure pressure;
-    private List<Measure> measures = new ArrayList<>();
 
 
     /**
      * Constructeur de Position.
      *
-     * @param timestamp Le timestamp de la position actuelle.
+     * @param timestamp    Le timestamp de la position actuelle.
      * @param positionBrut Les coordonnées brut de la position.
-     * @param direction La direction de la position actuelle.
+     * @param direction    La direction de la position actuelle.
      */
-    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu, GPS gps) {
+    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu, GPS gps, Pressure pressure) {
+        this.pressure = pressure;
         this.gps = gps;
         this.timestamp = timestamp;
         this.positionBrut = positionBrut;
@@ -120,26 +123,8 @@ public class Position {
         return pressure;
     }
 
-    /**
-     * Définit la Pressure de la position.
-     *
-     * @param pressure La pressure de la position.
-     */
-    public void setPressure(Pressure pressure) {
-        this.pressure = pressure;
-    }
-
     public IMU getImu() {
         return imu;
-    }
-
-    /**
-     * Définit l'IMU de la position.
-     *
-     * @param imu L'IMU de la position.
-     */
-    public void setImu(IMU imu) {
-        this.imu = imu;
     }
 
     public List<Measure> getMeasures() {
@@ -153,23 +138,15 @@ public class Position {
      */
     public List<MeasureEntity> getMeasureEntities() {
         if (entities.isEmpty()) {
+            for (Measure measure : measures) {
+                //TODO attendre merge pour supprimer id et la position recalculé
+                //TODO lien vers le entity information
+                entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
+                        imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
+                        getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
 
-
-            if (positionBrut != null) {
-
-
-                for (Measure measure : measures) {
-                    //TODO attendre merge pour supprimer id et la position recalculé
-                    //TODO lien vers le entity information
-                    entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
-                            imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
-                            getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
-
-                }
-
-            } else {
-                throw new IllegalStateException("pas de position brut !");
             }
+
 
         } else {
             if (positionRecalculated != null) {
@@ -188,6 +165,24 @@ public class Position {
 
 
         return entities;
+    }
+
+    /**
+     * Définit l'IMU de la position.
+     *
+     * @param imu L'IMU de la position.
+     */
+    public void setImu(IMU imu) {
+        this.imu = imu;
+    }
+
+    /**
+     * Définit la Pressure de la position.
+     *
+     * @param pressure La pressure de la position.
+     */
+    public void setPressure(Pressure pressure) {
+        this.pressure = pressure;
     }
 
     /**
@@ -214,7 +209,7 @@ public class Position {
      * Afin de ce faire, il est nécessaire d'avoir un GPS, IMU, Pressure associé à la position précédente.
      *
      * @param previousPosition La position précédente.
-     * @param velocity La vitesse de la position précédente.
+     * @param velocity         La vitesse de la position précédente.
      */
     public void calculate(Position previousPosition, GPSCoordinate velocity) {
         // TODO
