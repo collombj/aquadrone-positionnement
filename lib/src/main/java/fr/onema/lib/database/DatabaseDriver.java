@@ -206,7 +206,6 @@ public class DatabaseDriver {
      * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
      */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) throws SQLException {
-        System.out.println("dbdriver insert mesure");
         PreparedStatement insertStatement = null;
         String insertString = "INSERT INTO Measure(" +
                 "timestamp," +

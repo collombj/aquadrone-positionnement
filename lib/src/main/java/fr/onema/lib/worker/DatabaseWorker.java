@@ -18,9 +18,9 @@ import java.util.function.BiConsumer;
  */
 public class DatabaseWorker implements Worker {
 
+    private static DatabaseWorker INSTANCE = new DatabaseWorker();
     private Thread dbWorkerThread;
     private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
-    private static DatabaseWorker INSTANCE = new DatabaseWorker();
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -121,6 +121,15 @@ public class DatabaseWorker implements Worker {
     private DatabaseWorker(){}
 
     /**
+     * Permet d'obtenir la seule instance de databaseworker
+     *
+     * @return l'instance de databaseworker
+     */
+    public static DatabaseWorker getInstance() {
+        return INSTANCE;
+    }
+
+    /**
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
      *
@@ -138,19 +147,9 @@ public class DatabaseWorker implements Worker {
                     }
                 }
             } catch (InterruptedException e) {
-                System.out.println("database thread interrupted");
+                Thread.currentThread().interrupt();
             }
         });
-    }
-
-
-    /**
-     * Permet d'obtenir la seule instance de databaseworker
-     *
-     * @return l'instance de databaseworker
-     */
-    public static DatabaseWorker getInstance() {
-        return INSTANCE;
     }
 
     /**

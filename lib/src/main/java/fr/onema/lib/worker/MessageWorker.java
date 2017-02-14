@@ -19,6 +19,8 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /**
+ * Classe worker de messages. Récupère les messages depuis le ServerListerner.
+ * Un fois les messages récupérés, ils sont traités et envoyés aux positions des plongées.
  *
  * @author loics
  * @since 09-02-2017
@@ -46,6 +48,11 @@ public class MessageWorker implements Worker {
     private Boolean mavLinkConnection;
     private long firstInfo = 0;
 
+    /**
+     * Constructeur de MessageWorker
+     * Attention, après l'instanciation la pluspars des champs seront encore null. Ils seront créés en cours de
+     * communication avec avec le serveur.
+     */
     MessageWorker() {
         this.dive = null;
         this.inDive = false;
@@ -54,45 +61,89 @@ public class MessageWorker implements Worker {
         this.mavLinkConnection = false;
     }
 
+    /**
+     * Ajoute un message MavLink à la liste des messages à traiter.
+     *
+     * @param message Le message MavLink à traiter.
+     * @throws InterruptedException En cas d'intérruption du thread courant.
+     */
     void newMessage(MAVLinkMessage message) throws InterruptedException {
         this.messages.put(Objects.requireNonNull(message));
     }
 
+    /**
+     * Vide la liste des mesures en attentes.
+     */
     void clearWaitingList() {
         this.measuresWaiting.clear();
     }
 
+    /**
+     * Indique si la liste des mesures est vide.
+     *
+     * @return Vrai si la liste est vide. Sinon faux.
+     */
     boolean isWaitingListEmpty() {
         return this.measuresWaiting.isEmpty();
     }
 
+    /**
+     * Ajoute une objet Temperature à la liste des mesures.
+     * Ces mesures seront associées à une position.
+     *
+     * @param temperature           La Temperature à ajouter.
+     * @throws InterruptedException En cas d'intérruption du thread courant.
+     */
     public void add(Temperature temperature) throws InterruptedException {
         this.measuresWaiting.put(temperature);
     }
 
+    /**
+     * Démarre un enregistrement de plongée.
+     */
     public void startRecording() {
         this.dive.startRecording(System.currentTimeMillis());
     }
 
+    /**
+     * Arrête un enregistrement de plongée.
+     */
     public void stopRecording() {
         this.dive.stopRecording(System.currentTimeMillis());
     }
 
+    /**
+     * Donne l'information de connexion MavLink.
+     *
+     * @return Vrai si la connexion est établie. Faux sinon. (Experimental)
+     */
     public Boolean getMavLinkConnection() {
         return mavLinkConnection;
     }
 
+    /**
+     * Donne la dernière position GPS connue.
+     *
+     * @return La dernière position GPS connue.
+     */
     public GPS getLastPos() {
         return lastPos;
     }
 
+    /**
+     * Démarre le thread de lecture de flux MavLink.
+     */
     @Override
     public void start() {
         this.mavLinkMessagesThread.start();
     }
 
+    /**
+     * Stop le thread de lecture de flux MavLink.
+     */
     @Override
     public void stop() {
+        this.mavLinkConnection = false;
         this.mavLinkMessagesThread.interrupt();
     }
 
@@ -109,6 +160,7 @@ public class MessageWorker implements Worker {
 
             // If the MAVLinkMessage is an accurate GPS message
             // And if the drone was previously diving
+            mavLinkConnection = true;
             switch (mavLinkMessage.messageType) {
                 case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT: // ID -> msg_global_position_int -> GPS SIGNAL RECEIVED!
                     msg_gps_raw_int gpsData = (msg_gps_raw_int) mavLinkMessage;
@@ -160,10 +212,9 @@ public class MessageWorker implements Worker {
         }
 
         private void processPressureData(Pressure pressure, msg_scaled_pressure pressureData) throws InterruptedException {
-            if (currentPos.hasPressure() && (currentPos.hasGPS() || currentPos.hasIMU())) {
+            if ((currentPos.hasGPS() || currentPos.hasIMU())) {
                 dive.add(currentPos);
             }
-            currentPos.setPressure(pressure);
             add(Temperature.build(pressureData));
             updateState(pressure.getClass().getCanonicalName(), pressureData.time_boot_ms);
         }

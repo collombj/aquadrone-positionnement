@@ -5,7 +5,6 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
-import fr.onema.lib.sensor.position.Pressure;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -88,12 +87,32 @@ public class Position {
     }
 
     /**
+     * Met a jour la coordonnées brutes
+     *
+     * @param positionBrut des coordonnées GPS
+     */
+    public void setPositionBrut(GPSCoordinate positionBrut) {
+        this.positionBrut = positionBrut;
+        this.entities.forEach(a -> a.setLocationBrut(positionBrut));
+    }
+
+    /**
      * Obtient la position GPS corrigée de la position.
      *
      * @return La position GPS corrigée de la position.
      */
     public GPSCoordinate getPositionRecalculated() {
         return positionRecalculated;
+    }
+
+    /**
+     * Met à jour les coordonnées recalculées
+     *
+     * @param positionRecalculated des coordonées GPS
+     */
+    public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
+        this.positionRecalculated = positionRecalculated;
+        this.entities.forEach(a -> a.setLocationCorrected(positionRecalculated));
     }
 
     /**
@@ -115,24 +134,6 @@ public class Position {
 
     private int getzRotation() {
         return imu.getGyroscope().getzRotation();
-    }
-
-    /**
-     * Obtient l'objet Pressure associé à la position.
-     *
-     * @return L'objet Pressure associé à la position.
-     */
-    public Pressure getPressure() {
-        return pressure;
-    }
-
-    /**
-     * Définit la Pressure de la position.
-     *
-     * @param pressure La pressure de la position.
-     */
-    public void setPressure(Pressure pressure) {
-        this.pressure = pressure;
     }
 
     public IMU getImu() {
@@ -182,24 +183,6 @@ public class Position {
     }
 
     /**
-     * Définit l'IMU de la position.
-     *
-     * @param imu L'IMU de la position.
-     */
-    public void setImu(IMU imu) {
-        this.imu = imu;
-    }
-
-    /**
-     * Définit la Pressure de la position.
-     *
-     * @param pressure La pressure de la position.
-     */
-    public void setPressure(Pressure pressure) {
-        this.pressure = pressure;
-    }
-
-    /**
      * Définit le GPS de la position.
      *
      * @param gps Le GPS de la position.
@@ -245,40 +228,11 @@ public class Position {
     }
 
     /**
-     * Vérifie si un Pressure est associé à la position.
-     *
-     * @return Vrai si un Pressure est associé. Sinon faux.
-     */
-    public boolean hasPressure() {
-        return this.pressure != null;
-    }
-
-    /**
      * Vérifie si un IMU est associé à la position.
      *
      * @return Vrai si un IMU est associé. Sinon faux.
      */
     public boolean hasIMU() {
         return this.imu != null;
-    }
-
-    /**
-     * Met a jour la coordonnées brutes
-     *
-     * @param positionBrut des coordonnées GPS
-     */
-    public void setPositionBrut(GPSCoordinate positionBrut) {
-        this.positionBrut = positionBrut;
-        this.entities.forEach(a -> a.setLocationBrut(positionBrut));
-    }
-
-    /**
-     * Met à jour les coordonnées recalculées
-     *
-     * @param positionRecalculated des coordonées GPS
-     */
-    public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
-        this.positionRecalculated = positionRecalculated;
-        this.entities.forEach(a -> a.setLocationCorrected(positionRecalculated));
     }
 }
