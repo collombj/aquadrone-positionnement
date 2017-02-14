@@ -1,13 +1,16 @@
 package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 
+import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Représente une position. Cette position doit avoir plusieurs mesures associées dont: IMU, GPS et Pressure.
@@ -28,7 +31,6 @@ public class Position {
 
     private GPS gps;
     private IMU imu;
-    private Pressure pressure;
 
 
     /**
@@ -38,8 +40,9 @@ public class Position {
      * @param positionBrut Les coordonnées brut de la position.
      * @param direction    La direction de la position actuelle.
      */
-    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu, GPS gps, Pressure pressure) {
-        this.pressure = pressure;
+    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu, GPS gps) {
+        if (imu == null && gps == null)
+            throw new InvalidParameterException("Position need either an IMU or a GPS value");
         this.gps = gps;
         this.timestamp = timestamp;
         this.positionBrut = positionBrut;
@@ -123,8 +126,26 @@ public class Position {
         return pressure;
     }
 
+    /**
+     * Définit la Pressure de la position.
+     *
+     * @param pressure La pressure de la position.
+     */
+    public void setPressure(Pressure pressure) {
+        this.pressure = pressure;
+    }
+
     public IMU getImu() {
         return imu;
+    }
+
+    /**
+     * Définit l'IMU de la position.
+     *
+     * @param imu L'IMU de la position.
+     */
+    public void setImu(IMU imu) {
+        this.imu = imu;
     }
 
     public List<Measure> getMeasures() {
@@ -146,19 +167,12 @@ public class Position {
                         getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
 
             }
-
-
         } else {
-            if (positionRecalculated != null) {
-                for (int i = 0; i < measures.size(); i++) {
+            for (int i = 0; i < measures.size(); i++) {
 
-                    //TODO getter sur la position reclaculé de lmeasure entity
-                    //TODO calcul distance Geomaths
+                //TODO getter sur la position reclaculé de lmeasure entity
+                //TODO calcul distance Geomaths
 
-                }
-
-            } else {
-                throw new IllegalStateException("pas de position recalculée !");
             }
 
         }
@@ -211,8 +225,14 @@ public class Position {
      * @param previousPosition La position précédente.
      * @param velocity         La vitesse de la position précédente.
      */
-    public void calculate(Position previousPosition, GPSCoordinate velocity) {
+    public void calculate(Position previousPosition, CartesianVelocity velocity) {
         // TODO
+        Random rand = new Random();
+        int x = rand.nextInt(25000 - 1) + 1;
+        int y = rand.nextInt(25000 - 1) + 1;
+        int z = rand.nextInt(25000 - 1) + 1;
+
+        this.setPositionBrut(new GPSCoordinate(x, y, z));
     }
 
     /**
@@ -240,5 +260,25 @@ public class Position {
      */
     public boolean hasIMU() {
         return this.imu != null;
+    }
+
+    /**
+     * Met a jour la coordonnées brutes
+     *
+     * @param positionBrut des coordonnées GPS
+     */
+    public void setPositionBrut(GPSCoordinate positionBrut) {
+        this.positionBrut = positionBrut;
+        this.entities.forEach(a -> a.setLocationBrut(positionBrut));
+    }
+
+    /**
+     * Met à jour les coordonnées recalculées
+     *
+     * @param positionRecalculated des coordonées GPS
+     */
+    public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
+        this.positionRecalculated = positionRecalculated;
+        this.entities.forEach(a -> a.setLocationCorrected(positionRecalculated));
     }
 }

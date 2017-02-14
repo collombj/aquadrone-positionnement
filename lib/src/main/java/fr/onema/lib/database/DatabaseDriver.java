@@ -206,6 +206,7 @@ public class DatabaseDriver {
      * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé.
      */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) throws SQLException {
+        System.out.println("dbdriver insert mesure");
         PreparedStatement insertStatement = null;
         String insertString = "INSERT INTO Measure(" +
                 "timestamp," +
@@ -244,15 +245,27 @@ public class DatabaseDriver {
             insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
 
             // location_corrected
-            insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-            insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-            insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            insertStatement.setInt(5, srid);
+            if (measureEntity.getLocationCorrected() == null) {
+                insertStatement.setNull(2, Types.BIGINT);
+                insertStatement.setNull(3, Types.BIGINT);
+                insertStatement.setNull(4, Types.BIGINT);
 
+            } else {
+                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            }
+            insertStatement.setInt(5, srid);
             // location_brut
-            insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-            insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-            insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            }
             insertStatement.setInt(9, srid);
 
             //acceleration XYZ
@@ -343,7 +356,7 @@ public class DatabaseDriver {
     public void sendNotification(String message) throws SQLException {
         Objects.requireNonNull(message);
         try (Statement ps = connector.createStatement()) {
-            ps.execute("NOTIFY " + message );
+            ps.execute("NOTIFY " + message);
         }
     }
 

@@ -122,7 +122,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Initialise le singlet
-     * ATTENTION : Doit etre appelée avant toute utilisation du databaseworker
+     * Doit etre appelée avant toute utilisation du databaseworker
      *
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */

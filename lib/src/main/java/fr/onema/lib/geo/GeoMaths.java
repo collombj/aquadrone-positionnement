@@ -6,6 +6,7 @@ import fr.onema.lib.sensor.position.IMU.Accelerometer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
@@ -215,6 +216,15 @@ public class GeoMaths {
 
 
     public static List<MeasureEntity> recalculatePosition(List<MeasureEntity> measures) { //TODO
+
+        Random rand = new Random();
+        for (MeasureEntity measure : measures) {
+            int x = rand.nextInt(25000 - 1) + 1;
+            int y = rand.nextInt(25000 - 1) + 1;
+            int z = rand.nextInt(25000 - 1) + 1;
+            measure.setLocationCorrected(new GPSCoordinate(x, y, z));
+
+        }
         return measures;
     }
 

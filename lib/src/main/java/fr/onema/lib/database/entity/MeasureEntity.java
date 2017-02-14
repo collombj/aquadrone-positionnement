@@ -39,8 +39,6 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
                          int rotationZ, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
-        Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
@@ -186,6 +184,25 @@ public class MeasureEntity {
         return measureValue;
     }
 
+
+    /**
+     * MEt a jour les coordonnées relevées
+     *
+     * @param locationBrut des coordonnées GPS
+     */
+    public void setLocationBrut(GPSCoordinate locationBrut) {
+        this.locationBrut = locationBrut;
+    }
+
+    /**
+     * Met a jour les coordonnées corrigées
+     *
+     * @param locationCorrected des coordonnées GPS
+     */
+    public void setLocationCorrected(GPSCoordinate locationCorrected) {
+        this.locationCorrected = locationCorrected;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -237,4 +254,6 @@ public class MeasureEntity {
         result = 31 * result + (measureValue != null ? measureValue.hashCode() : 0);
         return result;
     }
+
+
 }
