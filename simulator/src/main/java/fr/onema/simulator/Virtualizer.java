@@ -110,9 +110,9 @@ public class Virtualizer {
                                 short xRot = (short) x.getAccelerationX();
                                 short yRot = (short) x.getAccelerationY();
                                 short zRot = (short) x.getAccelerationZ();
-                                short xAcc = (short) x.getRotationX();
-                                short yAcc = (short) x.getRotationY();
-                                short zAcc = (short) x.getRotationZ();
+                                short xAcc = (short) x.getRoll();
+                                short yAcc = (short) x.getPitch();
+                                short zAcc = (short) x.getYaw();
                                 //TODO A modifier si on utilise l'orientation magnétique
                                 short xMag = 0;//Non utilisé pour le moment
                                 short yMag = 0;//Non utilisé pour le moment

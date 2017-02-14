@@ -39,7 +39,7 @@ public class Generator {
     public void convert() {
         for (ReferenceEntry e : inputReferencies) {
             IMU i = previous == null
-                    ? IMU.build(new CartesianVelocity(0,0,0),
+                    ? IMU.build(new CartesianVelocity(0, 0, 0),
                     e.getTimestamp(),
                     new GPSCoordinate(e.getLat() * 10_000_000, e.getLon() * 10_000_000, e.getAlt() * 1_000),
                     e.getTimestamp(),
@@ -59,9 +59,9 @@ public class Generator {
                         (short) i.getAccelerometer().getxAcceleration(),
                         (short) i.getAccelerometer().getyAcceleration(),
                         (short) i.getAccelerometer().getzAcceleration(),
-                        (short) i.getGyroscope().getxRotation(),
-                        (short) i.getGyroscope().getyRotation(),
-                        (short) i.getGyroscope().getzRotation(),
+                        i.getGyroscope().getRoll(),
+                        i.getGyroscope().getPitch(),
+                        i.getGyroscope().getYaw(),
                         (short) i.getCompass().getxMagnetic(),
                         (short) i.getCompass().getyMagnetic(),
                         (short) i.getCompass().getzMagnetic(),

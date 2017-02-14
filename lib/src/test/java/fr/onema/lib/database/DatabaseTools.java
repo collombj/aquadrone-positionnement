@@ -47,9 +47,9 @@ public final class DatabaseTools {
                 "  accelerationZ  INTEGER   NOT NULL,\n" +
                 "  precision_cm          INTEGER,\n" +
                 "  measure_value         CHARACTER VARYING(255)   NOT NULL,\n" +
-                "  rotationX  INTEGER   NOT NULL,\n" +
-                "  rotationY  INTEGER   NOT NULL,\n" +
-                "  rotationZ  INTEGER   NOT NULL,\n" +
+                "  roll  DECIMAL   NOT NULL,\n" +
+                "  pitch  DECIMAL   NOT NULL,\n" +
+                "  yaw  DECIMAL   NOT NULL,\n" +
                 "  dive_id               INTEGER                  NOT NULL,\n" +
                 "  measureinformation_id INTEGER\n" +
                 ");\n" +
