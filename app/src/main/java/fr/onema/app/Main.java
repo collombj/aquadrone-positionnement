@@ -13,6 +13,10 @@ import javafx.stage.Stage;
 public class Main extends Application {
     private Stage primaryStage;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     /***
      * Méthode start appelée lors de l'initialisation de l'application pour définir les paramètres du conteneur de base
      * @param primaryStage Le conteneur principal
@@ -34,9 +38,5 @@ public class Main extends Application {
         primaryStage.setScene(rootScene);
         primaryStage.sizeToScene();
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

@@ -343,7 +343,7 @@ public class DatabaseDriver {
     public void sendNotification(String message) throws SQLException {
         Objects.requireNonNull(message);
         try (Statement ps = connector.createStatement()) {
-            ps.execute("NOTIFY " + message );
+            ps.execute("NOTIFY " + message);
         }
     }
 

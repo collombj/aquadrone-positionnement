@@ -8,7 +8,6 @@ import java.util.Objects;
  * Cette classe représente une mesure réalisée au cours de la plongée pour la base de données
  */
 public class MeasureEntity {
-    private int id;
     private final long timestamp;
     private final GPSCoordinate locationBrut;
     private final GPSCoordinate locationCorrected;
@@ -20,6 +19,7 @@ public class MeasureEntity {
     private final double yaw;
     private final int precisionCm;
     private final String measureValue;
+    private int id;
 
     /**
      * Constructeur
@@ -194,30 +194,18 @@ public class MeasureEntity {
             return false;
 
         MeasureEntity that = (MeasureEntity) o;
-
-        if (id != that.id)
-            return false;
-        if (timestamp != that.timestamp)
-            return false;
-        if (accelerationX != that.accelerationX)
-            return false;
-        if (accelerationY != that.accelerationY)
-            return false;
-        if (accelerationZ != that.accelerationZ)
-            return false;
-        if (Double.compare(roll, that.roll) != 0)
-            return false;
-        if (Double.compare(pitch, that.pitch) != 0)
-            return false;
-        if (Double.compare(yaw, that.yaw) != 0)
-            return false;
-        if (precisionCm != that.precisionCm)
-            return false;
-        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null)
-            return false;
-        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
-            return false;
-        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+        return !(id != that.id
+                || timestamp != that.timestamp
+                || accelerationX != that.accelerationX)
+                && !(accelerationY != that.accelerationY
+                || accelerationZ != that.accelerationZ
+                || Double.compare(roll, that.roll) != 0)
+                && !(Double.compare(pitch, that.pitch) != 0
+                || Double.compare(yaw, that.yaw) != 0
+                || precisionCm != that.precisionCm)
+                && (locationBrut != null ? locationBrut.equals(that.locationBrut) : that.locationBrut == null
+                && (locationCorrected != null ? locationCorrected.equals(that.locationCorrected) : that.locationCorrected == null
+                && (measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null)));
 
     }
 
@@ -230,9 +218,9 @@ public class MeasureEntity {
         result = 31 * result + accelerationX;
         result = 31 * result + accelerationY;
         result = 31 * result + accelerationZ;
-        result = (int)(31 * result + roll);
-        result = (int)(31 * result + pitch);
-        result = (int)(31 * result + yaw);
+        result = (int) (31 * result + roll);
+        result = (int) (31 * result + pitch);
+        result = (int) (31 * result + yaw);
         result = 31 * result + precisionCm;
         result = 31 * result + (measureValue != null ? measureValue.hashCode() : 0);
         return result;

@@ -15,10 +15,10 @@ public class TestMeasureEntity {
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
-
     @Test
     public void testCreateAndGet() {
         MeasureEntity e = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
+        MeasureEntity e2 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
         assertNotNull(e);
         assertTrue(e.getId() == 1);
         assertTrue(e.getLocationBrut().equals(brut));
@@ -30,8 +30,8 @@ public class TestMeasureEntity {
         assertTrue(e.getPitch() == 2.0);
         assertTrue(e.getYaw() == 3.0);
         assertTrue(e.getPrecisionCm() == 2);
-
         assertTrue(e.getMeasureValue().equals("uneMes"));
+        assertTrue(e.equals(e2));
     }
 
     @Test(expected = IllegalArgumentException.class)

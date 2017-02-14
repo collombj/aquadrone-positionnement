@@ -10,6 +10,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.time.Duration;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -34,7 +36,6 @@ public class TestDatabaseWorker {
         dbWorker.start();
     }
 
-
     @Before
     public void setUp() throws Exception {
         Configuration.Database configuration = this.configuration.getDatabaseInformation();
@@ -46,9 +47,9 @@ public class TestDatabaseWorker {
     @Test
     public void simulTraitement() throws Exception {
         dbWorker.newDive(dive);
-        Thread.sleep(1000);
+        // Thread.sleep(1000);
         dbWorker.insertMeasure(entity, dive.getId(), 1);
-        Thread.sleep(1000);
+        // Thread.sleep(1000);
         dbWorker.updatePosition(entity.getId(), correct, 0);
         dbWorker.startRecording(start, dive.getId());
         dbWorker.stopRecording(end, dive.getId());
@@ -58,18 +59,15 @@ public class TestDatabaseWorker {
 
     @After
     public void afterEffect() throws Exception {
-        Thread.sleep(1000);
+        // Thread.sleep(1000);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
         assertTrue(dive.getId() == dive2.getId());
-
         assertTrue(dive2.getStartTime() == start);
         assertTrue(dive2.getEndTime() == end);
-
         MeasureEntity entity2 = repository.getMeasureFrom(dive).get(0);
         assertFalse(entity.equals(entity2));
         assertTrue(entity.getId() == entity2.getId());
-
         assertTrue(entity2.getLocationCorrected().equals(correct));
         dbWorker.stop();
     }

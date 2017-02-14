@@ -26,6 +26,7 @@ import static org.junit.Assert.*;
  * Created by Jérôme on 09/02/2017.
  */
 public class VirtualizerTest {
+    private static final String configPath = System.getProperty("user.dir").replace("simulator", "lib") + "/settingsTest.properties";
     /*private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
     private final static String virtualizedErrorFile = System.getProperty("user.dir") +  "/src/test/java/fr/onema/lib/virtualizedErrorOutput.csv";
@@ -55,9 +56,7 @@ public class VirtualizerTest {
             "1487061123,7,7,7,-18380,-11842,-32436,0,0,0,0,0,0,0.0,7\n" +
             "1487061133,8,8,8,20607,5385,5616,0,0,0,0,0,0,0.0,8\n" +
             "1487061143,9,9,9,15433,28903,-10733,0,0,0,0,0,0,0.0,9";
-
     private static File virtualizedPath;
-    private static final String configPath = System.getProperty("user.dir").replace("simulator", "lib") + "/settingsTest.properties";
     private static FileManager fm;
     private static File resultPath;
     private static ServerListener srv;
