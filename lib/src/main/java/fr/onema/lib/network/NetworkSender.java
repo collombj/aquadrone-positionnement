@@ -10,7 +10,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 public class NetworkSender {
     private final int port;
     private final String host;
-    private VirtualizerEntry entry;
     private ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramSocket dsocket;
     private Thread sender;
@@ -36,13 +35,12 @@ public class NetworkSender {
      * @param entry Un champ de type VirtualizerEntry
      */
     public void add(VirtualizerEntry entry) {
-        this.entry = entry;
             if (entry.getHasGPS()) {
                MAVLinkMessage msgGPS = entry.getGPSMessage();
                 try {
                     queue.put(msgGPS);
                 } catch (InterruptedException e) {
-                    // TODO
+                    Thread.currentThread().interrupt();
                 }
             }
         MAVLinkMessage msgIMU = entry.getIMUMessage();
@@ -53,7 +51,7 @@ public class NetworkSender {
             queue.put(msgPressure);
             queue.put(msgTemperature);
         } catch (InterruptedException e) {
-            // TODO
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -111,10 +109,8 @@ public class NetworkSender {
                 try {
                     msg = queue.take();
                     send(msg);
-                } catch (InterruptedException e) {
-                    // TODO
-                } catch (IOException e) {
-                    // TODO
+                } catch (InterruptedException | IOException e) {
+                    Thread.currentThread().interrupt();
                 }
             }
         });

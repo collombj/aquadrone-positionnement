@@ -15,7 +15,7 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 public class ServerListener implements Worker {
     private final int port;
     private long lastReceivedTimestamp = 0;
-    private int time_usec = 0;
+    private int timeUsec = 0;
     private Thread listener;
     byte[] buf;
     DatagramPacket dgp;
@@ -57,8 +57,8 @@ public class ServerListener implements Worker {
                         }
                         if(mesg.getClass() == msg_scaled_imu.class || mesg.getClass() == msg_scaled_pressure.class) {
                             int tmpTime = bytesToInt(b);
-                            if(time_usec <= tmpTime) {
-                                time_usec = tmpTime;
+                            if(timeUsec <= tmpTime) {
+                                timeUsec = tmpTime;
                                 pressureValid = true;
                             } else {
                                 pressureValid = false;
