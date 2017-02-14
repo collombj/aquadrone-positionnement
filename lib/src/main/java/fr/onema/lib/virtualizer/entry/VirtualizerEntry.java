@@ -99,7 +99,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = System.currentTimeMillis();
+        msg.time_usec = timestamp;
         msg.fix_type = 6;
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
