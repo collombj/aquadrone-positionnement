@@ -48,19 +48,15 @@ public class Virtualizer {
      * @param port           Port sur lequel on se connecte à l'hôte
      */
     public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port) {
-        Objects.requireNonNull(filePathInput);
-        Objects.requireNonNull(simulationName);
-        Objects.requireNonNull(host);
-
         if(speed == 0 || port == 0){
             throw new IllegalArgumentException("Speed and port cannot be zero");
+        }else{
+            this.port = port;
+            this.speed = speed;
         }
-
-        this.fileManager = filePathInput;
-        this.speed = speed;
-        this.simulationName = simulationName;
-        this.host = host;
-        this.port = port;
+        this.fileManager = Objects.requireNonNull(filePathInput);
+        this.simulationName = Objects.requireNonNull(simulationName);
+        this.host = Objects.requireNonNull(host);
     }
 
     /**
@@ -85,7 +81,7 @@ public class Virtualizer {
     }
 
     private String getRecapitulatif(FileManager file) throws IOException {
-        Objects.requireNonNull(file);
+
         List<VirtualizerEntry> entries = file.readVirtualizedEntries();
         StringBuilder sb = new StringBuilder();
         entries.forEach(x -> sb.append(x.toCSV()).append("\n"));
@@ -101,52 +97,42 @@ public class Virtualizer {
         return getStop() - getStart();
     }
 
-    public String compare(FileManager sourceFile, FileManager errorFile, Configuration config, int errorAllowed) throws ComparisonException {
-        Objects.requireNonNull(sourceFile);
-        Objects.requireNonNull(errorFile);
+    public String compare(FileManager fm, Configuration config, int errorAllowed) throws ComparisonException {
+        Objects.requireNonNull(fm);
         Objects.requireNonNull(config);
 
         DatabaseDriver driver = DatabaseDriver.build(config);
         driver.initAsReadable();
         try {
-            List<ReferenceEntry> listRefEntry = sourceFile.readReferenceEntries();
+            List<ReferenceEntry> listRefEntry = fm.readReferenceEntries();
             MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
             DiveEntity dive = repository.getLastDive();
             List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
-            listMeasures.forEach(x -> listRefEntry.forEach(y -> sendMessage(errorFile, y, x, errorAllowed)));
-            return getRecapitulatif(errorFile);
+            int minimum = Math.min(listMeasures.size(),listRefEntry.size());
+            for(int i = 0; i < minimum;i++){
+                sendMessage(fm, listRefEntry.get(i), listMeasures.get(i), errorAllowed);
+            }
+            return "to be fixed";//fixme: return comparison result
         } catch (IOException | SQLException e) {
             throw new ComparisonException(e);
         }
     }
 
-    private void sendMessage(FileManager errFile, ReferenceEntry ref, MeasureEntity measure, int errVal) {
+    private void sendMessage(FileManager fm, ReferenceEntry ref, MeasureEntity measure, int errVal) {
         try {
-            Objects.requireNonNull(measure.getMeasureValue());
-            long timestamp = measure.getTimestamp();
-            short xRot = (short) measure.getAccelerationX();
-            short yRot = (short) measure.getAccelerationY();
-            short zRot = (short) measure.getAccelerationZ();
-            short xAcc = (short) measure.getRotationX();
-            short yAcc = (short) measure.getRotationY();
-            short zAcc = (short) measure.getRotationZ();
-            //TODO A modifier si on utilise l'orientation magnétique
-            short xMag = 0;//Non utilisé pour le moment
-            short yMag = 0;//Non utilisé pour le moment
-            short zMag = 0;//Non utilisé pour le moment
-            //TODO Récupérer la valeur de pression
-            float pressure = 0; //Trouver la valeur
-            short temperature = (short) ref.getTemperature();
+            if (ref.getTimestamp() == measure.getTimestamp()) {
+                Objects.requireNonNull(measure.getMeasureValue());
 
-            int realLat = ref.getLat();
-            int realLon = ref.getLon();
-            int realAlt = ref.getAlt();
-            GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
-            GPSCoordinate calculatedPoint = measure.getLocationCorrected();
-            double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
-            if (distance > errVal) {
-                VirtualizerEntry entry = new VirtualizerEntry(timestamp, xAcc, yAcc, zAcc, xRot, yRot, zRot, xMag, yMag, zMag, pressure, temperature);
-                errFile.appendVirtualized(entry);
+                int realLat = ref.getLat();
+                int realLon = ref.getLon();
+                int realAlt = ref.getAlt();
+                GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
+                GPSCoordinate calculatedPoint = measure.getLocationCorrected();
+                double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
+
+                if (distance > errVal) {
+                    fm.appendResults(ref,measure,errVal);
+                }
             }
         }catch(IOException e){
             LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
