@@ -47,9 +47,9 @@ public class TestDatabaseWorker {
     @Test
     public void simulTraitement() throws Exception {
         dbWorker.newDive(dive);
-        // Thread.sleep(1000);
+        Thread.sleep(1000);
         dbWorker.insertMeasure(entity, dive.getId(), 1);
-        // Thread.sleep(1000);
+        Thread.sleep(1000);
         dbWorker.updatePosition(entity.getId(), correct, 0);
         dbWorker.startRecording(start, dive.getId());
         dbWorker.stopRecording(end, dive.getId());
@@ -59,7 +59,7 @@ public class TestDatabaseWorker {
 
     @After
     public void afterEffect() throws Exception {
-        // Thread.sleep(1000);
+        Thread.sleep(1000);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
         assertTrue(dive.getId() == dive2.getId());
