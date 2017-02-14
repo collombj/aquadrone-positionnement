@@ -1,6 +1,5 @@
 package fr.onema.app;
 
-import fr.onema.lib.TestLib;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -20,10 +19,10 @@ public class Main extends Application {
 
     private void initRootLayout(Stage primaryStage) throws java.io.IOException {
         rootLayout = FXMLLoader.load(getClass().getResource("view/RootLayout.fxml"));
-        primaryStage.setScene(new Scene(rootLayout, 300, 275));
+        Scene rootScene = new Scene(rootLayout);
+        primaryStage.setScene(rootScene);
         primaryStage.show();
     }
-
 
     public static void main(String[] args) {
         launch(args);

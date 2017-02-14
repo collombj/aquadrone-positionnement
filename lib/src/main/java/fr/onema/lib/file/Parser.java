@@ -4,7 +4,7 @@ package fr.onema.lib.file;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
-// TODO : complete
+// TODO : complete -> replace into factory
 public class Parser {
     // TODO : complete
     public static ReferenceEntry parseReference(String line) {
