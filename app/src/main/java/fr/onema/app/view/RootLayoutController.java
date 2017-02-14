@@ -12,10 +12,6 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class RootLayoutController {
-
-    @FXML
-    private TitledPane stateTitledPane;
-
     @FXML
     private TitledPane sensorsTitledPane;
 
@@ -41,6 +37,7 @@ public class RootLayoutController {
             stage.setTitle("Configuration");
             stage.initModality(Modality.APPLICATION_MODAL);
             stage.initOwner(root);
+            stage.resizableProperty().set(false);
             stage.showAndWait();
         } else {
             stage = root;
