@@ -15,7 +15,8 @@ import java.util.Objects;
  */
 public class GPS extends Sensor {
     private GPSCoordinate position;
-    private int direction;
+    private float direction;
+    private static String HEADER = "timestamp,latitude,longitude,altitude,direction";
 
     // TODO : maybe a single constructor is better
     private GPS(long timestamp, long lat, long lon, long alt) {
@@ -23,7 +24,7 @@ public class GPS extends Sensor {
         this.position = new GPSCoordinate(lat, lon, alt);
     }
 
-    private GPS(long timestamp, long lat, long lon, long alt, int direction) {
+    private GPS(long timestamp, long lat, long lon, long alt, float direction) {
         this(timestamp, lat, lon, alt);
         this.direction = direction;
     }
@@ -35,6 +36,18 @@ public class GPS extends Sensor {
     public static GPS build(msg_gps_raw_int msg) {
         Objects.requireNonNull(msg);
         return new GPS(msg.time_usec, msg.lat, msg.lon, msg.alt, msg.cog);
+    }
+
+    /***
+     * Builder de l'objet GPS
+     * @param timestamp Heure de la mesure
+     * @param lat Latitude de la mesure
+     * @param lon Longitude de la mesure
+     * @param alt Altitude de la mesure
+     * @param direction Direction de la mesure
+     */
+    public static GPS build(long timestamp, long lat, long lon, long alt, float direction) {
+        return new GPS(timestamp, lat, lon, alt, direction);
     }
 
     /**
@@ -49,7 +62,7 @@ public class GPS extends Sensor {
      * Retourne l'orientation de la mesure en degrés
      * @return Orientation de la mesure
      */
-    public int getDirection() {
+    public float getDirection() {
         return direction;
     }
 
@@ -60,6 +73,6 @@ public class GPS extends Sensor {
 
     @Override
     public String getCSVHeader() {
-        return "timestamp, latitude, longitude, altitude, direction";
+        return HEADER;
     }
 }

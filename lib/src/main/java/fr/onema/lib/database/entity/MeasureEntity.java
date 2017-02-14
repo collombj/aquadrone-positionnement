@@ -9,17 +9,17 @@ import java.util.Objects;
  */
 public class MeasureEntity {
     private int id;
-    private long timestamp;
-    private GPSCoordinate locationBrut;
-    private GPSCoordinate locationCorrected;
-    private int accelerationX;
-    private int accelerationY;
-    private int accelerationZ;
-    private int rotationX;
-    private int rotationY;
-    private int rotationZ;
-    private int precisionCm;
-    private String measureValue;
+    private final long timestamp;
+    private final GPSCoordinate locationBrut;
+    private final GPSCoordinate locationCorrected;
+    private final int accelerationX;
+    private final int accelerationY;
+    private final int accelerationZ;
+    private final double roll;
+    private final double pitch;
+    private final double yaw;
+    private final int precisionCm;
+    private final String measureValue;
 
     /**
      * Constructeur
@@ -30,15 +30,17 @@ public class MeasureEntity {
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
      * @param accelerationZ     L'accélération selon l'axe Z du drone
-     * @param rotationX         La rotation autour de l'axe X du drone
-     * @param rotationY         La rotation autour de l'axe Y du drone
-     * @param rotationZ         La rotation autour de l'axe Z du drone
+     * @param roll              le roll du drone
+     * @param pitch             Le pitch du drone
+     * @param yaw               Le yaw du drone
      * @param precisionCm       La precision estimée de la mesure
      * @param measureValue      La valeur de la mesure.
      */
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
-                         int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
-                         int rotationZ, int precisionCm, String measureValue) {
+                         int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
+                         double yaw, int precisionCm, String measureValue) {
+        Objects.requireNonNull(locationBrut);
+        Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
@@ -46,9 +48,9 @@ public class MeasureEntity {
         this.accelerationX = accelerationX;
         this.accelerationY = accelerationY;
         this.accelerationZ = accelerationZ;
-        this.rotationX = rotationX;
-        this.rotationY = rotationY;
-        this.rotationZ = rotationZ;
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
         this.precisionCm = precisionCm;
         this.measureValue = measureValue;
     }
@@ -63,15 +65,15 @@ public class MeasureEntity {
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
      * @param accelerationZ     L'accélération selon l'axe Z du drone
-     * @param rotationX         La rotation autour de l'axe X du drone
-     * @param rotationY         La rotation autour de l'axe Y du drone
-     * @param rotationZ         La rotation autour de l'axe Z du drone
+     * @param roll              le roll du drone
+     * @param pitch             Le pitch du drone
+     * @param yaw               Le yaw du drone
      * @param precisionCm       La precision estimée de la mesure
      * @param measureValue      La valeur de la mesure.
      */
     public MeasureEntity(int id, long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
-                         int accelerationX, int accelerationY, int accelerationZ, int rotationX, int rotationY,
-                         int rotationZ, int precisionCm, String measureValue) {
+                         int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
+                         double yaw, int precisionCm, String measureValue) {
         Objects.requireNonNull(locationBrut);
         Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
@@ -84,9 +86,9 @@ public class MeasureEntity {
         this.accelerationX = accelerationX;
         this.accelerationY = accelerationY;
         this.accelerationZ = accelerationZ;
-        this.rotationX = rotationX;
-        this.rotationY = rotationY;
-        this.rotationZ = rotationZ;
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
         this.precisionCm = precisionCm;
         this.measureValue = measureValue;
     }
@@ -152,22 +154,22 @@ public class MeasureEntity {
     /**
      * @return La rotation autour de l'axe X du drone
      */
-    public int getRotationX() {
-        return rotationX;
+    public double getRoll() {
+        return roll;
     }
 
     /**
      * @return La rotation autour de l'axe Y du drone
      */
-    public int getRotationY() {
-        return rotationY;
+    public double getPitch() {
+        return pitch;
     }
 
     /**
      * @return La rotation autour de l'axe Z du drone
      */
-    public int getRotationZ() {
-        return rotationZ;
+    public double getYaw() {
+        return yaw;
     }
 
     /**
@@ -222,11 +224,11 @@ public class MeasureEntity {
             return false;
         if (accelerationZ != that.accelerationZ)
             return false;
-        if (rotationX != that.rotationX)
+        if (Double.compare(roll, that.roll) != 0)
             return false;
-        if (rotationY != that.rotationY)
+        if (Double.compare(pitch, that.pitch) != 0)
             return false;
-        if (rotationZ != that.rotationZ)
+        if (Double.compare(yaw, that.yaw) != 0)
             return false;
         if (precisionCm != that.precisionCm)
             return false;
@@ -247,13 +249,11 @@ public class MeasureEntity {
         result = 31 * result + accelerationX;
         result = 31 * result + accelerationY;
         result = 31 * result + accelerationZ;
-        result = 31 * result + rotationX;
-        result = 31 * result + rotationY;
-        result = 31 * result + rotationZ;
+        result = (int)(31 * result + roll);
+        result = (int)(31 * result + pitch);
+        result = (int)(31 * result + yaw);
         result = 31 * result + precisionCm;
         result = 31 * result + (measureValue != null ? measureValue.hashCode() : 0);
         return result;
     }
-
-
 }

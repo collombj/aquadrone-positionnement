@@ -1,6 +1,7 @@
 package fr.onema.lib.virtualizer.entry;
 
 import fr.onema.lib.file.CSV;
+import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
@@ -14,15 +15,15 @@ public class VirtualizerEntry implements CSV {
     private final short xacc;
     private final short yacc;
     private final short zacc;
-    private final short xgyro;
-    private final short ygyro;
-    private final short zgyro;
+    private final double roll;
+    private final double pitch;
+    private final double yaw;
     private final short xmag;
     private final short ymag;
     private final short zmag;
     private final float pressure;
     private final short temperature;
-    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature";
+    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final boolean hasGPS;
 
     /**
@@ -34,16 +35,16 @@ public class VirtualizerEntry implements CSV {
      * @param xacc Acceleration en x
      * @param yacc Acceleration en y
      * @param zacc Acceleration en z
-     * @param xgyro Rotation en x
-     * @param ygyro Rotation en y
-     * @param zgyro Rotation en z
+     * @param roll roll du drone
+     * @param pitch pitch du drone
+     * @param yaw yaw du drone
      * @param xmag Orientation magnétique en x
      * @param ymag Orientation magnétique en y
      * @param zmag Orientation magnétique en z
      * @param pressure Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
@@ -51,9 +52,9 @@ public class VirtualizerEntry implements CSV {
         this.xacc = xacc;
         this.yacc = yacc;
         this.zacc = zacc;
-        this.xgyro = xgyro;
-        this.ygyro = ygyro;
-        this.zgyro = zgyro;
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
         this.xmag = xmag;
         this.ymag = ymag;
         this.zmag = zmag;
@@ -68,23 +69,23 @@ public class VirtualizerEntry implements CSV {
      * @param xacc Acceleration en x
      * @param yacc Acceleration en y
      * @param zacc Acceleration en z
-     * @param xgyro Rotation en x
-     * @param ygyro Rotation en y
-     * @param zgyro Rotation en z
+     * @param roll roll du drone
+     * @param pitch pitch du drone
+     * @param yaw yaw du drone
      * @param xmag Orientation magnétique en x
      * @param ymag Orientation magnétique en y
      * @param zmag Orientation magnétique en z
      * @param pressure Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, short xgyro, short ygyro, short zgyro, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
         this.timestamp = timestamp;
         this.xacc = xacc;
         this.yacc = yacc;
         this.zacc = zacc;
-        this.xgyro = xgyro;
-        this.ygyro = ygyro;
-        this.zgyro = zgyro;
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
         this.xmag = xmag;
         this.ymag = ymag;
         this.zmag = zmag;
@@ -99,7 +100,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = System.currentTimeMillis();
+        msg.time_usec = timestamp;
         msg.fix_type = 6;
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
@@ -123,13 +124,25 @@ public class VirtualizerEntry implements CSV {
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
-        msg.xgyro = this.xgyro;
-        msg.ygyro = this.ygyro;
-        msg.zgyro = this.zgyro;
+        msg.xgyro = 0;
+        msg.ygyro = 0;
+        msg.zgyro = 0;
         msg.xmag = this.xmag;
         msg.ymag = this.ymag;
         msg.zmag = this.zmag;
         return msg;
+    }
+
+    /**
+     * Retourne le message Attitude en format MavLink
+     * @return AttitudeMessage
+     */
+    public msg_attitude getAttitudeMessage() {
+        msg_attitude msgAttitude = new msg_attitude();
+        msgAttitude.roll = (float) this.roll;
+        msgAttitude.pitch = (float) this.pitch;
+        msgAttitude.yaw = (float) this.yaw;
+        return msgAttitude;
     }
 
     /**
@@ -212,24 +225,24 @@ public class VirtualizerEntry implements CSV {
      * Récupère la vitesse de rotation en X
      * @return xgyro
      */
-    public short getXgyro() {
-        return xgyro;
+    public double getRoll() {
+        return roll;
     }
 
     /**
      * Récupère la vitesse de rotation en Y
      * @return ygyro
      */
-    public short getYgyro() {
-        return ygyro;
+    public double getPitch() {
+        return pitch;
     }
 
     /**
      * Récupère la vitesse de rotation en Z
      * @return zgyro
      */
-    public short getZgyro() {
-        return zgyro;
+    public double getYaw() {
+        return yaw;
     }
 
     /**
@@ -284,7 +297,7 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + xgyro + "," + ygyro + "," + zgyro + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
+        return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
     }
 
      /**
