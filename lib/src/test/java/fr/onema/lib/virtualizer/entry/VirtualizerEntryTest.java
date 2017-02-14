@@ -17,7 +17,7 @@ public class VirtualizerEntryTest {
 
     @Test
     public void testConstructorGetter() {
-        VirtualizerEntry virtual = new VirtualizerEntry(1,2,3,4,(short) 5, (short)6,(short)7,(short)8,(short)9,(short)10,(short)11,(short)12,(short)13, 14,(short)15);
+        VirtualizerEntry virtual = new VirtualizerEntry(1,2,3,4,(short) 5, (short)6,(short)7,8,9,10,(short)11,(short)12,(short)13, 14,(short)15);
         assertEquals(1, virtual.getTimestamp());
         assertEquals(2, virtual.getGpsLat());
         assertEquals(3, virtual.getGpsLon());
@@ -25,9 +25,9 @@ public class VirtualizerEntryTest {
         assertEquals((short)5, virtual.getXacc());
         assertEquals((short)6, virtual.getYacc());
         assertEquals((short)7, virtual.getZacc());
-        assertEquals((short)8, virtual.getXgyro());
-        assertEquals((short)9, virtual.getYgyro());
-        assertEquals((short)10, virtual.getZgyro());
+        assertEquals(8.0, virtual.getRoll(), 0);
+        assertEquals(9.0, virtual.getPitch(), 0);
+        assertEquals(10.0, virtual.getYaw(), 0);
         assertEquals((short)11, virtual.getXmag());
         assertEquals((short)12, virtual.getYmag());
         assertEquals((short)13, virtual.getZmag());
@@ -42,9 +42,9 @@ public class VirtualizerEntryTest {
         assertEquals((short)5, virtual.getXacc());
         assertEquals((short)6, virtual.getYacc());
         assertEquals((short)7, virtual.getZacc());
-        assertEquals((short)8, virtual.getXgyro());
-        assertEquals((short)9, virtual.getYgyro());
-        assertEquals((short)10, virtual.getZgyro());
+        assertEquals(8.0, virtual.getRoll(), 0);
+        assertEquals(9.0, virtual.getPitch(), 0);
+        assertEquals(10.0, virtual.getYaw(), 0);
         assertEquals((short)11, virtual.getXmag());
         assertEquals((short)12, virtual.getYmag());
         assertEquals((short)13, virtual.getZmag());
@@ -70,13 +70,13 @@ public class VirtualizerEntryTest {
     @Test
     public void toCSVTest() {
         VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
-        assertEquals("1,1,1,1,1,1,1,1,1,1,1,1,1,1.0,1", ref.toCSV());
+        assertEquals("1,1,1,1,1,1,1,1.0,1.0,1.0,1,1,1,1.0,1", ref.toCSV());
     }
 
     @Test
     public void getCSVHeaderTest() {
         VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
-        assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,rotationX,rotationY,rotationZ,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
+        assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
     }
 
 }

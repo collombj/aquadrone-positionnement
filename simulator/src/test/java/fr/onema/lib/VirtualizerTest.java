@@ -162,13 +162,12 @@ public class VirtualizerTest {
             assertEquals(v.getSpeed(),100);
             assertEquals(v.getHost(),"test");
             assertEquals(v.getPort(),5432);
-            assertNotNull(Virtualizer.getLogs());
         }catch(Exception e){
             fail(e.getMessage());
         }
     }
 
-    /*@Test
+    @Test
     public void testCompare(){
         String workingSourceDir = System.getProperty("user.dir").replace("simulator", "lib");
         Virtualizer v = new Virtualizer(fm,100,"aaa","test",5432);
@@ -176,9 +175,9 @@ public class VirtualizerTest {
             Configuration config = Configuration.build(workingSourceDir + "/settingsTest.properties");
             v.start();
             assertNotEquals(v.getDuration(),0);
-            assertNotNull(v.compare(fm, config,0));
+            v.compare(fm, config,0);
         }catch(Exception e){
             fail(e.getMessage());
         }
-    }*/
+    }
 }

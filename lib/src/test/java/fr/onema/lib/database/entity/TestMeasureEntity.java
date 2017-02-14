@@ -26,9 +26,9 @@ public class TestMeasureEntity {
         assertTrue(e.getAccelerationX() == 1);
         assertTrue(e.getAccelerationY() == 2);
         assertTrue(e.getAccelerationZ() == 3);
-        assertTrue(e.getRotationX() == 1);
-        assertTrue(e.getRotationY() == 2);
-        assertTrue(e.getRotationZ() == 3);
+        assertTrue(e.getRoll() == 1.0);
+        assertTrue(e.getPitch() == 2.0);
+        assertTrue(e.getYaw() == 3.0);
         assertTrue(e.getPrecisionCm() == 2);
 
         assertTrue(e.getMeasureValue().equals("uneMes"));

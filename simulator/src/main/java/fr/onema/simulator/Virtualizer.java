@@ -193,8 +193,4 @@ public class Virtualizer {
     public String getHost() {
         return host;
     }
-
-    public static Logger getLogs() {
-        return LOGGER;
-    }
 }
