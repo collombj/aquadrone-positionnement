@@ -7,11 +7,19 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+/***
+ * Classe Main de l'application graphique
+ */
 public class Main extends Application {
     private Stage primaryStage;
 
+    /***
+     * Méthode start appelée lors de l'initialisation de l'application pour définir les paramètres du conteneur de base
+     * @param primaryStage Le conteneur principal
+     * @throws Exception
+     */
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("App");
         this.primaryStage.resizableProperty().set(false);
@@ -24,6 +32,7 @@ public class Main extends Application {
         fxmlLoader.load();
         Scene rootScene = new Scene(fxmlLoader.getRoot());
         primaryStage.setScene(rootScene);
+        primaryStage.sizeToScene();
         primaryStage.show();
     }
 

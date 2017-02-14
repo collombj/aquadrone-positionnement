@@ -17,6 +17,9 @@ import java.io.IOException;
 import java.util.Objects;
 import java.util.Timer;
 
+/***
+ * Controlleur associé à la vue RootLayout.fxml
+ */
 public class RootLayoutController {
     private final Configuration c;
 
@@ -32,6 +35,10 @@ public class RootLayoutController {
     @FXML
     private Label mavlinkLabel;
 
+    /***
+     * Constructeur du controlleur du RootLayout
+     * @param c Fichier de configuration comprenant les infos de la base Postgres
+     */
     public RootLayoutController(Configuration c) {
         this.c = Objects.requireNonNull(c);
     }
@@ -40,6 +47,9 @@ public class RootLayoutController {
         return c;
     }
 
+    /***
+     * Méthode permettant de déclarer le scheduler de tâches pour interroger l'état des dépendances
+     */
     @FXML
     private void initialize() {
         Timer timer = new Timer(true);
@@ -56,6 +66,9 @@ public class RootLayoutController {
         mavlinkLabel.setTextFill(c);
     }
 
+    /***
+     * Permet de redimensionner dynamiquement les éléments de la vue lorsque certaines parties sont réduites
+     */
     @FXML
     private void resizeParent() {
         Stage root = (Stage)sensorsTitledPane.getScene().getWindow();
@@ -63,11 +76,15 @@ public class RootLayoutController {
         root.show();
     }
 
+    /***
+     * Permet de faire apparaitre le popup de configuration
+     * @param event
+     * @throws IOException
+     */
     @FXML
     private void accessConfiguration(ActionEvent event) throws IOException {
         Stage stage;
-        Stage root;
-        root = (Stage)configurationButton.getScene().getWindow();
+        Stage root = (Stage)configurationButton.getScene().getWindow();
 
         if (event.getSource() == configurationButton) {
             stage = new Stage();
@@ -82,6 +99,4 @@ public class RootLayoutController {
             stage.close();
         }
     }
-
-
 }

@@ -1,9 +1,14 @@
 package fr.onema.lib.virtualizer.entry;
 
+import fr.onema.lib.network.NetworkSender;
 import org.junit.Test;
 
+import java.io.IOException;
+
+import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Theo on 06/02/2017.
@@ -79,4 +84,15 @@ public class VirtualizerEntryTest {
         assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
     }
 
+    @Test
+    public void hasGPSTrue() throws IOException {
+        VirtualizerEntry virtual = new VirtualizerEntry(1, 2,3,4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        assertTrue(virtual.getHasGPS());
+    }
+
+    @Test
+    public void hasGPSFalse() throws IOException {
+        VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        assertFalse(virtual.getHasGPS());
+    }
 }
