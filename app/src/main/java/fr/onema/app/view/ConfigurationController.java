@@ -9,6 +9,10 @@ import javafx.util.StringConverter;
 /**
  * Created by you on 13/02/2017.
  */
+
+/***
+ * Controlleur associé à la vue ConfigurationLayout.fxml
+ */
 public class ConfigurationController {
     private static double horizontalDefaultValue = 0;
     private static double verticalDefaultValue = 0;
@@ -32,18 +36,24 @@ public class ConfigurationController {
     @FXML
     private Spinner<Double> depthSpinner;
 
+    /***
+     * Méthode permettant l'initialisation des valeurs dans les spinners
+     */
     @FXML
-    public void initialize() {
+    private void initialize() {
         insertSpinnerValues();
     }
 
     @FXML
-    public void insertSpinnerValues() {
+    private void insertSpinnerValues() {
         horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), horizontalDefaultValue, horizontalSlider.getMinorTickCount()));
         verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), verticalDefaultValue, verticalSlider.getMinorTickCount()));
         depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), depthDefaultValue, depthSlider.getMinorTickCount()));
     }
 
+    /***
+     * Permet de remettre à 0 les Spinners et Sliders de la vue de configuration
+     */
     @FXML
     private void resetConfigurationLayout() {
         horizontalSlider.adjustValue(horizontalDefaultValue);
@@ -54,6 +64,9 @@ public class ConfigurationController {
         updateSpinner(depthSpinner, depthDefaultValue);
     }
 
+    /***
+     * Binding des valuers Spinner -> Slider
+     */
     @FXML
     private void updateSliderFromSpinner() {
         horizontalSlider.adjustValue(horizontalSpinner.getValue());
@@ -61,6 +74,9 @@ public class ConfigurationController {
         depthSlider.adjustValue(depthSpinner.getValue());
     }
 
+    /***
+     * Binding des valuers Slider -> Spinner
+     */
     @FXML
     private void updateSpinnerFromSlider() {
         updateSpinner(horizontalSpinner, horizontalSlider.getValue());
@@ -82,6 +98,9 @@ public class ConfigurationController {
         }
     }
 
+    /***
+     * Apply settings to the next dive operation
+     */
     @FXML
     private void applyConfigurationOnNextDive() {
         // TODO : do something with values
