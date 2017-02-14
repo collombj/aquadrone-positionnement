@@ -48,8 +48,8 @@ public class Virtualizer {
      * @param port           Port sur lequel on se connecte à l'hôte
      */
     public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port) {
-        if(speed == 0 || port == 0){
-            throw new IllegalArgumentException("Speed and port cannot be zero");
+        if(speed < 1 || port < 1){
+            throw new IllegalArgumentException("Speed and port cannot be negative");
         }else{
             this.port = port;
             this.speed = speed;
@@ -63,7 +63,7 @@ public class Virtualizer {
      * Lance une simulation
      */
     public void start() throws IOException {
-        start = System.currentTimeMillis(); //Pour avoir un start en millisecondes (Tellement rapide que start = stop sinon)
+        start = System.currentTimeMillis(); //Pour avoir un start en millisecondes
         List<VirtualizerEntry> entries = fileManager.readVirtualizedEntries();
         NetworkSender sender = new NetworkSender(port, host);
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
@@ -77,15 +77,7 @@ public class Virtualizer {
             }
         });
 
-        stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes (Tellement rapide que start = stop sinon)
-    }
-
-    private String getRecapitulatif(FileManager file) throws IOException {
-
-        List<VirtualizerEntry> entries = file.readVirtualizedEntries();
-        StringBuilder sb = new StringBuilder();
-        entries.forEach(x -> sb.append(x.toCSV()).append("\n"));
-        return sb.toString();
+        stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes
     }
 
     /**
@@ -97,7 +89,7 @@ public class Virtualizer {
         return getStop() - getStart();
     }
 
-    public String compare(FileManager fm, Configuration config, int errorAllowed) throws ComparisonException {
+    public void compare(FileManager fm, Configuration config, int errorAllowed) throws ComparisonException {
         Objects.requireNonNull(fm);
         Objects.requireNonNull(config);
 
@@ -112,7 +104,6 @@ public class Virtualizer {
             for(int i = 0; i < minimum;i++){
                 sendMessage(fm, listRefEntry.get(i), listMeasures.get(i), errorAllowed);
             }
-            return "to be fixed";//fixme: return comparison result
         } catch (IOException | SQLException e) {
             throw new ComparisonException(e);
         }
@@ -121,8 +112,6 @@ public class Virtualizer {
     private void sendMessage(FileManager fm, ReferenceEntry ref, MeasureEntity measure, int errVal) {
         try {
             if (ref.getTimestamp() == measure.getTimestamp()) {
-                Objects.requireNonNull(measure.getMeasureValue());
-
                 int realLat = ref.getLat();
                 int realLon = ref.getLon();
                 int realAlt = ref.getAlt();
@@ -133,6 +122,8 @@ public class Virtualizer {
                 if (distance > errVal) {
                     fm.appendResults(ref,measure,errVal);
                 }
+            } else {
+                fm.appendResults(ref, measure, errVal);
             }
         }catch(IOException e){
             LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
