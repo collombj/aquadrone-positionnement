@@ -34,7 +34,7 @@ public class FileManager {
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
 
-    private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+    public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
 
     /***
      * Constructeur du FileManager
@@ -46,6 +46,16 @@ public class FileManager {
         this.rawInputFilePath = Objects.requireNonNull(inputFilePath);
         this.virtualizedOutputFilePath = Objects.requireNonNull(virtualizedOutputFilePath);
         this.resultsOutputFilePath = Objects.requireNonNull(resultsOutputFilePath);
+    }
+
+    /***
+     * Constructeur du FileManager
+     * @param inputFilePath Chemin d'accès vers le fichier brut d'entrée
+     * @param virtualizedOutputFilePath Chemin d'accès vers le fichier de sorties des données virtualisées
+     */
+    public FileManager(String inputFilePath, String virtualizedOutputFilePath) {
+        // TODO : find a better solution
+        this(inputFilePath, virtualizedOutputFilePath, "");
     }
 
     /***
@@ -87,9 +97,11 @@ public class FileManager {
      */
     public void appendRaw(GPS gps, Temperature temp) throws IOException {
         File f = new File(rawInputFilePath);
+        if (!f.exists()) {
+            f.createNewFile();
+        }
         try (FileWriter fw = new FileWriter(f, true)) {
-            int lineNumber = getLineNumber(f);
-            if (!f.exists() || lineNumber == 0) {
+            if (getLineNumber(f) == 0) {
                 fw.write(ReferenceEntry.HEADER);
             }
             fw.write("\n" + gps.getTimestamp() + "," + gps.getPosition().lat + "," + gps.getPosition().lon + ","
@@ -106,9 +118,11 @@ public class FileManager {
      */
     public void appendVirtualized(VirtualizerEntry ve) throws IOException {
         File f = new File(virtualizedOutputFilePath);
+        if (!f.exists()) {
+            f.createNewFile();
+        }
         try (FileWriter fw = new FileWriter(f, true)) {
-            int lineNumber = getLineNumber(f);
-            if (!f.exists() || lineNumber == 0) {
+            if (getLineNumber(f) == 0) {
                 fw.write(VirtualizerEntry.HEADER);
             }
             fw.write("\n" + ve.toCSV());
@@ -121,7 +135,7 @@ public class FileManager {
     /**
      * Open results.csv to write header
      */
-    public void openFile() throws IOException {
+    public void openFileForResults() throws IOException {
         File f = new File(resultsOutputFilePath);
         f.delete();
         try (FileWriter fw = new FileWriter(f, false)) {

@@ -14,16 +14,15 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import static org.junit.Assert.*;
 
-/**
- * Created by Theo on 08/02/2017.
- */
 public class NetworkSenderTest {
     public static final String ASCII = "ASCII";
 
     @Test
-    public void constructorNotNull() {
-        NetworkSender networkSender = new NetworkSender(5, "test");
+    public void constructorNotNull() throws IOException {
+        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
+        networkSender.openConnection();
         assertNotNull(networkSender);
+        networkSender.closeConnection();
     }
 
     @Test
@@ -33,6 +32,7 @@ public class NetworkSenderTest {
         networkSender.openConnection();
         assertNotNull(networkSender.getDsocket());
         networkSender.closeConnection();
+        server.close();
     }
 
     @Test

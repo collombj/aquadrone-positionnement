@@ -14,7 +14,6 @@ public class IMU {
     private final Gyroscope gyroscope;
     private final Compass compass;
 
-
     /**
      * constructeur privé de l'imu
      *
@@ -28,7 +27,6 @@ public class IMU {
         this.compass = compass;
     }
 
-
     /**
      * builder de l'imu a apartir du flux mavlink
      *
@@ -36,14 +34,10 @@ public class IMU {
      * @return
      */
     public static IMU build(msg_scaled_imu msg) {
-
         Accelerometer accelerometer = new Accelerometer(msg.xacc, msg.yacc, msg.zacc);
         Gyroscope gyroscope = new Gyroscope(msg.xgyro, msg.ygyro, msg.zgyro);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
-
         return new IMU(accelerometer, gyroscope, compass);
-
-
     }
 
     /**
@@ -57,23 +51,12 @@ public class IMU {
      * @return un imu sans gyroscope et compas
      */
     public static IMU build(CartesianVelocity refVelocity, long prevTimestamp, GPSCoordinate prevCoordinate, long timestamp, GPSCoordinate coordinate) {
-
-
         CartesianCoordinate cartCoordinate = GeoMaths.computeCartesianPosition(prevCoordinate, coordinate);
-
-
         CartesianVelocity velocity = GeoMaths.computeVelocityFromCartesianCoordinate(cartCoordinate, timestamp - prevTimestamp);
-
         Accelerometer accelerometer = GeoMaths.computeAccelerometerData(refVelocity, velocity, timestamp - prevTimestamp);
-
-
         Gyroscope gyroscope = new Gyroscope(0, 0, 0);
         Compass compass = new Compass(0, 0, 0);
-
-
         return new IMU(accelerometer, gyroscope, compass);
-
-
     }
 
 

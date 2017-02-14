@@ -23,7 +23,7 @@ public class Temperature extends Sensor implements Measure {
      * @param temperature Valeur de la température à l'instant donné.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
-    public static Temperature construct(long timestamp, int temperature) {
+    public static Temperature build(long timestamp, int temperature) {
         return new Temperature(timestamp, temperature);
     }
 
@@ -33,7 +33,7 @@ public class Temperature extends Sensor implements Measure {
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
     public static Temperature build(msg_scaled_pressure pressureMAVLinkMessage) {
-        return Temperature.construct(System.currentTimeMillis(), pressureMAVLinkMessage.temperature);
+        return Temperature.build(System.currentTimeMillis(), pressureMAVLinkMessage.temperature);
     }
 
     /**

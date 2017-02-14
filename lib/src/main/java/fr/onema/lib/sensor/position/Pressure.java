@@ -6,10 +6,12 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 /**
  * Created by Theo on 06/02/2017.
  */
+// TODO : complete
 public class Pressure extends Sensor {
-    private float absolute;
-    private float differential;
-    private int temperature;
+    private final float absolute;
+    private final float differential;
+    private final int temperature;
+    private static String HEADER = "timestamp,asbolute,differential,temperature";
 
     private Pressure(long timestamp, float absolute, float differential, int temperature) {
         super(timestamp);
@@ -18,8 +20,16 @@ public class Pressure extends Sensor {
         this.temperature = temperature;
     }
 
+    // TODO : complete
     public static Pressure build(msg_scaled_pressure msg) {
         return new Pressure(msg.time_boot_ms, msg.press_abs, msg.press_diff, msg.temperature);
+    }
+
+    // TODO : complete
+    public static Pressure build(long timestamp, int altitude, int temperature) {
+        // TODO : complete --> calcul de la pression à partir de l'altitude (et température ?)
+        int absolute = 0;
+        return new Pressure(timestamp, absolute, 0, temperature);
     }
 
     /**
@@ -53,6 +63,6 @@ public class Pressure extends Sensor {
 
     @Override
     public String getCSVHeader() {
-        return "timestamp,asbolute,differential,temperature";
+        return HEADER;
     }
 }
