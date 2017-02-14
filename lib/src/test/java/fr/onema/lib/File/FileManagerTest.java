@@ -9,6 +9,7 @@ import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.*;
 import org.mavlink.messages.ardupilotmega.msg_global_position_int;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
@@ -33,12 +34,12 @@ public class FileManagerTest {
         v.delete();
         File res = new File(resultsFile);
         res.delete();
-        msg_global_position_int msg = new msg_global_position_int();
-        msg.time_boot_ms = 1;
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.time_usec = 1;
         msg.lat = 2;
         msg.lon = 3;
         msg.alt = 4;
-        msg.hdg = 5;
+        msg.cog = 5;
         msg_scaled_pressure msg2 = new msg_scaled_pressure();
         msg2.time_boot_ms = 0;
         msg2.temperature = 6;
@@ -79,12 +80,12 @@ public class FileManagerTest {
 
     @Test
     public void appendRaw() throws Exception {
-        msg_global_position_int msg = new msg_global_position_int();
-        msg.time_boot_ms = 0;
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.time_usec = 0;
         msg.lat = 1;
         msg.lon = 2;
         msg.alt = 3;
-        msg.hdg = 4;
+        msg.cog = 4;
         msg_scaled_pressure msg2 = new msg_scaled_pressure();
         msg2.time_boot_ms = 0;
         msg2.temperature = 5;

@@ -42,7 +42,7 @@ public class DiveTest {
         Position position = new Position(System.currentTimeMillis());
         position.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position.add(Temperature.build(System.currentTimeMillis(), 250));
         dive.add(position);
 
         Thread.sleep(200);
@@ -54,27 +54,27 @@ public class DiveTest {
         Position position2 = new Position(System.currentTimeMillis());
         position2.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position2.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position2.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position3 = new Position(System.currentTimeMillis());
         position3.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position3.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position3.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position4 = new Position(System.currentTimeMillis());
         position4.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position4.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position4.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position5 = new Position(System.currentTimeMillis());
         position5.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position5.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position5.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position6 = new Position(System.currentTimeMillis());
         position6.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
-        position6.add(Temperature.construct(System.currentTimeMillis(), 250));
+        position6.add(Temperature.build(System.currentTimeMillis(), 250));
 
 
         dive.add(position2);

@@ -1,0 +1,2 @@
+timestamp,corrected.latitute,corrected.longitude,corrected.altitude,ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z,difference.absolute,precision,margin,margin.error
+0,1,2,3,4,5,6,7.0,8,252633.94405114,864468.0688498556,-1.0147670209231338E7,1.0187558079690589E7,13,14.0,true

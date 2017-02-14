@@ -8,6 +8,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_global_position_int;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
@@ -28,21 +29,21 @@ public class GeneratorTest {
         ref.delete();
         File v = new File(virtualizedFile);
         v.delete();
-        msg_global_position_int msg = new msg_global_position_int();
-        msg.time_boot_ms = System.currentTimeMillis();
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.time_usec = System.currentTimeMillis();
         msg.lat = 2;
         msg.lon = 3;
         msg.alt = 4;
-        msg.hdg = 5;
+        msg.cog = 5;
         msg_scaled_pressure msg2 = new msg_scaled_pressure();
-        msg2.time_boot_ms = msg.time_boot_ms;
+        msg2.time_boot_ms = msg.time_usec;
         msg2.temperature = 6;
         fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
-        msg.time_boot_ms = System.currentTimeMillis();
-        msg2.time_boot_ms = msg.time_boot_ms;
+        msg.time_usec = System.currentTimeMillis();
+        msg2.time_boot_ms = msg.time_usec;
         fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
-        msg.time_boot_ms = System.currentTimeMillis();
-        msg2.time_boot_ms = msg.time_boot_ms;
+        msg.time_usec = System.currentTimeMillis();
+        msg2.time_boot_ms = msg.time_usec;
         fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
     }
 

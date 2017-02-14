@@ -8,6 +8,7 @@ import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
@@ -17,6 +18,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
@@ -47,6 +49,8 @@ public class MessageWorker implements Worker {
     private GPS lastPos;
     private Boolean mavLinkConnection;
     private long firstInfo = 0;
+
+    private final AtomicReference<MAVLinkMessage> bufferMavLink = new AtomicReference<>();
 
     /**
      * Constructeur de MessageWorker
@@ -91,7 +95,7 @@ public class MessageWorker implements Worker {
      * Ajoute une objet Temperature à la liste des mesures.
      * Ces mesures seront associées à une position.
      *
-     * @param temperature           La Temperature à ajouter.
+     * @param temperature La Temperature à ajouter.
      * @throws InterruptedException En cas d'intérruption du thread courant.
      */
     public void add(Temperature temperature) throws InterruptedException {
@@ -170,11 +174,36 @@ public class MessageWorker implements Worker {
                     processGPSData(GPS.build(gpsData), gpsData);
                     break; // GPS
                 case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
-                    msg_scaled_imu imuData = (msg_scaled_imu) mavLinkMessage;
-                    addOrCreateToPosition(imuData.time_boot_ms, imuData.getClass().getCanonicalName());
-                    IMU imu = IMU.build(imuData);
-                    processIMUData(imu, imuData);
-                    break; //IMU
+                    if (bufferMavLink.get() == null) {
+                        bufferMavLink.set(mavLinkMessage);
+                        break;
+                    } else if (bufferMavLink.get() instanceof msg_attitude) {
+
+                        msg_scaled_imu imuData = (msg_scaled_imu) mavLinkMessage;
+                        addOrCreateToPosition(imuData.time_boot_ms, imuData.getClass().getCanonicalName());
+                        IMU imu = IMU.build(imuData, (msg_attitude) bufferMavLink.get());
+                        bufferMavLink.set(null);
+                        processIMUData(imu, imuData);
+                        break; //IMU
+                    }
+                    bufferMavLink.set(mavLinkMessage); // Update msg_scale_imu value
+                    break;
+                case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
+                    if (bufferMavLink.get() == null) {
+                        bufferMavLink.set(mavLinkMessage);
+                        break;
+                    } else if (bufferMavLink.get() instanceof msg_scaled_imu) {
+
+                        msg_attitude attitudeData = (msg_attitude) mavLinkMessage;
+                        addOrCreateToPosition(attitudeData.time_boot_ms, attitudeData.getClass().getCanonicalName());
+                        msg_scaled_imu message = (msg_scaled_imu) bufferMavLink.get();
+                        IMU imu = IMU.build(message, attitudeData);
+                        bufferMavLink.set(null);
+                        processIMUData(imu, message);
+                        break; //IMU
+                    }
+                    bufferMavLink.set(mavLinkMessage); // Update msg_scale_imu value
+                    break;
                 case msg_scaled_pressure.MAVLINK_MSG_ID_SCALED_PRESSURE:
                     msg_scaled_pressure pressureData = (msg_scaled_pressure) mavLinkMessage;
                     addOrCreateToPosition(pressureData.time_boot_ms, pressureData.getClass().getCanonicalName());

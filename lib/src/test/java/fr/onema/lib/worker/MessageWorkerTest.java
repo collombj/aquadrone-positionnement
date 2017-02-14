@@ -77,7 +77,7 @@ public class MessageWorkerTest {
 
     @Test
     public void clearWaitingList() throws Exception {
-        Temperature temperature = Temperature.construct(System.currentTimeMillis(), 20);
+        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
         messageWorker.add(temperature);
         assertFalse(messageWorker.isWaitingListEmpty());
         messageWorker.clearWaitingList();
@@ -86,7 +86,7 @@ public class MessageWorkerTest {
 
     @Test
     public void add() throws Exception {
-        Temperature temperature = Temperature.construct(System.currentTimeMillis(), 20);
+        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
         messageWorker.add(temperature);
         assertFalse(messageWorker.isWaitingListEmpty());
     }

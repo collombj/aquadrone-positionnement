@@ -124,18 +124,6 @@ public class Position {
         return direction;
     }
 
-    private int getxRotationp() {
-        return imu.getGyroscope().getxRotation();
-    }
-
-    private int getyRotation() {
-        return imu.getGyroscope().getyRotation();
-    }
-
-    private int getzRotation() {
-        return imu.getGyroscope().getzRotation();
-    }
-
     public IMU getImu() {
         return imu;
     }
@@ -165,7 +153,7 @@ public class Position {
                 //TODO lien vers le entity information
                 entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
                         imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
-                        getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
+                        imu.getGyroscope().getRoll(), imu.getGyroscope().getPitch(), imu.getGyroscope().getYaw(), -1, measure.getName()));
 
             }
         } else {

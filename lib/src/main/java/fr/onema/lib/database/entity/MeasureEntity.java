@@ -10,8 +10,8 @@ import java.util.Objects;
 public class MeasureEntity {
     private int id;
     private final long timestamp;
-    private final GPSCoordinate locationBrut;
-    private final GPSCoordinate locationCorrected;
+    private GPSCoordinate locationBrut;
+    private GPSCoordinate locationCorrected;
     private final int accelerationX;
     private final int accelerationY;
     private final int accelerationZ;
@@ -39,9 +39,9 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
-        Objects.requireNonNull(locationCorrected);
-        Objects.requireNonNull(measureValue);
+        //Objects.requireNonNull(locationBrut);
+        //Objects.requireNonNull(locationCorrected);
+        //Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
         this.locationCorrected = locationCorrected;
