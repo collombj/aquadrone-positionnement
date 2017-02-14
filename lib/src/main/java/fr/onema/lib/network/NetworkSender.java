@@ -20,6 +20,7 @@ public class NetworkSender {
 
     /**
      * Constructeur de la classe NetworkSender
+     *
      * @param port le port de l'hôte
      * @param host l'adresse de l'hôte
      */
@@ -32,23 +33,26 @@ public class NetworkSender {
 
     /**
      * Permet d'ajouter une virtualizerEntry
+     *
      * @param entry Un champ de type VirtualizerEntry
      */
     public void add(VirtualizerEntry entry) {
         this.entry = entry;
-            if (entry.getHasGPS() == true) {
-                MAVLinkMessage msgGPS = entry.getGPSMessage();
-                try {
-                    queue.put(msgGPS);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+        if (entry.getHasGPS() == true) {
+            MAVLinkMessage msgGPS = entry.getGPSMessage();
+            try {
+                queue.put(msgGPS);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+        }
         MAVLinkMessage msgIMU = entry.getIMUMessage();
+        MAVLinkMessage msgAttitude = entry.getAttitudeMessage();
         MAVLinkMessage msgPressure = entry.getPressureMessage();
         MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
         try {
             queue.put(msgIMU);
+            queue.put(msgAttitude);
             queue.put(msgPressure);
             queue.put(msgTemperature);
         } catch (InterruptedException e) {
@@ -61,9 +65,9 @@ public class NetworkSender {
      */
     public void send(MAVLinkMessage msg) {
         ByteBuffer buff = Charset.forName("utf8").encode(msg.toString());
-        InetSocketAddress dest= new InetSocketAddress(host,port);
+        InetSocketAddress dest = new InetSocketAddress(host, port);
         try {
-            client.send(buff,dest);
+            client.send(buff, dest);
         } catch (IOException e) {
             // TODO
         }
@@ -90,6 +94,7 @@ public class NetworkSender {
 
     /**
      * Permet de récupérer le port
+     *
      * @return le port
      */
     public int getPort() {
@@ -98,6 +103,7 @@ public class NetworkSender {
 
     /**
      * permet de récupérer l'adresse hôte
+     *
      * @return l'adresse hôte
      */
     public String getHost() {
@@ -106,6 +112,7 @@ public class NetworkSender {
 
     /**
      * Permet de récupérer le socket
+     *
      * @return le socket
      */
     public DatagramChannel getChannel() {
@@ -135,6 +142,7 @@ public class NetworkSender {
 
     /**
      * Getter pour la thread sender
+     *
      * @return la thread
      */
     public Thread getSender() {
@@ -143,6 +151,7 @@ public class NetworkSender {
 
     /**
      * getter de la blocking queue
+     *
      * @return la blocking queue
      */
     public ArrayBlockingQueue getQueue() {
