@@ -19,14 +19,14 @@ import static org.junit.Assert.*;
  * Created by you on 07/02/2017.
  */
 public class FileManagerTest {
-/*
-    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/rawInput.csv";
-    private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/virtualizedOutput.csv";
-    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/File/resultsOutput.csv";
+
+    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
+    private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
+    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
     private final static FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
 
     @BeforeClass
-    public void prepare() throws Exception {
+    public static void prepare() throws Exception {
         File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);
@@ -68,9 +68,9 @@ public class FileManagerTest {
         assertEquals(v.getXacc(),5);
         assertEquals(v.getYacc(),6);
         assertEquals(v.getZacc(),7);
-        assertEquals(v.getXgyro(),8);
-        assertEquals(v.getYgyro(),9);
-        assertEquals(v.getZgyro(),10);
+        assertEquals(v.getRoll(),8.0,0.1);
+        assertEquals(v.getPitch(),9.0,0.1);
+        assertEquals(v.getYaw(),10.0,0.1);
         assertEquals(v.getXmag(),11);
         assertEquals(v.getYmag(),12);
         assertEquals(v.getZmag(),13);
@@ -107,7 +107,7 @@ public class FileManagerTest {
         fm.appendResults(re, m, 14);
     }
 
-    @AfterClass
+    /*@AfterClass
     public static void delete() {
         File ref = new File(refFile);
         ref.delete();
