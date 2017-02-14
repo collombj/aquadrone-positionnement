@@ -2,10 +2,10 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.geo.GPSCoordinate;
-import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -17,20 +17,14 @@ import java.util.List;
  */
 public class Position {
 
-    private List<MeasureEntity> entities;
+    private List<MeasureEntity> entities = new ArrayList<>();
     private long timestamp;
-
-    // Positions
     private GPSCoordinate positionBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
-
-    // Sensors
-    private GPS gps;
     private IMU imu;
     private Pressure pressure;
-
-    private List<Measure> measures;
+    private List<Measure> measures = new ArrayList<>();
 
 
     /**
@@ -45,7 +39,7 @@ public class Position {
         this.timestamp = timestamp;
         this.positionBrut = positionBrut;
         this.direction = direction;
-        this.imu=imu;
+        this.imu = imu;
     }
 
     /**
@@ -165,7 +159,7 @@ public class Position {
                 for (Measure measure : measures) {
                     //TODO attendre merge pour supprimer id et la position recalculé
                     //TODO lien vers le entity information
-                    entities.add(new MeasureEntity(0, timestamp, positionBrut, positionRecalculated,
+                    entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
                             imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
                             getxRotationp(), getyRotation(), getzRotation(), -1, measure.getName()));
 
@@ -203,6 +197,7 @@ public class Position {
         this.gps = gps;
     }
 
+    public void calculate(Position position, GPSCoordinate velocity) {
     /**
      * Ajoute une mesure à cette position.
      *

@@ -1,80 +1,100 @@
 package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.DiveEntity;
+import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.geo.GeoMaths;
+import fr.onema.lib.worker.DatabaseWorker;
 
-import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
+
+import static fr.onema.lib.drone.Dive.State.ON;
+import static fr.onema.lib.drone.Dive.State.RECORD;
 
 /**
- * Created by loics on 10/02/2017.
- *
- * @author loics
- * @since 10-02-2017
+ * Created by strock on 09/02/2017.
  */
 public class Dive {
 
-    private final DiveEntity diveEntity;
-    private int localStartTime;
-    private int subStartTime;
-    private int subEndTime;
-    private int actionNumber;
+    private DiveEntity diveEntity;
+
     private State state;
-    private boolean isDiveOver;
-    private Position lastPosition;
+    private int numberOfmovement;
 
-    private Dive(DiveEntity diveEntity, int localStartTime, int subStartTime, int subEndTime, int actionNumber, State state, boolean isDiveOver, Position lastPosition) {
-        this.diveEntity = diveEntity;
-        this.localStartTime = localStartTime;
-        this.subStartTime = subStartTime;
-        this.subEndTime = subEndTime;
-        this.actionNumber = actionNumber;
-        this.state = state;
-        this.isDiveOver = isDiveOver;
-        this.lastPosition = lastPosition;
-    }
+    private GPSCoordinate lastVitesse;
 
-    public Dive construct(long startTime) {
-        DiveEntity diveEntity = new DiveEntity(startTime, startTime);
-        Position lastPosition = new Position();
-        return new Dive(
-                diveEntity,
-                (int) startTime,
-                0,
-                0,
-                0,
-                State.OFF,
-                false,
-                lastPosition
-        );
-    }
+    private final List<Position> positions = new ArrayList<>();
+    private List<MeasureEntity> measures = new ArrayList<>();
+    private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
 
-    public void add(Position currentPos) {
-        this.lastPosition.calculate(currentPos);
-    }
-
-    public void endDive() {
-        this.isDiveOver = true;
-        this.state = State.OFF;
-    }
-
-    public void startRecording(Timestamp timestamp) {
-        this.state = State.RECORD;
-    }
-
-    public void stopRecording(Timestamp timestamp) {
-        this.state = State.ON;
-    }
-
-    public void newMovement() {
-
-    }
-
-    public boolean isInitiated() {
-        return
-    }
-
-    private enum State {
+    /**
+     * Les différents états de la plongée
+     */
+    enum State {
         OFF,
         ON,
         RECORD
     }
+
+    /**
+     * @param timestamp
+     */
+    public Dive(long timestamp) {
+        diveEntity = new DiveEntity();
+        dbWorker.newDive(diveEntity);
+        numberOfmovement = 0;
+        state = ON;
+    }
+
+    /**
+     * @param position
+     */
+    public void add(Position position) {
+        //faire le calcul de position
+        position.calculate(positions.get(positions.size()), lastVitesse);
+        for (MeasureEntity measure : position.getMeasureEntities()) {
+            dbWorker.insertMeasure(measure, diveEntity.getId(), 0);//FIXME changer l id de la mesure
+            measures.add(measure);
+        }
+        positions.add(position);
+    }
+
+
+    /**
+     *
+     */
+    public void endDive() {
+        if (state == RECORD)
+            dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
+        measures = GeoMaths.recalculatePosition(measures);
+        for (MeasureEntity measure : measures) {
+            dbWorker.updatePosition(measure.getId(),measure.getLocationCorrected(),measure.getPrecisionCm());
+        }
+    }
+
+    /**
+     * * @param timestamp
+     */
+    public void startRecording(long timestamp) {
+        state = RECORD;
+        dbWorker.startRecording(timestamp, diveEntity.getId());
+    }
+
+    /**
+     * @param timestamp
+     */
+    public void stopRecording(long timestamp) {
+        state = ON;
+        dbWorker.stopRecording(timestamp, diveEntity.getId());
+    }
+
+    /**
+     *
+     */
+    public void newMovement() {
+        numberOfmovement++;
+    }
+
+
 }

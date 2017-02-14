@@ -26,7 +26,7 @@ public class ReferenceEntryTest {
     @Test
     public void getCSVHeaderTest() {
         ReferenceEntry ref = new ReferenceEntry(1, 1,1,1, 1, (short)1 );
-        assertEquals("timestamp,Latitude,Longitude,Altitude,Direction,Temperature", ref.getCSVHeader());
+        assertEquals("timestamp,latitude,longitude,altitude,direction,temperature", ref.getCSVHeader());
     }
 
 }
