@@ -1,22 +1,60 @@
 package fr.onema.app.view;
 
+import fr.onema.app.model.CheckDependenciesAvailabilityTask;
+import fr.onema.lib.tools.Configuration;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
+import java.util.Timer;
 
 public class RootLayoutController {
+    private final Configuration c;
+
     @FXML
     private TitledPane sensorsTitledPane;
 
     @FXML
     private Button configurationButton;
+
+    @FXML
+    private Label dbLabel;
+
+    @FXML
+    private Label mavlinkLabel;
+
+    public RootLayoutController(Configuration c) {
+        this.c = Objects.requireNonNull(c);
+    }
+
+    public Configuration getConfiguration() {
+        return c;
+    }
+
+    @FXML
+    private void initialize() {
+        Timer timer = new Timer(true);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this), 0, 30_000);
+    }
+
+    @FXML
+    public void updateDatabaseColor(Color c) {
+        dbLabel.setTextFill(c);
+    }
+
+    @FXML
+    public void updateMavlinkColor(Color c) {
+        mavlinkLabel.setTextFill(c);
+    }
 
     @FXML
     private void resizeParent() {
@@ -44,4 +82,6 @@ public class RootLayoutController {
             stage.close();
         }
     }
+
+
 }
