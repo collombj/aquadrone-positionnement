@@ -2,7 +2,7 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
-import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.worker.DatabaseWorker;
 
@@ -22,11 +22,13 @@ public class Dive {
     private DiveEntity diveEntity;
     private State state;
     private int numberOfmovement;
-    private GPSCoordinate lastVitesse;
+    private CartesianVelocity lastVitesse;
     private List<MeasureEntity> measures = new ArrayList<>();
 
     /**
-     * @param timestamp
+     * Crée une nouvelle Dive
+     *
+     * @param timestamp l'heure de début de la plongée
      */
     public Dive(long timestamp) {
         diveEntity = new DiveEntity();
@@ -36,11 +38,17 @@ public class Dive {
     }
 
     /**
-     * @param position
+     * Ajoute une position à la plongée
+     *
+     * @param position une position
      */
     public void add(Position position) {
-        //faire le calcul de position
-        position.calculate(positions.get(positions.size()), lastVitesse);
+        // si c'est le premier point
+        if (positions.isEmpty()) {
+            position.calculate(null, lastVitesse);
+        } else {//si ce n'est pas le premier point
+            position.calculate(positions.get(positions.size() - 1), lastVitesse);
+        }
         for (MeasureEntity measure : position.getMeasureEntities()) {
             dbWorker.insertMeasure(measure, diveEntity.getId(), 1);//FIXME changer l id de la mesure
             measures.add(measure);
@@ -49,19 +57,20 @@ public class Dive {
     }
 
     /**
-     *
+     * Termine la plongée
      */
     public void endDive() {
         if (state == RECORD)
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
         measures = GeoMaths.recalculatePosition(measures);
         for (MeasureEntity measure : measures) {
-            dbWorker.updatePosition(measure.getId(),measure.getLocationCorrected(),measure.getPrecisionCm());
+            dbWorker.updatePosition(measure.getId(), measure.getLocationCorrected(), measure.getPrecisionCm());
         }
     }
 
     /**
-     * * @param timestamp
+     * Termine l enregistrement de la plongée
+     * * @param timestamp le debut de l enregistrement
      */
     public void startRecording(long timestamp) {
         state = RECORD;
@@ -69,7 +78,8 @@ public class Dive {
     }
 
     /**
-     * @param timestamp
+     * Comment l'enregistrement de la plongée
+     * @param timestamp la fin de l'enregistrement
      */
     public void stopRecording(long timestamp) {
         state = ON;
@@ -77,10 +87,18 @@ public class Dive {
     }
 
     /**
-     *
+     * Incremente le nombre de mouvements effectués
      */
     public void newMovement() {
         numberOfmovement++;
+    }
+
+
+    /**
+     * @return le nombre de mouvements
+     */
+    public int getNumberOfmovement() {
+        return numberOfmovement;
     }
 
     /**
@@ -91,6 +109,4 @@ public class Dive {
         ON,
         RECORD
     }
-
-
 }
