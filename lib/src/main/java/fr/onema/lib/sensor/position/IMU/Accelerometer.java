@@ -9,7 +9,7 @@ public class Accelerometer {
     private final int zAcceleration;
 
     /**
-     *  @param xAcceleration coordonnée acceleration x
+     * @param xAcceleration coordonnée acceleration x
      * @param yAcceleration coordonnée acceleration y
      * @param zAcceleration coordonnée acceleration z
      */

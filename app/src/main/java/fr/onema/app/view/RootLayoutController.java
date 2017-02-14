@@ -71,7 +71,7 @@ public class RootLayoutController {
      */
     @FXML
     private void resizeParent() {
-        Stage root = (Stage)sensorsTitledPane.getScene().getWindow();
+        Stage root = (Stage) sensorsTitledPane.getScene().getWindow();
         root.sizeToScene();
         root.show();
     }
@@ -84,7 +84,7 @@ public class RootLayoutController {
     @FXML
     private void accessConfiguration(ActionEvent event) throws IOException {
         Stage stage;
-        Stage root = (Stage)configurationButton.getScene().getWindow();
+        Stage root = (Stage) configurationButton.getScene().getWindow();
 
         if (event.getSource() == configurationButton) {
             stage = new Stage();

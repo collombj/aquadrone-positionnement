@@ -1,7 +1,6 @@
 package fr.onema.lib.geo;
 
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertEquals;

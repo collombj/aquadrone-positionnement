@@ -14,9 +14,9 @@ import javafx.util.StringConverter;
  * Controlleur associé à la vue ConfigurationLayout.fxml
  */
 public class ConfigurationController {
-    private static double horizontalDefaultValue = 0;
-    private static double verticalDefaultValue = 0;
-    private static double depthDefaultValue = 0;
+    private static final double HORIZONTAL_DEFAULT_VALUE = 0;
+    private static final double VERTICAL_DEFAULT_VALUE = 0;
+    private static final double DEPTH_DEFAULT_VALUE = 0;
 
     @FXML
     private Slider verticalSlider;
@@ -40,58 +40,84 @@ public class ConfigurationController {
      * Méthode permettant l'initialisation des valeurs dans les spinners
      */
     @FXML
-    private void initialize() {
+    public void initialize() {
         insertSpinnerValues();
     }
 
     @FXML
     private void insertSpinnerValues() {
-        horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), horizontalDefaultValue, horizontalSlider.getMinorTickCount()));
-        verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), verticalDefaultValue, verticalSlider.getMinorTickCount()));
-        depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), depthDefaultValue, depthSlider.getMinorTickCount()));
+        horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), HORIZONTAL_DEFAULT_VALUE, horizontalSlider.getMinorTickCount()));
+        verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), VERTICAL_DEFAULT_VALUE, verticalSlider.getMinorTickCount()));
+        depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), DEPTH_DEFAULT_VALUE, depthSlider.getMinorTickCount()));
     }
 
     /***
      * Permet de remettre à 0 les Spinners et Sliders de la vue de configuration
      */
     @FXML
-    private void resetConfigurationLayout() {
-        horizontalSlider.adjustValue(horizontalDefaultValue);
-        verticalSlider.adjustValue(verticalDefaultValue);
-        depthSlider.adjustValue(depthDefaultValue);
-        updateSpinner(horizontalSpinner, horizontalDefaultValue);
-        updateSpinner(verticalSpinner, verticalDefaultValue);
-        updateSpinner(depthSpinner, depthDefaultValue);
+    public void resetConfigurationLayout() {
+        horizontalSlider.adjustValue(HORIZONTAL_DEFAULT_VALUE);
+        verticalSlider.adjustValue(VERTICAL_DEFAULT_VALUE);
+        depthSlider.adjustValue(DEPTH_DEFAULT_VALUE);
+        updateSpinner(horizontalSpinner, HORIZONTAL_DEFAULT_VALUE);
+        updateSpinner(verticalSpinner, VERTICAL_DEFAULT_VALUE);
+        updateSpinner(depthSpinner, DEPTH_DEFAULT_VALUE);
     }
 
     /***
-     * Binding des valuers Spinner -> Slider
+     * Binding des valuers Spinner -> Slider horizontal
      */
     @FXML
-    private void updateSliderFromSpinner() {
+    private void updateSliderFromSpinnerH() {
         horizontalSlider.adjustValue(horizontalSpinner.getValue());
+    }
+
+    /***
+     * Binding des valuers Spinner -> Slider vertical
+     */
+    private void updateSliderFromSpinnerV() {
         verticalSlider.adjustValue(verticalSpinner.getValue());
+    }
+
+    /***
+     * Binding des valuers Spinner -> Slider depth
+     */
+    private void updateSliderFromSpinnerD() {
         depthSlider.adjustValue(depthSpinner.getValue());
     }
 
     /***
-     * Binding des valuers Slider -> Spinner
+     * Binding des valuers Slider -> Spinner horizontal
      */
     @FXML
-    private void updateSpinnerFromSlider() {
+    private void updateSpinnerFromSliderH() {
         updateSpinner(horizontalSpinner, horizontalSlider.getValue());
+    }
+
+    /***
+     * Binding des valuers Slider -> Spinner vertical
+     */
+    @FXML
+    private void updateSpinnerFromSliderV() {
         updateSpinner(verticalSpinner, verticalSlider.getValue());
+    }
+
+    /***
+     * Binding des valuers Slider -> Spinner depth
+     */
+    @FXML
+    private void updateSpinnerFromSliderD() {
         updateSpinner(depthSpinner, depthSlider.getValue());
     }
 
-    private void updateSpinner(Spinner sp, Double d) {
+    private void updateSpinner(Spinner<Double> sp, Double d) {
         SpinnerValueFactory<Double> valueFactory = sp.getValueFactory();
         if (valueFactory != null) {
             StringConverter<Double> converter = valueFactory.getConverter();
             if (converter != null) {
-                try{
+                try {
                     valueFactory.setValue(d);
-                } catch(NumberFormatException nfe){
+                } catch (NumberFormatException nfe) {
                     sp.getEditor().setText(converter.toString(valueFactory.getValue()));
                 }
             }
@@ -103,9 +129,11 @@ public class ConfigurationController {
      */
     @FXML
     private void applyConfigurationOnNextDive() {
-        // TODO : do something with values
+        /* TODO : do something with values
         double horizontalOffset = horizontalSpinner.getValue();
         double verticalOffset = verticalSpinner.getValue();
         double depthOffset = depthSpinner.getValue();
+         */
+
     }
 }

@@ -5,5 +5,7 @@ package fr.onema.simulator;
  */
 public class ComparisonException extends Exception {
 
-    public ComparisonException(Throwable cause) { super(cause); }
+    public ComparisonException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -2,17 +2,12 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
-import org.mavlink.messages.MAVLinkMessage;
 
 import java.io.IOException;
-import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.net.ServerSocket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class NetworkSenderTest {
 

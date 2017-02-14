@@ -1,12 +1,9 @@
 package fr.onema.simulator;
 
 import fr.onema.lib.file.FileManager;
-import fr.onema.lib.virtualizer.entry.ReferenceEntry;
-import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.logging.Level;
 
 /**
@@ -102,7 +99,7 @@ public class Main {
      * @param command paramètres saisie
      * @param options liste des options à utiliser pour les paramètres saisies
      */
-    private static void action(CommandLine command, Options options) {
+    public static void action(CommandLine command, Options options) {
         // Génération des CSVs pour l'utilisation du simulateur
         if (command.hasOption(GENERATION_ARGUMENT)) {
             generationAction(command.getOptionValues(GENERATION_ARGUMENT));
@@ -188,7 +185,8 @@ public class Main {
             Generator g = new Generator(referenceFilePath, virtualizedFilePath);
             g.convert();
         } catch (IOException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Problème concernant les fichiers d'entrées");
+            // TODO : handle exception
+            // FileManager.LOGGER.log(Level.SEVERE, "Problème concernant les fichiers d'entrées");
         }
     }
 
@@ -197,7 +195,7 @@ public class Main {
      *
      * @return Options instanciées
      */
-    private static Options initOptions() {
+    public static Options initOptions() {
         Option generatorOption = Option.builder(GENERATION_ARGUMENT_SHORT)
                 .longOpt(GENERATION_ARGUMENT)
                 .argName(GENERATION_ARGUMENT)

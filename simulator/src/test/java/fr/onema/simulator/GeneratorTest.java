@@ -3,7 +3,6 @@ package fr.onema.simulator;
 import fr.onema.lib.file.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -11,8 +10,6 @@ import org.mavlink.messages.ardupilotmega.msg_global_position_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by you on 13/02/2017.
@@ -46,17 +43,17 @@ public class GeneratorTest {
         fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
     }
 
-    @Test
-    public void convert() throws Exception {
-        Generator g = new Generator(refFile, virtualizedFile);
-        g.convert();
-    }
-
     @AfterClass
     public static void delete() {
         File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);
         v.delete();
+    }
+
+    @Test
+    public void convert() throws Exception {
+        Generator g = new Generator(refFile, virtualizedFile);
+        g.convert();
     }
 }

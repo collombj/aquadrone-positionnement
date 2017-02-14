@@ -1,7 +1,6 @@
 package fr.onema.lib.file;
 
 import fr.onema.lib.database.entity.MeasureEntity;
-import fr.onema.lib.drone.Measure;
 import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
@@ -9,7 +8,9 @@ import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -27,14 +28,13 @@ import java.util.stream.Stream;
  * Classe utilitaire permettant la gestion des CSV brut et modifiés de données MavLink
  */
 public class FileManager {
+    public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitute,corrected.longitude,corrected.altitude," +
+            "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
+            "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
     private final String virtualizedOutputFilePath;
     private final String resultsOutputFilePath;
-    private final String resultsCSVHeader = "timestamp,corrected.latitute,corrected.longitude,corrected.altitude," +
-            "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
-            "difference.absolute,precision,margin,margin.error";
-
-    public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
 
     /***
      * Constructeur du FileManager
@@ -87,7 +87,7 @@ public class FileManager {
     }
 
     private int getLineNumber(File f) throws IOException {
-        return (int)Files.lines(Paths.get(f.getPath())).count();
+        return (int) Files.lines(Paths.get(f.getPath())).count();
     }
 
     /***
@@ -97,8 +97,9 @@ public class FileManager {
      */
     public void appendRaw(GPS gps, Temperature temp) throws IOException {
         File f = new File(rawInputFilePath);
-        if (!f.exists()) {
-            f.createNewFile();
+        if (!f.exists() && f.createNewFile()) {
+            String out = "Écriture du fichier de référence : " + rawInputFilePath;
+            LOGGER.log(Level.FINE, out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -118,8 +119,9 @@ public class FileManager {
      */
     public void appendVirtualized(VirtualizerEntry ve) throws IOException {
         File f = new File(virtualizedOutputFilePath);
-        if (!f.exists()) {
-            f.createNewFile();
+        if (!f.exists() && f.createNewFile()) {
+            String out = "Écriture du fichier de données virtualisées : " + virtualizedOutputFilePath;
+            LOGGER.log(Level.FINE, out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -137,9 +139,12 @@ public class FileManager {
      */
     public void openFileForResults() throws IOException {
         File f = new File(resultsOutputFilePath);
-        f.delete();
+        if (f.delete()) {
+            String out = "Fichier précédent de résultats écrasé : " + resultsOutputFilePath;
+            LOGGER.log(Level.FINE, out);
+        }
         try (FileWriter fw = new FileWriter(f, false)) {
-            fw.write(resultsCSVHeader);
+            fw.write(RESULTS_CSV_HEADER);
             fw.close();
         } catch (IOException e) {
             throw e;
@@ -155,13 +160,13 @@ public class FileManager {
     public void appendResults(ReferenceEntry re, MeasureEntity m, double margin) throws IOException {
         File f = new File(resultsOutputFilePath);
         try (FileWriter fw = new FileWriter(f, true)) {
-            CartesianCoordinate ref = GeoMaths.computeXYZfromLatLonAlt(re.getLat(),re.getLon(),re.getAlt());
+            CartesianCoordinate ref = GeoMaths.computeXYZfromLatLonAlt(re.getLat(), re.getLon(), re.getAlt());
             CartesianCoordinate adjusted = GeoMaths.computeXYZfromLatLonAlt(m.getLocationCorrected().lat, m.getLocationCorrected().lon, m.getLocationCorrected().alt);
             double diffX = ref.x - adjusted.x;
             double diffY = ref.y - adjusted.y;
             double diffZ = ref.z - adjusted.z;
             double diffAbsolute = GeoMaths.cartesianDistance(ref, adjusted);
-            boolean error = diffAbsolute > margin ? true : false;
+            boolean error = diffAbsolute > margin;
             fw.write("\n" + re.getTimestamp() + "," + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon
                     + "," + m.getLocationCorrected().alt + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt()
                     + "," + re.getDirection() + "," + re.getTemperature() + "," + diffX + "," + diffY + "," + diffZ
