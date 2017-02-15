@@ -1,9 +1,12 @@
 package fr.onema.app.view;
 
+import fr.onema.app.model.GraphicUtils;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
 /**
@@ -14,9 +17,7 @@ import javafx.util.StringConverter;
  * Controlleur associé à la vue ConfigurationLayout.fxml
  */
 public class ConfigurationController {
-    private static final double HORIZONTAL_DEFAULT_VALUE = 0;
-    private static final double VERTICAL_DEFAULT_VALUE = 0;
-    private static final double DEPTH_DEFAULT_VALUE = 0;
+    private RootLayoutController parent;
 
     @FXML
     private Slider verticalSlider;
@@ -41,14 +42,21 @@ public class ConfigurationController {
      */
     @FXML
     public void initialize() {
-        insertSpinnerValues();
+
+    }
+
+    public void init(RootLayoutController parent) {
+        this.parent = parent;
     }
 
     @FXML
-    private void insertSpinnerValues() {
-        horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), HORIZONTAL_DEFAULT_VALUE, horizontalSlider.getMinorTickCount()));
-        verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), VERTICAL_DEFAULT_VALUE, verticalSlider.getMinorTickCount()));
-        depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), DEPTH_DEFAULT_VALUE, depthSlider.getMinorTickCount()));
+    public void insertSpinnerValues(double h, double v, double d) {
+        horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), h, horizontalSlider.getMinorTickCount()));
+        verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), v, verticalSlider.getMinorTickCount()));
+        depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), d, depthSlider.getMinorTickCount()));
+        horizontalSlider.adjustValue(horizontalSpinner.getValue());
+        verticalSlider.adjustValue(verticalSpinner.getValue());
+        depthSlider.adjustValue(depthSpinner.getValue());
     }
 
     /***
@@ -56,12 +64,12 @@ public class ConfigurationController {
      */
     @FXML
     public void resetConfigurationLayout() {
-        horizontalSlider.adjustValue(HORIZONTAL_DEFAULT_VALUE);
-        verticalSlider.adjustValue(VERTICAL_DEFAULT_VALUE);
-        depthSlider.adjustValue(DEPTH_DEFAULT_VALUE);
-        updateSpinner(horizontalSpinner, HORIZONTAL_DEFAULT_VALUE);
-        updateSpinner(verticalSpinner, VERTICAL_DEFAULT_VALUE);
-        updateSpinner(depthSpinner, DEPTH_DEFAULT_VALUE);
+        horizontalSlider.adjustValue(GraphicUtils.HORIZONTAL_DEFAULT_VALUE);
+        verticalSlider.adjustValue(GraphicUtils.VERTICAL_DEFAULT_VALUE);
+        depthSlider.adjustValue(GraphicUtils.DEPTH_DEFAULT_VALUE);
+        updateSpinner(horizontalSpinner, GraphicUtils.HORIZONTAL_DEFAULT_VALUE);
+        updateSpinner(verticalSpinner, GraphicUtils.VERTICAL_DEFAULT_VALUE);
+        updateSpinner(depthSpinner, GraphicUtils.DEPTH_DEFAULT_VALUE);
     }
 
     /***
@@ -70,6 +78,7 @@ public class ConfigurationController {
     @FXML
     private void updateSliderFromSpinnerH() {
         horizontalSlider.adjustValue(horizontalSpinner.getValue());
+        parent.setHorizontalOffset(horizontalSpinner.getValue());
     }
 
     /***
@@ -78,6 +87,7 @@ public class ConfigurationController {
     @FXML
     private void updateSliderFromSpinnerV() {
         verticalSlider.adjustValue(verticalSpinner.getValue());
+        parent.setVerticalOffset(verticalSpinner.getValue());
     }
 
     /***
@@ -86,6 +96,7 @@ public class ConfigurationController {
     @FXML
     private void updateSliderFromSpinnerD() {
         depthSlider.adjustValue(depthSpinner.getValue());
+        parent.setDepthOffset(depthSpinner.getValue());
     }
 
     /***
@@ -94,6 +105,7 @@ public class ConfigurationController {
     @FXML
     private void updateSpinnerFromSliderH() {
         updateSpinner(horizontalSpinner, horizontalSlider.getValue());
+        parent.setHorizontalOffset(horizontalSpinner.getValue());
     }
 
     /***
@@ -102,6 +114,7 @@ public class ConfigurationController {
     @FXML
     private void updateSpinnerFromSliderV() {
         updateSpinner(verticalSpinner, verticalSlider.getValue());
+        parent.setVerticalOffset(verticalSpinner.getValue());
     }
 
     /***
@@ -110,6 +123,7 @@ public class ConfigurationController {
     @FXML
     private void updateSpinnerFromSliderD() {
         updateSpinner(depthSpinner, depthSlider.getValue());
+        parent.setDepthOffset(depthSpinner.getValue());
     }
 
     private void updateSpinner(Spinner<Double> sp, Double d) {
@@ -126,16 +140,18 @@ public class ConfigurationController {
         }
     }
 
+    @FXML
+    private Button applyButton;
+
     /***
      * Apply settings to the next dive operation
      */
     @FXML
     private void applyConfigurationOnNextDive() {
-        /* TODO : do something with values
-        double horizontalOffset = horizontalSpinner.getValue();
-        double verticalOffset = verticalSpinner.getValue();
-        double depthOffset = depthSpinner.getValue();
-         */
-
+        parent.setHorizontalOffset(horizontalSpinner.getValue());
+        parent.setVerticalOffset(verticalSpinner.getValue());
+        parent.setDepthOffset(depthSpinner.getValue());
+        Stage stage = (Stage) applyButton.getScene().getWindow();
+        stage.close();
     }
 }

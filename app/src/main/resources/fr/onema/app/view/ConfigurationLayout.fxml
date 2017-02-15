@@ -142,7 +142,7 @@
                 <HBox alignment="CENTER" maxHeight="35.0" minHeight="35.0" prefHeight="35.0">
                     <children>
                         <Button fx:id="resetButton" maxWidth="140.0" mnemonicParsing="false" onAction="#resetConfigurationLayout" prefWidth="140.0" text="Réinitialiser" />
-                        <Button mnemonicParsing="false" onAction="#applyConfigurationOnNextDive" text="Appliquer à la plongée suivante">
+                        <Button fx:id="applyButton" mnemonicParsing="false" onAction="#applyConfigurationOnNextDive" text="Appliquer à la plongée suivante">
                             <HBox.margin>
                                 <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </HBox.margin>

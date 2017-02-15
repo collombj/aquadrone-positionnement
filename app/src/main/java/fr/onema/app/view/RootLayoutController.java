@@ -6,9 +6,11 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
+import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -21,6 +23,9 @@ import java.util.Timer;
  * Controlleur associé à la vue RootLayout.fxml
  */
 public class RootLayoutController {
+    private double horizontalOffset = 0;
+    private double verticalOffset = 0;
+    private double depthOffset = 0;
     private final Configuration c;
 
     @FXML
@@ -88,15 +93,50 @@ public class RootLayoutController {
 
         if (event.getSource() == configurationButton) {
             stage = new Stage();
-            stage.setScene(new Scene(FXMLLoader.load(getClass().getResource("ConfigurationLayout.fxml"))));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ConfigurationLayout.fxml"));
+            Region region = loader.load();
+            Scene scene = new Scene(region);
             stage.setTitle("Configuration");
             stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setScene(scene);
+            stage.sizeToScene();
             stage.initOwner(root);
-            stage.resizableProperty().set(false);
+            stage.setAlwaysOnTop(true);
+            ConfigurationController controller = loader.getController();
+            controller.initialize();
+            controller.insertSpinnerValues(horizontalOffset, verticalOffset, depthOffset);
+            controller.init(this);
             stage.showAndWait();
         } else {
             stage = root;
             stage.close();
         }
+    }
+
+    public void setHorizontalOffset(double horizontalOffset) {
+        this.horizontalOffset = horizontalOffset;
+    }
+
+    public void setVerticalOffset(double verticalOffset) {
+        this.verticalOffset = verticalOffset;
+    }
+
+    public void setDepthOffset(double depthOffset) {
+        this.depthOffset = depthOffset;
+    }
+
+    @FXML
+    private void executeMeasures() {
+        // TODO : remove temporary implementation with startRecording()
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText(null);
+        alert.setContentText("horizontalOffset : " + horizontalOffset + "\n"
+                            + "verticalOffset : " + verticalOffset + "\n"
+                            + "depthOffset : " + depthOffset + "\n");
+        alert.showAndWait();
+        //
+
+        
     }
 }
