@@ -55,7 +55,7 @@ public class TestDatabaseWorker {
 
     @Test
     public void simulTraitement() throws Exception {
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
         assertTrue(dive.getId() == dive2.getId());
@@ -65,7 +65,6 @@ public class TestDatabaseWorker {
         assertFalse(entity.equals(entity2));
         assertTrue(entity.getId() == entity2.getId());
         assertTrue(entity2.getLocationCorrected().equals(correct));
-
     }
 
     @After

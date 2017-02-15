@@ -3,6 +3,7 @@ package fr.onema.app;
 import fr.onema.app.view.RootLayoutController;
 import fr.onema.lib.tools.Configuration;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -27,7 +28,7 @@ public class Main extends Application {
         this.primaryStage.setTitle("App");
         this.primaryStage.resizableProperty().set(false);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
-        fxmlLoader.setController(new RootLayoutController(Configuration.build("app/settings.properties")));
+        fxmlLoader.setController(new RootLayoutController(Configuration.build("settings.properties")));
         fxmlLoader.load();
         primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
         primaryStage.sizeToScene();

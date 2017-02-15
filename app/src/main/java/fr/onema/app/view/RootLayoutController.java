@@ -78,7 +78,7 @@ public class RootLayoutController {
 
     /***
      * Permet de faire apparaitre le popup de configuration
-     * @param event
+     * @param event Le contrôle ayant appelé la méthode
      * @throws IOException
      */
     @FXML

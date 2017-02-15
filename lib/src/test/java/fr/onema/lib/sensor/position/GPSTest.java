@@ -1,6 +1,7 @@
 package fr.onema.lib.sensor.position;
 
 import org.junit.Test;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -21,6 +22,15 @@ public class GPSTest {
         assertEquals(gps.getPosition().lat, 1, 0);
         assertEquals(gps.getPosition().lon, 2, 0);
         assertEquals(gps.getPosition().alt, 3, 0);
+    }
+
+    @Test
+    public void getDirection() throws Exception {
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.cog = 10;
+        GPS gps = GPS.build(msg);
+        assertNotNull(gps.getDirection());
+        assertEquals(10.0, gps.getDirection(),0);
     }
 
     @Test
