@@ -21,15 +21,11 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- * Created by you on 07/02/2017.
- */
-
-/***
  * Classe utilitaire permettant la gestion des CSV brut et modifiés de données MavLink
  */
 public class FileManager {
     public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
-    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitute,corrected.longitude,corrected.altitude," +
+    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude," +
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
@@ -79,9 +75,7 @@ public class FileManager {
     public List<VirtualizerEntry> readVirtualizedEntries() throws IOException {
         List<VirtualizerEntry> virts = new ArrayList<>();
         try (Stream<String> s = Files.lines(Paths.get(virtualizedOutputFilePath))) {
-            s.skip(1).forEach(e -> virts.add(Parser.parseVirtualizer(e)));
-        } catch (IOException e) {
-            throw e;
+            s.skip(1).filter(e -> !e.isEmpty()).forEach(e -> virts.add(Parser.parseVirtualizer(e)));
         }
         return virts;
     }
@@ -129,8 +123,6 @@ public class FileManager {
             }
             fw.write("\n" + ve.toCSV());
             fw.close();
-        } catch (IOException e) {
-            throw e;
         }
     }
 
@@ -175,5 +167,21 @@ public class FileManager {
         } catch (IOException e) {
             throw e;
         }
+    }
+
+    /**
+     * Méthode permettant d'obtenir une lecture reformattée du fichier de comparaison
+     *
+     * @param replacement Caractère remplacant "," [virgule] dans le csv d'entrée
+     * @return Le fichier de résultat dans une liste de ligne. Chaque élément est séparé par le caractère de remplacement spécifié.
+     * @throws IOException En cas d'erreur du à la manipulation du fichier
+     */
+    public List<String> getResults(String replacement) throws IOException {
+        List<String> results = new ArrayList<>();
+        try (Stream<String> s = Files.lines(Paths.get(resultsOutputFilePath))) {
+            s.filter(e -> !e.isEmpty()).forEach(e -> results.add(e.replaceAll(",", replacement)));
+        }
+
+        return results;
     }
 }
