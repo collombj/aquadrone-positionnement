@@ -2,6 +2,7 @@ package fr.onema.lib.database;
 
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.database.entity.MeasureInformationEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
 import org.junit.Before;
@@ -130,6 +131,15 @@ public class TestDatabaseDriver {
         driver.stopRecording(timestamp.getTime(), diveID);
         DiveEntity d2 = driver.getLastDive();
         assertTrue(d2.getEndTime() == timestamp.getTime());
+        driver.closeConnection();
+    }
+
+    @Test
+    public void getMeasureInfo() throws Exception {
+        driver.initAsWritable();
+        MeasureInformationEntity measure = driver.getMeasureInfo(1);
+        MeasureInformationEntity measure1 = driver.getMeasureInfoFromName("temperature");
+        assertTrue(measure.equals(measure1));
         driver.closeConnection();
     }
 
