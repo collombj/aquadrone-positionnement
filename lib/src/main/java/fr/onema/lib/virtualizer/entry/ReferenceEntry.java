@@ -4,27 +4,28 @@ package fr.onema.lib.virtualizer.entry;
 import fr.onema.lib.file.CSV;
 
 public class ReferenceEntry implements CSV {
+    public static final String HEADER = "timestamp,latitude,longitude,altitude,direction,temperature";
     private final long timestamp;
     private final int lat;
     private final int lon;
     private final int alt;
     private final float direction;
     private final short temperature;
-    public static final String HEADER = "timestamp,latitude,longitude,altitude,direction,temperature";
 
     /**
      * Le constructeur de classe, pour attribuer une valeur aux attributs
-     * @param timestamp timestamp de la mesure
-     * @param lat la latitude de notre point
-     * @param lon la longitude de notre point
-     * @param alt l'altitude de notre point
-     * @param direction la direction que prend le point
+     *
+     * @param timestamp   timestamp de la mesure
+     * @param lat         la latitude de notre point
+     * @param lon         la longitude de notre point
+     * @param alt         l'altitude de notre point
+     * @param direction   la direction que prend le point
      * @param temperature la température au niveau du point
      */
-    public ReferenceEntry(long timestamp, int lat, int lon, int alt, float direction, short temperature){
-        if(timestamp < 0 || direction < 0){
+    public ReferenceEntry(long timestamp, int lat, int lon, int alt, float direction, short temperature) {
+        if (timestamp < 0 || direction < 0) {
             throw new IllegalArgumentException("Negative value for 'timestamp' or 'direction'");
-        }else{
+        } else {
             this.timestamp = timestamp;
             this.direction = direction;
         }
@@ -36,6 +37,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * récupère le timestamp
+     *
      * @return timestamp
      */
     public long getTimestamp() {
@@ -44,6 +46,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * récupère la latidude
+     *
      * @return Lat
      */
     public int getLat() {
@@ -52,6 +55,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Récupère la longitude
+     *
      * @return Lon
      */
     public int getLon() {
@@ -60,6 +64,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Récupère l'altitude
+     *
      * @return Alt
      */
     public int getAlt() {
@@ -68,6 +73,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Récupère la direction
+     *
      * @return direction
      */
     public float getDirection() {
@@ -76,6 +82,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Récupère la température
+     *
      * @return temperature
      */
     public int getTemperature() {
@@ -97,6 +104,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Renvoi une string des champs au format CSV
+     *
      * @return la chaine de caractère CSV
      */
     @Override

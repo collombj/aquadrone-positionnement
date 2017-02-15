@@ -9,7 +9,6 @@ public class Compass {
     private final int zMagnetic;
 
     /**
-     *
      * @param xMagnetic coordonnée magnétisme x
      * @param yMagnetic coordonnée magnétisme y
      * @param zMagnetic coordonnée magnétisme z

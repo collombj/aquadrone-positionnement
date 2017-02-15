@@ -8,10 +8,9 @@ import java.util.Objects;
  * Cette classe représente une mesure réalisée au cours de la plongée pour la base de données
  */
 public class MeasureEntity {
-    private int id;
     private final long timestamp;
-    private final GPSCoordinate locationBrut;
-    private final GPSCoordinate locationCorrected;
+    private GPSCoordinate locationBrut;
+    private GPSCoordinate locationCorrected;
     private final int accelerationX;
     private final int accelerationY;
     private final int accelerationZ;
@@ -20,6 +19,7 @@ public class MeasureEntity {
     private final double yaw;
     private final int precisionCm;
     private final String measureValue;
+    private int id;
 
     /**
      * Constructeur
@@ -39,9 +39,9 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
-        Objects.requireNonNull(locationCorrected);
-        Objects.requireNonNull(measureValue);
+        //Objects.requireNonNull(locationBrut);
+        //Objects.requireNonNull(locationCorrected);
+        //Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
         this.locationCorrected = locationCorrected;
@@ -186,35 +186,42 @@ public class MeasureEntity {
         return measureValue;
     }
 
+
+    /**
+     * MEt a jour les coordonnées relevées
+     *
+     * @param locationBrut des coordonnées GPS
+     */
+    public void setLocationBrut(GPSCoordinate locationBrut) {
+        this.locationBrut = locationBrut;
+    }
+
+    /**
+     * Met a jour les coordonnées corrigées
+     *
+     * @param locationCorrected des coordonnées GPS
+     */
+    public void setLocationCorrected(GPSCoordinate locationCorrected) {
+        this.locationCorrected = locationCorrected;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         MeasureEntity that = (MeasureEntity) o;
 
-        if (id != that.id)
-            return false;
-        if (timestamp != that.timestamp)
-            return false;
-        if (accelerationX != that.accelerationX)
-            return false;
-        if (accelerationY != that.accelerationY)
-            return false;
-        if (accelerationZ != that.accelerationZ)
-            return false;
-        if (Double.compare(roll, that.roll) != 0)
-            return false;
-        if (Double.compare(pitch, that.pitch) != 0)
-            return false;
-        if (Double.compare(yaw, that.yaw) != 0)
-            return false;
-        if (precisionCm != that.precisionCm)
-            return false;
-        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null)
-            return false;
+        if (timestamp != that.timestamp) return false;
+        if (accelerationX != that.accelerationX) return false;
+        if (accelerationY != that.accelerationY) return false;
+        if (accelerationZ != that.accelerationZ) return false;
+        if (Double.compare(that.roll, roll) != 0) return false;
+        if (Double.compare(that.pitch, pitch) != 0) return false;
+        if (Double.compare(that.yaw, yaw) != 0) return false;
+        if (precisionCm != that.precisionCm) return false;
+        if (id != that.id) return false;
+        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
         if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
             return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
@@ -230,9 +237,9 @@ public class MeasureEntity {
         result = 31 * result + accelerationX;
         result = 31 * result + accelerationY;
         result = 31 * result + accelerationZ;
-        result = (int)(31 * result + roll);
-        result = (int)(31 * result + pitch);
-        result = (int)(31 * result + yaw);
+        result = (int) (31 * result + roll);
+        result = (int) (31 * result + pitch);
+        result = (int) (31 * result + yaw);
         result = 31 * result + precisionCm;
         result = 31 * result + (measureValue != null ? measureValue.hashCode() : 0);
         return result;

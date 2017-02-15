@@ -1,14 +1,12 @@
 package fr.onema.lib.virtualizer.entry;
 
-import fr.onema.lib.network.NetworkSender;
 import org.junit.Test;
+import org.mavlink.messages.ardupilotmega.msg_attitude;
 
 import java.io.IOException;
 
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Theo on 06/02/2017.
@@ -38,6 +36,10 @@ public class VirtualizerEntryTest {
         assertEquals((short)13, virtual.getZmag());
         assertEquals(14, virtual.getPressure(), 0);
         assertEquals((short)15, virtual.getTemperature());
+        msg_attitude msg = virtual.getAttitudeMessage();
+        assertEquals(8.0, msg.roll, 0);
+        assertEquals(9.0, msg.pitch, 0);
+        assertEquals(10.0, msg.yaw, 0);
     }
 
     @Test

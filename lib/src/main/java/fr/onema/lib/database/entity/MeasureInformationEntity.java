@@ -15,23 +15,19 @@ public class MeasureInformationEntity {
 
     /**
      * Le constructeur
-     * @param id
-     *  L'identifiant de la mesure en base
-     * @param name
-     *  Le nom de la mesure en base
-     * @param unit
-     *  L'unité de la mesure
-     * @param type
-     *  Le type de mesure
-     * @param display
-     *  L affichage de la mesure
+     *
+     * @param id      L'identifiant de la mesure en base
+     * @param name    Le nom de la mesure en base
+     * @param unit    L'unité de la mesure
+     * @param type    Le type de mesure
+     * @param display L affichage de la mesure
      */
     public MeasureInformationEntity(int id, String name, String unit, String type, String display) {
         Objects.requireNonNull(name);
         Objects.requireNonNull(unit);
         Objects.requireNonNull(type);
         Objects.requireNonNull(display);
-        if (id<=0)
+        if (id <= 0)
             throw new IllegalArgumentException("parameter id must be positive but has value " + id);
         this.id = id;
         this.name = name;

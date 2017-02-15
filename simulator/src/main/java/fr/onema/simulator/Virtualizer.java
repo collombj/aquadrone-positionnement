@@ -28,6 +28,7 @@ import java.util.logging.Logger;
  */
 
 public class Virtualizer {
+    private static final Logger LOGGER = Logger.getLogger(Virtualizer.class.getName());
     private FileManager fileManager;
     private int speed;
     private String simulationName;
@@ -35,8 +36,6 @@ public class Virtualizer {
     private String host;
     private long start;
     private long stop;
-
-    private static final Logger LOGGER = Logger.getLogger(Virtualizer.class.getName());
 
     /**
      * Constructeur qui initialise un FileManager, un entier de vitesse et un nom de simulation
@@ -48,9 +47,9 @@ public class Virtualizer {
      * @param port           Port sur lequel on se connecte à l'hôte
      */
     public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port) {
-        if(speed < 1 || port < 1){
+        if (speed < 1 || port < 1) {
             throw new IllegalArgumentException("Speed and port cannot be negative");
-        }else{
+        } else {
             this.port = port;
             this.speed = speed;
         }
@@ -69,10 +68,10 @@ public class Virtualizer {
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
         entries.forEach(x -> {
-            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), 1000/speed, TimeUnit.MILLISECONDS);
+            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), 1000 / speed, TimeUnit.MILLISECONDS);
             try {
                 scheduled.get();
-            } catch (InterruptedException |ExecutionException e) {
+            } catch (InterruptedException | ExecutionException e) {
                 LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
             }
         });
@@ -100,16 +99,16 @@ public class Virtualizer {
             MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
             DiveEntity dive = repository.getLastDive();
             List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
-            int minimum = Math.min(listMeasures.size(),listRefEntry.size());
-            for(int i = 0; i < minimum;i++){
+            int minimum = Math.min(listMeasures.size(), listRefEntry.size());
+            for (int i = 0; i < minimum; i++) {
                 sendMessage(fm, listRefEntry.get(i), listMeasures.get(i), errorAllowed);
             }
-        } catch (IOException | SQLException e) {
+        } catch (Exception e) {
             throw new ComparisonException(e);
         }
     }
 
-    private void sendMessage(FileManager fm, ReferenceEntry ref, MeasureEntity measure, int errVal) {
+    private void sendMessage(FileManager fm, ReferenceEntry ref, MeasureEntity measure, int errVal) throws IOException {
         try {
             if (ref.getTimestamp() == measure.getTimestamp()) {
                 int realLat = ref.getLat();
@@ -120,13 +119,14 @@ public class Virtualizer {
                 double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
 
                 if (distance > errVal) {
-                    fm.appendResults(ref,measure,errVal);
+                    fm.appendResults(ref, measure, errVal);
                 }
             } else {
                 fm.appendResults(ref, measure, errVal);
             }
-        }catch(IOException e){
+        } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
+            throw e;
         }
     }
 

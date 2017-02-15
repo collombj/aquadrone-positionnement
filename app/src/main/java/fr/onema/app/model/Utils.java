@@ -13,18 +13,23 @@ import java.util.Objects;
  * Classe permettant l'accès à des méthodes utilitaires propres à l'application graphique
  */
 public class Utils {
+
+    private Utils() {
+    }
+
     /***
      * Permet de vérifier l'état de la base de donnée Postgres
      * @param c Le fichier de configuration contenant les informations de connexion
      * @return L'état de la base
      */
-  public static boolean checkPostgresAvailability(Configuration c) {
-      Objects.requireNonNull(c);
+    public static boolean checkPostgresAvailability(Configuration c) {
+        Objects.requireNonNull(c);
         try {
             DatabaseDriver dd = DatabaseDriver.build(c);
             dd.initAsReadable();
             dd.closeConnection();
         } catch (Exception e) {
+            // FileManager.LOGGER.log(Level.FINE, e.getMessage());
             return false;
         }
         return true;
