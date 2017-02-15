@@ -3,6 +3,7 @@ package fr.onema.simulator;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -71,20 +72,44 @@ public class MissingPointsGenerator {
      * liste de points
      * @param filePath chemin du fichier CSV d'entrée
      * @return un objet MissingPointsGenerator
+     * @throws IOException Quand une erreur se produit
      */
-    public static MissingPointsGenerator build(String filePath){
+    public static MissingPointsGenerator build(String filePath)throws IOException{
         Objects.requireNonNull(filePath);
+        if ("".equals(filePath)){
+            throw new IllegalArgumentException("Path was empty");
+        }
         MissingPointsGenerator generator = new MissingPointsGenerator(filePath);
         generator.retrieveLines();
         generator.retrieveInformationsFromLines();
         return generator;
     }
 
-    private void retrieveLines(){
+    /**
+     * Builder de la classe. Il s'occupe d'instancier un générateur de points manquants, de récupérer les lignes
+     * du fichier passé en argument dans une liste et d'en extraire les informations présentes pour faire une
+     * liste de points
+     * @param file fichier CSV d'entrée
+     * @return un objet MissingPointsGenerator
+     * @throws IOException Problème lors de la lecture du fichier (Pas de fichier, problème lors de la lecture
+     * d'une ligne...)
+     */
+    public static MissingPointsGenerator build(File file)throws IOException{
+        Objects.requireNonNull(file);
+        if ("".equals(file.getPath())){
+            throw new IllegalArgumentException("File path was empty");
+        }
+        MissingPointsGenerator generator = new MissingPointsGenerator(file.getPath());
+        generator.retrieveLines();
+        generator.retrieveInformationsFromLines();
+        return generator;
+    }
+
+    private void retrieveLines() throws IOException {
         try (Stream<String> s = Files.lines(Paths.get(csvFilePath))) {
             s.skip(1).forEach(entries::add);
         }catch (IOException ioe){
-            LOGGER.log(Level.SEVERE,"An error occurred while adding file lines in the list");
+            throw new IOException("An error occurred while adding file lines in the list");
         }
     }
 
@@ -94,10 +119,10 @@ public class MissingPointsGenerator {
             String[] members = entry.split(",");
             if(members.length == REQUIRED_LENGTH) {
                 long timestamp = Long.parseLong(members[0]);
-                long lon = Long.parseLong(members[1]);//X
-                long lat = Long.parseLong(members[2]);//Y
-                long alt = Long.parseLong(members[3]);//Z
-                float measure = Float.parseFloat(members[4]);
+                long lon = Long.parseLong(members[1].replace(".",","));//X
+                long lat = Long.parseLong(members[2].replace(".",","));//Y
+                long alt = Long.parseLong(members[3].replace(".",","));//Z
+                float measure = Float.parseFloat(members[4].replace(".",","));
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, timestamp);
                 pointsInput.add(point);
             } else {
@@ -109,9 +134,10 @@ public class MissingPointsGenerator {
 
     /**
      * Crée et remplit le fichier de sortie, qui contient tous les points du fichiers de départ,
-     * plus les points générés dans le builder
+     * plus les points générés dans le builder. Le path du fichier est par défaut
+     * @throws IOException Quand il y a une erreur lors de l'écriture dans le fichier
      */
-    public void generateOutput(){
+    public void generateOutput() throws IOException {
         Objects.requireNonNull(csvFilePath);
         String stringPath = "temp.csv";
         List<String> outputs;
@@ -122,11 +148,36 @@ public class MissingPointsGenerator {
         outputs = formatToCSV();
 
         try{
-            Files.write(filePath,outputs, Charset.forName("UTF-8"));
+            Files.write(filePath, outputs, Charset.forName("UTF-8"));
         }catch(IOException ioe){
-            LOGGER.log(Level.SEVERE, "Writing in file failed", ioe);
+            throw new IOException("Writing in file failed");
         }
+    }
 
+    /**
+     * @param stringPath chemin du fichier CSV de sortie
+     * Crée et remplit le fichier de sortie, qui contient tous les points du fichiers de départ,
+     * plus les points générés dans le builder. On donne le path du fichier en argument
+     * @throws IOException Quand il y a une erreur lors de l'écriture dans le fichier
+     */
+    public void generateOutput(String stringPath) throws IOException {
+        Objects.requireNonNull(stringPath);
+        Objects.requireNonNull(csvFilePath);
+        if ("".equals(stringPath)) {
+            throw new IllegalArgumentException("File path is empty");
+        }
+        List<String> outputs;
+        Path filePath = Paths.get(stringPath);
+        for(int i = 0 ; i < pointsInput.size() -1 ; i++){
+            createIntermediaryPoints(pointsInput.get(i),pointsInput.get(i+1));
+        }
+        outputs = formatToCSV();
+
+        try{
+            Files.write(filePath, outputs, Charset.forName("UTF-8"));
+        }catch(IOException ioe){
+            throw new IOException("Writing in file failed");
+        }
     }
 
     private List<String> formatToCSV() {
