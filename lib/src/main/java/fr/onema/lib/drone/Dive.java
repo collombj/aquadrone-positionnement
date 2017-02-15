@@ -50,7 +50,8 @@ public class Dive {
             position.calculate(positions.get(positions.size() - 1), lastVitesse);
         }
         for (MeasureEntity measure : position.getMeasureEntities()) {
-            dbWorker.insertMeasure(measure, diveEntity.getId(), 1);//FIXME changer l id de la mesure
+            dbWorker.insertMeasure(measure, diveEntity.getId(), 1);
+            // TODO : FIXME changer l id de la mesure
             measures.add(measure);
         }
         positions.add(position);

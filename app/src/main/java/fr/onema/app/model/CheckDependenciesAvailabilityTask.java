@@ -25,12 +25,12 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
      */
     @Override
     public void run() {
-        if (Utils.checkPostgresAvailability(rlc.getConfiguration())) {
+        if (GraphicUtils.checkPostgresAvailability(rlc.getConfiguration())) {
             rlc.updateDatabaseColor(Color.GREEN);
         } else {
             rlc.updateDatabaseColor(Color.RED);
         }
-        if (Utils.checkMavlinkAvailability()) {
+        if (GraphicUtils.checkMavlinkAvailability()) {
             rlc.updateMavlinkColor(Color.GREEN);
         } else {
             rlc.updateMavlinkColor(Color.RED);

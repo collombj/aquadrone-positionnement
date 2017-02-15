@@ -8,15 +8,15 @@ import static org.junit.Assert.assertEquals;
 /**
  * Created by you on 14/02/2017.
  */
-public class UtilsTest {
+public class GraphicUtilsTest {
     @Test
     public void checkPostgresAvailability() throws Exception {
-        assertEquals(Utils.checkPostgresAvailability(Configuration.build("settings.properties")), true);
+        assertEquals(GraphicUtils.checkPostgresAvailability(Configuration.build("settings.properties")), true);
     }
 
     @Test
     public void checkMavlinkAvailability() throws Exception {
-        assertEquals(Utils.checkMavlinkAvailability(), true);
+        assertEquals(GraphicUtils.checkMavlinkAvailability(), true);
     }
 
 }
