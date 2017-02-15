@@ -1,10 +1,13 @@
 package fr.onema.simulator;
 
 import fr.onema.lib.file.FileManager;
+import fr.onema.lib.tools.Configuration;
 import org.apache.commons.cli.*;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Point d'entrée du Simulateur
@@ -49,6 +52,8 @@ public class Main {
      */
     private static final String JAR_NAME = "simulator";
 
+    private static final String LOCALHOST = "localhost";
+
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
 
     /**
@@ -61,6 +66,8 @@ public class Main {
     private static final int NUMBER_OF_ARGS_GENERATION = 2;
     private static final int NUMBER_OF_ARGS_RUN = 1;
     private static final int NUMBER_OF_ARGS_COMPARE = 3;
+
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     private Main() {
         // Avoid instantiation
@@ -133,17 +140,25 @@ public class Main {
      * @param values paramètres pour l'option
      */
     private static void compareAction(String[] values) {
-        String mergedFilePath = values[0];
+        String referenceFilePath = values[0];
         String propertiesFilePath = values[1];
         String resultFilePath = values[2];
 
-        System.out.println("Comparaison avec" +
-                " Merged=" + mergedFilePath +
-                " Properties=" + propertiesFilePath +
-                " Result=" + resultFilePath
-        );
+        FileManager fileManager = new FileManager(referenceFilePath, "",
+                resultFilePath);
+        Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", LOCALHOST, 14550);
 
-        // TODO : Add comparaison call
+        try {
+            Configuration configuration = Configuration.build(propertiesFilePath);
+            virtualizer.compare(configuration, 0.3);
+            LOGGER.log(Level.INFO, fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b));
+        } catch (FileNotFoundException e) {
+            LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
+        } catch (ComparisonException e) {
+            LOGGER.log(Level.SEVERE, "Error during the comparison", e);
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Unable to read in the result file", e);
+        }
     }
 
     /**
@@ -157,15 +172,18 @@ public class Main {
 
         String host = hostParam;
         if (host == null) {
-            host = "localhost";
+            host = LOCALHOST;
         }
 
-        System.out.println("Virtualisation avec" +
-                " Virtu=" + virtualizedFilePath +
-                " Host=" + host
-        );
+        FileManager fileManager = new FileManager("", virtualizedFilePath,
+                "");
+        Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", host, 14550);
 
-        // TODO : Add virtualized run call
+        try {
+            virtualizer.start();
+        } catch (IOException e) {
+            LOGGER.log(Level.SEVERE, "Error during the simulation", e);
+        }
     }
 
     /**
@@ -177,16 +195,11 @@ public class Main {
         String referenceFilePath = values[0];
         String virtualizedFilePath = values[1];
 
-        System.out.println("Generation avec" +
-                " Ref=" + referenceFilePath +
-                " Virtu=" + virtualizedFilePath
-        );
         try {
             Generator g = new Generator(referenceFilePath, virtualizedFilePath);
             g.convert();
         } catch (IOException e) {
-            // TODO : handle exception
-            // FileManager.LOGGER.log(Level.SEVERE, "Problème concernant les fichiers d'entrées");
+            LOGGER.log(Level.SEVERE, "Problem with the conversion in the generator", e);
         }
     }
 
