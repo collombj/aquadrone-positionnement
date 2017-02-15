@@ -75,6 +75,7 @@ public class ConfigurationController {
     /***
      * Binding des valuers Spinner -> Slider vertical
      */
+    @FXML
     private void updateSliderFromSpinnerV() {
         verticalSlider.adjustValue(verticalSpinner.getValue());
     }
@@ -82,6 +83,7 @@ public class ConfigurationController {
     /***
      * Binding des valuers Spinner -> Slider depth
      */
+    @FXML
     private void updateSliderFromSpinnerD() {
         depthSlider.adjustValue(depthSpinner.getValue());
     }
