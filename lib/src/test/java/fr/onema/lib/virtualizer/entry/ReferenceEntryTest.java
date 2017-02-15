@@ -40,7 +40,7 @@ public class ReferenceEntryTest {
     }
 
     @Test
-    public void toCSVComputeTest() {
+    public void toCSVForComputedFormatTest() {
         ReferenceEntry ref = new ReferenceEntry(1, 1,2,3, 4, (short)1 );
         assertEquals("1,2,3,4.0", ref.toCSVforComputedFormat());
     }
