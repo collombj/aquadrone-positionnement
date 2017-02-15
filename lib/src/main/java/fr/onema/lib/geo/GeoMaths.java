@@ -4,7 +4,6 @@ import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -52,8 +51,8 @@ public class GeoMaths {
     public static double gpsDistance(GPSCoordinate a, GPSCoordinate b) {
         Objects.requireNonNull(a);
         Objects.requireNonNull(b);
-        CartesianCoordinate a2 = computeXYZfromLatLonAlt(deg2rad(a.lat/10_000_000.), deg2rad(a.lon/10_000_000.), deg2rad(a.alt/1_000.));
-        CartesianCoordinate b2 = computeXYZfromLatLonAlt(deg2rad(b.lat/10_000_000.), deg2rad(b.lon/10_000_000.), deg2rad(b.alt/1_000.));
+        CartesianCoordinate a2 = computeXYZfromLatLonAlt(deg2rad(a.lat / 10_000_000.), deg2rad(a.lon / 10_000_000.), deg2rad(a.alt / 1_000.));
+        CartesianCoordinate b2 = computeXYZfromLatLonAlt(deg2rad(b.lat / 10_000_000.), deg2rad(b.lon / 10_000_000.), deg2rad(b.alt / 1_000.));
 
 
         return cartesianDistance(a2, b2);
@@ -83,7 +82,7 @@ public class GeoMaths {
 
     /**
      * Calcule les XYZ à partir d'une lat/lon/alt (Earth centered reference)
-     *
+     * <p>
      * Cette méthode a très peu d'usage HORS méthodes de GeoMath, soyez sur que c'est bien ce dont vous avez besoin
      *
      * @param lat la latitude en radians
@@ -292,12 +291,31 @@ public class GeoMaths {
     }
 
 
-    public static List<Position> recalculateRawPosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    public static void recalculateRawPosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+        Objects.requireNonNull(rawPositions);
+        Objects.requireNonNull(ref);
+        Objects.requireNonNull(resurface);
+
 
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
+        CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrut();
 
 
-        return Collections.emptyList();
+
+        double deltax = cartesianResurface.x - cartesianResurfaceBrut.x;
+        double deltay = cartesianResurface.y - cartesianResurfaceBrut.y;
+        double deltaz = cartesianResurface.z - cartesianResurfaceBrut.z;
+        double ecart = (double) 1 / (rawPositions.size() - 1);
+
+        for (int i = 0; i < rawPositions.size(); i++) {
+
+            rawPositions.get(i).setPositionRecalculated(computeGPSCoordinateFromCartesian(ref, new CartesianCoordinate(
+                    rawPositions.get(i).getCartesianBrut().x + (deltax * ecart * i),
+                    rawPositions.get(i).getCartesianBrut().y + (deltay * ecart * i),
+                    rawPositions.get(i).getCartesianBrut().z + (deltaz * ecart * i))));
+        }
+        
+        return;
     }
 
 

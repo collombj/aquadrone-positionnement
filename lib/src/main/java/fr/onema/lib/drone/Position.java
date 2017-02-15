@@ -1,6 +1,7 @@
 package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -15,11 +16,13 @@ public class Position {
     private List<MeasureEntity> entities;
     private long timestamp;
     private GPSCoordinate positionBrut = null;
+    private CartesianCoordinate cartesianBrut = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
     private IMU imu;
     private Pressure pressure;
     private List<Measure> measures;
+
 
 
     /**
@@ -28,7 +31,7 @@ public class Position {
      * @param positionBrut
      * @param direction
      */
-    public Position(long timestamp, GPSCoordinate positionBrut, int direction,IMU imu) {
+    public Position(long timestamp, GPSCoordinate positionBrut, int direction,IMU imu,GPS gps,Pressure pressure) {
         //// TODO: insert GPS 
         this.timestamp = timestamp;
         this.positionBrut = positionBrut;
@@ -36,6 +39,18 @@ public class Position {
         this.imu=imu;
     }
 
+
+    public void setCartesianBrut(CartesianCoordinate cartesianBrut) {
+        this.cartesianBrut = cartesianBrut;
+    }
+
+    public CartesianCoordinate getCartesianBrut() {
+        return cartesianBrut;
+    }
+
+    public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
+        this.positionRecalculated = positionRecalculated;
+    }
     public List<MeasureEntity> getEntities() {
         return entities;
     }
