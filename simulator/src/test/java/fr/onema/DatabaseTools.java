@@ -1,4 +1,4 @@
-package fr.onema.lib.database;
+package fr.onema;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

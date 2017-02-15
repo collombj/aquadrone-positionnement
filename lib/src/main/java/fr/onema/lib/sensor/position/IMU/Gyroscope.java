@@ -2,35 +2,50 @@ package fr.onema.lib.sensor.position.IMU;
 
 /**
  * Created by strock on 06/02/2017.
+ * Edit jroussel on 14/02/2017.
+ * <p>
+ * Classe représentant les éléments d'attitude du drone
  */
 public class Gyroscope {
-    private final int xRotation;
-    private final int yRotation;
-    private final int zRotation;
+    private final double roll;
+    private final double pitch;
+    private final double yaw;
 
     /**
-     * @param xRotation coordonnée rotation x
-     * @param yRotation coordonnée rotation y
-     * @param zRotation coordonnée rotation z
+     * @param roll  le roll du drone
+     * @param pitch le pitch du drone
+     * @param yaw   le yaw du drone
      */
-    public Gyroscope(int xRotation, int yRotation, int zRotation) {
-        this.xRotation = xRotation;
-        this.yRotation = yRotation;
-        this.zRotation = zRotation;
+    public Gyroscope(double roll, double pitch, double yaw) {
+        this.roll = roll;
+        this.pitch = pitch;
+        this.yaw = yaw;
     }
 
-    // TODO : complete
-    public int getxRotation() {
-        return xRotation;
+    /**
+     * Retourne le roll
+     *
+     * @return le roll
+     */
+    public double getRoll() {
+        return roll;
     }
 
-    // TODO : complete
-    public int getyRotation() {
-        return yRotation;
+    /**
+     * Retourne le pitch
+     *
+     * @return le ptich
+     */
+    public double getPitch() {
+        return pitch;
     }
 
-    // TODO : complete
-    public int getzRotation() {
-        return zRotation;
+    /**
+     * Retourne le yaw
+     *
+     * @return le yaw
+     */
+    public double getYaw() {
+        return yaw;
     }
 }

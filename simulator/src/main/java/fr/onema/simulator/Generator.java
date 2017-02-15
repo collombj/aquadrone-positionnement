@@ -1,12 +1,10 @@
 package fr.onema.simulator;
 
 import fr.onema.lib.file.FileManager;
-import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
-import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
@@ -36,10 +34,10 @@ public class Generator {
     /***
      * Permet de convertir les données du fichier d'entrée en données virtualisées et les écrire dans le fichier spécifié
      */
-    public void convert() {
+    public void convert() throws IOException {
         for (ReferenceEntry e : inputReferencies) {
             IMU i = previous == null
-                    ? IMU.build(new CartesianVelocity(0,0,0),
+                    ? IMU.build(new CartesianVelocity(0, 0, 0),
                     e.getTimestamp(),
                     new GPSCoordinate(e.getLat() * 10_000_000, e.getLon() * 10_000_000, e.getAlt() * 1_000),
                     e.getTimestamp(),
@@ -59,17 +57,16 @@ public class Generator {
                         (short) i.getAccelerometer().getxAcceleration(),
                         (short) i.getAccelerometer().getyAcceleration(),
                         (short) i.getAccelerometer().getzAcceleration(),
-                        (short) i.getGyroscope().getxRotation(),
-                        (short) i.getGyroscope().getyRotation(),
-                        (short) i.getGyroscope().getzRotation(),
+                        i.getGyroscope().getRoll(),
+                        i.getGyroscope().getPitch(),
+                        i.getGyroscope().getYaw(),
                         (short) i.getCompass().getxMagnetic(),
                         (short) i.getCompass().getyMagnetic(),
                         (short) i.getCompass().getzMagnetic(),
                         p.getAbsolute(),
                         (short) t.getValueTemperature()));
             } catch (IOException e1) {
-                // TODO : exception handling
-                e1.printStackTrace();
+                throw e1;
             }
         }
     }

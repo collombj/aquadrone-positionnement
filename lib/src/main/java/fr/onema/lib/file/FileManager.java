@@ -49,6 +49,7 @@ public class FileManager {
      * @param virtualizedOutputFilePath Chemin d'accès vers le fichier de sorties des données virtualisées
      */
     public FileManager(String inputFilePath, String virtualizedOutputFilePath) {
+        // TODO : find a better solution
         this(inputFilePath, virtualizedOutputFilePath, "");
     }
 
@@ -59,7 +60,9 @@ public class FileManager {
     public List<ReferenceEntry> readReferenceEntries() throws IOException {
         List<ReferenceEntry> refs = new ArrayList<>();
         try (Stream<String> s = Files.lines(Paths.get(rawInputFilePath))) {
-            s.skip(1).filter(e -> !e.isEmpty()).forEach(e -> refs.add(Parser.parseReference(e)));
+            s.skip(1).forEach(e -> refs.add(Parser.parseReference(e)));
+        } catch (IOException e) {
+            throw e;
         }
         return refs;
     }
@@ -87,8 +90,9 @@ public class FileManager {
      */
     public void appendRaw(GPS gps, Temperature temp) throws IOException {
         File f = new File(rawInputFilePath);
-        if (!f.exists() && !f.createNewFile()) {
-            throw new IOException("Cannot create " + f.getCanonicalPath() + " file");
+        if (!f.exists() && f.createNewFile()) {
+            String out = "Écriture du fichier de référence : " + rawInputFilePath;
+            LOGGER.log(Level.FINE, out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -97,6 +101,8 @@ public class FileManager {
             fw.write("\n" + gps.getTimestamp() + "," + gps.getPosition().lat + "," + gps.getPosition().lon + ","
                     + gps.getPosition().alt + "," + gps.getDirection() + "," + temp.getValue());
             fw.close();
+        } catch (IOException e) {
+            throw e;
         }
     }
 
@@ -106,8 +112,9 @@ public class FileManager {
      */
     public void appendVirtualized(VirtualizerEntry ve) throws IOException {
         File f = new File(virtualizedOutputFilePath);
-        if (!f.exists() && !f.createNewFile()) {
-            throw new IOException("Cannot create " + f.getCanonicalPath() + " file");
+        if (!f.exists() && f.createNewFile()) {
+            String out = "Écriture du fichier de données virtualisées : " + virtualizedOutputFilePath;
+            LOGGER.log(Level.FINE, out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -123,12 +130,15 @@ public class FileManager {
      */
     public void openFileForResults() throws IOException {
         File f = new File(resultsOutputFilePath);
-        if (f.exists() && !f.delete()) {
-            throw new IOException("Cannot delete " + f.getCanonicalPath() + " file");
+        if (f.delete()) {
+            String out = "Fichier précédent de résultats écrasé : " + resultsOutputFilePath;
+            LOGGER.log(Level.FINE, out);
         }
         try (FileWriter fw = new FileWriter(f, false)) {
             fw.write(RESULTS_CSV_HEADER);
             fw.close();
+        } catch (IOException e) {
+            throw e;
         }
     }
 
@@ -153,6 +163,8 @@ public class FileManager {
                     + "," + re.getDirection() + "," + re.getTemperature() + "," + diffX + "," + diffY + "," + diffZ
                     + "," + diffAbsolute + "," + m.getPrecisionCm() + "," + margin + "," + error);
             fw.close();
+        } catch (IOException e) {
+            throw e;
         }
     }
 

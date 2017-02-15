@@ -1,8 +1,9 @@
 package fr.onema.lib.sensor.position;
 
 import fr.onema.lib.geo.GPSCoordinate;
-import org.mavlink.messages.ardupilotmega.msg_global_position_int;
-import fr.onema.lib.sensor.*;
+import fr.onema.lib.sensor.Sensor;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
+
 import java.util.Objects;
 
 /**
@@ -13,9 +14,9 @@ import java.util.Objects;
  * Classe représentant les mesures GPS
  */
 public class GPS extends Sensor {
+    private static final String HEADER = "timestamp,latitude,longitude,altitude,direction";
     private GPSCoordinate position;
     private float direction;
-    private static String HEADER = "timestamp,latitude,longitude,altitude,direction";
 
     // TODO : maybe a single constructor is better
     private GPS(long timestamp, long lat, long lon, long alt) {
@@ -32,9 +33,9 @@ public class GPS extends Sensor {
      * Builder de l'objet GPS
      * @param msg Message correspondant à la mesure GPS en protocole MavLink
      */
-    public static GPS build(msg_global_position_int msg) {
+    public static GPS build(msg_gps_raw_int msg) {
         Objects.requireNonNull(msg);
-        return new GPS(msg.time_boot_ms, msg.lat, msg.lon, msg.alt, msg.hdg);
+        return new GPS(msg.time_usec, msg.lat, msg.lon, msg.alt, msg.cog);
     }
 
     /***

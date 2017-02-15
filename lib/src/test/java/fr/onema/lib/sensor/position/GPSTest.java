@@ -2,7 +2,8 @@ package fr.onema.lib.sensor.position;
 
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by you on 11/02/2017.

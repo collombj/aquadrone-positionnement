@@ -11,23 +11,23 @@ public class GyroscopeTest {
 
 
     @Test
-    public void getxRotation() throws Exception {
+    public void getRoll() throws Exception {
         Gyroscope a= new Gyroscope(3,4,5);
-        assertEquals(3,a.getxRotation());
+        assertEquals(3.0,a.getRoll(), 0);
 
     }
 
     @Test
-    public void getyRotation() throws Exception {
+    public void getPitch() throws Exception {
         Gyroscope a= new Gyroscope(3,4,5);
-        assertEquals(4,a.getyRotation());
+        assertEquals(4.0,a.getPitch(), 0);
 
     }
 
     @Test
-    public void getzRotation() throws Exception {
+    public void getYaw() throws Exception {
         Gyroscope a= new Gyroscope(3,4,5);
-        assertEquals(5,a.getzRotation());
+        assertEquals(5.0,a.getYaw(), 0);
 
     }
 

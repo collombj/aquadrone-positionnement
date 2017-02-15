@@ -52,7 +52,7 @@ public class Configuration {
     /**
      * Builder permettant de créer une représentation des paramètres
      *
-     * @param path CHemin d'accès au fichier de configuration
+     * @param path Chemin d'accès au fichier de configuration
      * @return La représentation du fichier de configuration
      * @throws FileNotFoundException En cas d'absence de fichier de configuration
      */

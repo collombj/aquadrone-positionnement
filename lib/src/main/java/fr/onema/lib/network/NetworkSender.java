@@ -1,24 +1,29 @@
 package fr.onema.lib.network;
 
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.mavlink.messages.MAVLinkMessage;
 
 import java.io.IOException;
-import java.net.*;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
 
 public class NetworkSender {
     private final int port;
     private final String host;
-    private ArrayBlockingQueue<MAVLinkMessage> queue;
-    private DatagramSocket dsocket;
-    private Thread sender;
     byte[] buffer;
     DatagramPacket packet;
     InetAddress hostAddress;
+    private ArrayBlockingQueue<MAVLinkMessage> queue;
+    private DatagramSocket dsocket;
+    private Thread sender;
 
     /**
      * Constructeur de la classe NetworkSender
+     *
      * @param port le port de l'hôte
      * @param host l'adresse de l'hôte
      */
@@ -32,17 +37,18 @@ public class NetworkSender {
 
     /**
      * Permet d'ajouter une virtualizerEntry
+     *
      * @param entry Un champ de type VirtualizerEntry
      */
     public void add(VirtualizerEntry entry) {
-            if (entry.getHasGPS()) {
-               MAVLinkMessage msgGPS = entry.getGPSMessage();
-                try {
-                    queue.put(msgGPS);
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                }
+        if (entry.getHasGPS()) {
+            MAVLinkMessage msgGPS = entry.getGPSMessage();
+            try {
+                queue.put(msgGPS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
+        }
         MAVLinkMessage msgIMU = entry.getIMUMessage();
         MAVLinkMessage msgPressure = entry.getPressureMessage();
         MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
@@ -84,6 +90,7 @@ public class NetworkSender {
 
     /**
      * Permet de récupérer le port
+     *
      * @return le port
      */
     public int getPort() {
@@ -92,6 +99,7 @@ public class NetworkSender {
 
     /**
      * permet de récupérer l'adresse hôte
+     *
      * @return l'adresse hôte
      */
     public String getHost() {
@@ -100,7 +108,6 @@ public class NetworkSender {
 
     /**
      * Demarre la thread d'envoi de messages
-
      */
     public void startThread() {
         sender = new Thread(() -> {
@@ -119,6 +126,7 @@ public class NetworkSender {
 
     /**
      * Getter pour la thread sender
+     *
      * @return la thread
      */
     public Thread getSender() {
@@ -127,6 +135,7 @@ public class NetworkSender {
 
     /**
      * getter de la blocking queue
+     *
      * @return la blocking queue
      */
     public ArrayBlockingQueue getQueue() {
@@ -135,6 +144,7 @@ public class NetworkSender {
 
     /**
      * Getter de la DatagramSocket
+     *
      * @return la datagram socket
      */
     public DatagramSocket getDsocket() {

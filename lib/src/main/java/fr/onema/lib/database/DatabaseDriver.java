@@ -114,7 +114,7 @@ public class DatabaseDriver {
         try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) AS brutX," +
                 "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
                 "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
-                " accelerationY, accelerationZ, rotationX, rotationY, rotationZ, precision_cm, measure_value" +
+                " accelerationY, accelerationZ, roll, pitch, yaw, precision_cm, measure_value" +
                 "  FROM Measure WHERE dive_id=? ORDER BY id")) {
             ps.setInt(1, dive.getId());
             ResultSet results = ps.executeQuery();
@@ -131,15 +131,15 @@ public class DatabaseDriver {
                 int accelerationX = Integer.parseInt(results.getString("accelerationX"));
                 int accelerationY = Integer.parseInt(results.getString("accelerationY"));
                 int accelerationZ = Integer.parseInt(results.getString("accelerationZ"));
-                int rotationX = Integer.parseInt(results.getString("rotationX"));
-                int rotationY = Integer.parseInt(results.getString("rotationY"));
-                int rotationZ = Integer.parseInt(results.getString("rotationZ"));
+                double roll = Double.parseDouble(results.getString("roll"));
+                double pitch = Double.parseDouble(results.getString("pitch"));
+                double yaw = Double.parseDouble(results.getString("yaw"));
 
                 int precisionCm = Integer.parseInt(results.getString("precision_cm"));
                 String measureValue = results.getString("measure_value");
                 mesures.add(new MeasureEntity(id, timestamp, new GPSCoordinate(brutX, brutY, brutZ),
                         new GPSCoordinate(correctX, correctY, correctZ), accelerationX, accelerationY, accelerationZ,
-                        rotationX, rotationY, rotationZ, precisionCm, measureValue));
+                        roll, pitch, yaw, precisionCm, measureValue));
 
             }
         }
@@ -216,9 +216,9 @@ public class DatabaseDriver {
                 "accelerationz," +
                 "precision_cm," +
                 "measure_value," +
-                "rotationx," +
-                "rotationy," +
-                "rotationz," +
+                "roll," +
+                "pitch," +
+                "yaw," +
                 "dive_id," +
                 "measureinformation_id" +
                 ") VALUES (" +
@@ -244,15 +244,27 @@ public class DatabaseDriver {
             insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
 
             // location_corrected
-            insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-            insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-            insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            insertStatement.setInt(5, srid);
+            if (measureEntity.getLocationCorrected() == null) {
+                insertStatement.setNull(2, Types.BIGINT);
+                insertStatement.setNull(3, Types.BIGINT);
+                insertStatement.setNull(4, Types.BIGINT);
 
+            } else {
+                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            }
+            insertStatement.setInt(5, srid);
             // location_brut
-            insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-            insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-            insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            }
             insertStatement.setInt(9, srid);
 
             //acceleration XYZ
@@ -267,9 +279,9 @@ public class DatabaseDriver {
             insertStatement.setString(14, measureEntity.getMeasureValue());
 
             // rotationXYZ
-            insertStatement.setInt(15, measureEntity.getRotationX());
-            insertStatement.setInt(16, measureEntity.getRotationY());
-            insertStatement.setInt(17, measureEntity.getRotationZ());
+            insertStatement.setDouble(15, measureEntity.getRoll());
+            insertStatement.setDouble(16, measureEntity.getPitch());
+            insertStatement.setDouble(17, measureEntity.getYaw());
 
             // dive_id
             insertStatement.setInt(18, diveID);
@@ -343,7 +355,7 @@ public class DatabaseDriver {
     public void sendNotification(String message) throws SQLException {
         Objects.requireNonNull(message);
         try (Statement ps = connector.createStatement()) {
-            ps.execute("NOTIFY " + message );
+            ps.execute("NOTIFY " + message);
         }
     }
 
