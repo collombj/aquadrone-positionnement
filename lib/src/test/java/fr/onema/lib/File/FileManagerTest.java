@@ -10,10 +10,11 @@ import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mavlink.messages.ardupilotmega.msg_global_position_int;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -51,6 +52,16 @@ public class FileManagerTest {
         fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
         fm.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, (short)5, (short)6, (short)7, (short)8, (short)9,
                 (short)10, (short)11, (short)12, (short)13, 14, (short)15));
+    }
+
+    @AfterClass
+    public static void delete() {
+        File ref = new File(refFile);
+        ref.delete();
+        File v = new File(virtualizedFile);
+        v.delete();
+        File res = new File(resultsFile);
+        res.delete();
     }
 
     @Test (expected = IOException.class)
@@ -145,15 +156,5 @@ public class FileManagerTest {
         List<String> results = fm.getResults("||");
         assertEquals("timestamp||corrected.latitude||corrected.longitude||corrected.altitude||ref.latitude||ref.longitude||ref.altitude||ref.direction||ref.temperature||difference.x||difference.y||difference.z||difference.absolute||precision||margin||margin.error", results.get(0));
         assertEquals("0||1||2||3||4||5||6||7.0||8||252633.94405114||864468.0688498556||-1.0147670209231338E7||1.0187558079690589E7||13||14.0||true", results.get(1));
-    }
-
-    @AfterClass
-    public static void delete() {
-        File ref = new File(refFile);
-        ref.delete();
-        File v = new File(virtualizedFile);
-        v.delete();
-        File res = new File(resultsFile);
-        res.delete();
     }
 }
