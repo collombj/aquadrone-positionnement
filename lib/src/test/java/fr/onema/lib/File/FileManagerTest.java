@@ -15,6 +15,7 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -54,33 +55,38 @@ public class FileManagerTest {
                 (short)10, (short)11, (short)12, (short)13, 14, (short)15));
     }
 
-    @AfterClass
-    public static void delete() {
-        File ref = new File(refFile);
-        ref.delete();
-        File v = new File(virtualizedFile);
-        v.delete();
-        File res = new File(resultsFile);
-        res.delete();
+    @Test (expected = NoSuchFileException.class)
+    public void testException1() throws IOException {
+        fm_bugged.readReferenceEntries();
+    }
+
+    @Test (expected = NoSuchFileException.class)
+    public void testException2() throws IOException {
+        fm_bugged.readVirtualizedEntries();
+    }
+
+    @Test
+    public void testException3() throws IOException {
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg_scaled_pressure msg2 = new msg_scaled_pressure();
+        fm_bugged.appendRaw(GPS.build(msg), Temperature.build(msg2));
+    }
+
+    @Test
+    public void testException4() throws IOException {
+        fm_bugged.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, (short)5, (short)6, (short)7, (short)8, (short)9,
+                (short)10, (short)11, (short)12, (short)13, 14, (short)15));
     }
 
     @Test (expected = IOException.class)
-    public void testExceptions() throws IOException {
-        fm_bugged.readReferenceEntries();
-        fm_bugged.readVirtualizedEntries();
-        msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = 1;
-        msg.lat = 2;
-        msg.lon = 3;
-        msg.alt = 4;
-        msg.cog = 5;
-        msg_scaled_pressure msg2 = new msg_scaled_pressure();
-        msg2.time_boot_ms = 0;
-        msg2.temperature = 6;
-        fm_bugged.appendRaw(GPS.build(msg), Temperature.build(msg2));
-        fm_bugged.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, (short)5, (short)6, (short)7, (short)8, (short)9,
-                (short)10, (short)11, (short)12, (short)13, 14, (short)15));
+    public void testException5() throws IOException {
+        File ref = new File("notapath");
+        ref.delete();
         fm_bugged.openFileForResults();
+    }
+
+    @Test (expected = IOException.class)
+    public void testException6() throws IOException {
         ReferenceEntry re = new ReferenceEntry(0,4,5,6,(float)7,(short)8);
         MeasureEntity m = new MeasureEntity(
                 0, new GPSCoordinate(4,5,6), new GPSCoordinate(1,2,3), 0, 0, 0, 0, 0, 0, 13, "test");
@@ -156,5 +162,15 @@ public class FileManagerTest {
         List<String> results = fm.getResults("||");
         assertEquals("timestamp||corrected.latitude||corrected.longitude||corrected.altitude||ref.latitude||ref.longitude||ref.altitude||ref.direction||ref.temperature||difference.x||difference.y||difference.z||difference.absolute||precision||margin||margin.error", results.get(0));
         assertEquals("0||1||2||3||4||5||6||7.0||8||252633.94405114||864468.0688498556||-1.0147670209231338E7||1.0187558079690589E7||13||14.0||true", results.get(1));
+    }
+
+    @AfterClass
+    public static void delete() {
+        File ref = new File(refFile);
+        ref.delete();
+        File v = new File(virtualizedFile);
+        v.delete();
+        File res = new File(resultsFile);
+        res.delete();
     }
 }

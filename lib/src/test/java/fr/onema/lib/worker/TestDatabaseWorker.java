@@ -9,7 +9,6 @@ import fr.onema.lib.tools.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.time.Duration;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +44,7 @@ public class TestDatabaseWorker {
         dbWorker.start();
         dbWorker.newDive(dive);
         Thread.sleep(1000);
-        dbWorker.insertMeasure(entity, dive.getId(), 1);
+        dbWorker.insertMeasure(entity, dive.getId(), "temperature");
         Thread.sleep(1000);
         dbWorker.updatePosition(entity.getId(), correct, 0);
         dbWorker.startRecording(start, dive.getId());
@@ -55,7 +54,7 @@ public class TestDatabaseWorker {
 
     @Test
     public void simulTraitement() throws Exception {
-        Thread.sleep(1000);
+        Thread.sleep(1500);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
         assertTrue(dive.getId() == dive2.getId());
@@ -65,7 +64,6 @@ public class TestDatabaseWorker {
         assertFalse(entity.equals(entity2));
         assertTrue(entity.getId() == entity2.getId());
         assertTrue(entity2.getLocationCorrected().equals(correct));
-
     }
 
     @After

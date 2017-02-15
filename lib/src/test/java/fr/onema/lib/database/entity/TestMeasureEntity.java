@@ -3,6 +3,7 @@ package fr.onema.lib.database.entity;
 import fr.onema.lib.geo.GPSCoordinate;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -32,6 +33,8 @@ public class TestMeasureEntity {
         assertTrue(e.getPrecisionCm() == 2);
         assertTrue(e.getMeasureValue().equals("uneMes"));
         assertTrue(e.equals(e2));
+        assertFalse(e.equals(null));
+        assertFalse(e.hashCode() != e2.hashCode());
     }
 
     @Test(expected = IllegalArgumentException.class)
