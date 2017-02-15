@@ -17,7 +17,7 @@ public class MeasureEntity {
     private final double roll;
     private final double pitch;
     private final double yaw;
-    private final int precisionCm;
+    private int precisionCm;
     private final String measureValue;
     private int id;
 
@@ -205,6 +205,15 @@ public class MeasureEntity {
         this.locationCorrected = locationCorrected;
     }
 
+    /**
+     * Met à jour la précision de la mesure
+     *
+     * @param precisionCm
+     */
+    public void setPrecisionCm(int precisionCm) {
+        this.precisionCm = precisionCm;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -224,6 +233,33 @@ public class MeasureEntity {
         if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
         if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
             return false;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+
+    }
+
+
+    /**
+     * Permet de determiner si deux entités correspondent à la même mesure sans tenir compte de l'identifiant en base
+     * et de la position recalculée
+     *
+     * @param o
+     * @return
+     */
+    public boolean diveEquals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MeasureEntity that = (MeasureEntity) o;
+
+        if (timestamp != that.timestamp) return false;
+        if (accelerationX != that.accelerationX) return false;
+        if (accelerationY != that.accelerationY) return false;
+        if (accelerationZ != that.accelerationZ) return false;
+        if (Double.compare(that.roll, roll) != 0) return false;
+        if (Double.compare(that.pitch, pitch) != 0) return false;
+        if (Double.compare(that.yaw, yaw) != 0) return false;
+        if (precisionCm != that.precisionCm) return false;
+        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
 
     }

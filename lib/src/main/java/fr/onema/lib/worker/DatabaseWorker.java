@@ -42,12 +42,12 @@ public class DatabaseWorker implements Worker {
      */
     private BiConsumer<MeasureRepository, Object[]> insertMeasureAux = (repository, args) -> {
         if (args.length != 3 || !(args[0] instanceof MeasureEntity)
-                || !(args[1] instanceof Integer) || !(args[2] instanceof Integer)) {
+                || !(args[1] instanceof Integer) || !(args[2] instanceof String)) {
             FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : invalid args");
             return;
         }
         try {
-            repository.insertMeasure((MeasureEntity) args[0], (Integer) args[1], (Integer) args[2]);
+            repository.insertMeasure((MeasureEntity) args[0], (Integer) args[1], (String) args[2]);
         } catch (SQLException e) {
             FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure");
         }
@@ -179,10 +179,10 @@ public class DatabaseWorker implements Worker {
      *
      * @param measureEntity la MeasureEntity à insérer en base
      * @param diveID        l'identifiant de la plongée de la mesure
-     * @param measureInfoID l'identifiant du type de mesure
+     * @param measureInfoName l'identifiant du type de mesure
      */
-    public void insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) {
-        if (!actionQueue.offer(new DatabaseAction(insertMeasureAux, measureEntity, diveID, measureInfoID))) {
+    public void insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) {
+        if (!actionQueue.offer(new DatabaseAction(insertMeasureAux, measureEntity, diveID, measureInfoName))) {
             FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.insertMeasure : Measure insertion failed");
         }
     }

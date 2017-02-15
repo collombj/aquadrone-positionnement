@@ -1,6 +1,6 @@
 package fr.onema.lib.geo;
 
-import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 
 import java.math.BigDecimal;
@@ -199,14 +199,14 @@ public class GeoMaths {
     }
 
     // TODO : complete
-    public static List<MeasureEntity> recalculatePosition(List<MeasureEntity> measures) {
+    public static List<Position> recalculatePosition(List<Position> positions, GPSCoordinate refIn, GPSCoordinate refOut) {
         Random rand = new Random();
-        for (MeasureEntity measure : measures) {
+        for (Position position : positions) {
             int x = rand.nextInt(25000 - 1) + 1;
             int y = rand.nextInt(25000 - 1) + 1;
             int z = rand.nextInt(25000 - 1) + 1;
-            measure.setLocationCorrected(new GPSCoordinate(x, y, z));
+            position.setPositionRecalculated(new GPSCoordinate(x, y, z));
         }
-        return measures;
+        return positions;
     }
 }

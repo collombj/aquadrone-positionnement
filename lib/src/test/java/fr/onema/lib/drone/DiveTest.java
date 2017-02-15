@@ -4,6 +4,7 @@ import fr.onema.lib.database.DatabaseTools;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.Temperature;
+import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -75,15 +76,14 @@ public class DiveTest {
         position6.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
         position6.add(Temperature.build(System.currentTimeMillis(), 250));
-
+        position6.setGps(GPS.build(System.currentTimeMillis(),3,5,6,250));
 
         dive.add(position2);
         dive.add(position3);
         dive.add(position4);
         dive.add(position5);
-        dive.add(position6);
         dive.stopRecording(fin);
-        dive.endDive();
+        dive.endDive(position6);
     }
 
 

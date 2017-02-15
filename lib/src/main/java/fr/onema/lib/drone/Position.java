@@ -128,6 +128,10 @@ public class Position {
         return imu;
     }
 
+    public GPS getGps() {
+        return gps;
+    }
+
     /**
      * Définit l'IMU de la position.
      *
@@ -190,7 +194,7 @@ public class Position {
      * @param previousPosition La position précédente.
      * @param velocity         La vitesse de la position précédente.
      */
-    public void calculate(Position previousPosition, CartesianVelocity velocity) {
+    public void calculate(Position previousPosition, CartesianVelocity velocity, GPSCoordinate reference) {
         // TODO
         Random rand = new Random();
         int x = rand.nextInt(25000 - 1) + 1;
