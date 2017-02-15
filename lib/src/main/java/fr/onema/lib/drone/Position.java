@@ -89,7 +89,7 @@ public class Position {
     /**
      * Met a jour la coordonnées brutes
      *
-     * @param positionBrut des coordonnées GPS
+     * @param positionBrute des coordonnées GPS
      */
     public void setPositionBrute(GPSCoordinate positionBrute) {
         this.positionBrute = positionBrute;
@@ -197,7 +197,7 @@ public class Position {
         int y = rand.nextInt(25000 - 1) + 1;
         int z = rand.nextInt(25000 - 1) + 1;
 
-        this.setPositionBrut(new GPSCoordinate(x, y, z));
+        this.setPositionBrute(new GPSCoordinate(x, y, z));
     }
 
     /**

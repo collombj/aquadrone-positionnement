@@ -7,10 +7,9 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
-import org.mavlink.messages.ardupilotmega.msg_global_position_int;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
@@ -57,12 +56,12 @@ public class FileManagerTest {
     public void testExceptions() throws IOException {
         fm_bugged.readReferenceEntries();
         fm_bugged.readVirtualizedEntries();
-        msg_global_position_int msg = new msg_global_position_int();
-        msg.time_boot_ms = 1;
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.time_usec = 1;
         msg.lat = 2;
         msg.lon = 3;
         msg.alt = 4;
-        msg.hdg = 5;
+        msg.cog = 5;
         msg_scaled_pressure msg2 = new msg_scaled_pressure();
         msg2.time_boot_ms = 0;
         msg2.temperature = 6;
@@ -138,7 +137,7 @@ public class FileManagerTest {
         fm.appendResults(re, m, 0);
     }
 
-    /*@AfterClass
+    @AfterClass
     public static void delete() {
         File ref = new File(refFile);
         ref.delete();
@@ -147,5 +146,4 @@ public class FileManagerTest {
         File res = new File(resultsFile);
         res.delete();
     }
-    */
 }

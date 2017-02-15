@@ -17,7 +17,6 @@ public class GPS extends Sensor {
     private static final String HEADER = "timestamp,latitude,longitude,altitude,direction";
     private GPSCoordinate position;
     private float direction;
-    private static String HEADER = "timestamp,latitude,longitude,altitude,direction";
 
     // TODO : maybe a single constructor is better
     private GPS(long timestamp, long lat, long lon, long alt) {
