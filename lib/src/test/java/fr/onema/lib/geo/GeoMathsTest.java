@@ -4,13 +4,10 @@ package fr.onema.lib.geo;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static fr.onema.lib.geo.GeoMaths.recalculateRawPosition;
+import static fr.onema.lib.geo.GeoMaths.recalculatePosition;
 import static junit.framework.TestCase.assertEquals;
-import static junit.framework.TestCase.assertNotNull;
 
 
 /**
@@ -197,6 +194,8 @@ public class GeoMathsTest {
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE1() {
         GeoMaths.computeNewPosition(null, 0,0,0, null, 12, null);
+
+
     }
 
     @Test(expected = NullPointerException.class)
@@ -210,6 +209,8 @@ public class GeoMathsTest {
         CartesianCoordinate coordinate = new CartesianCoordinate(0,0,0);
         CartesianVelocity velocity = new CartesianVelocity(0,0,0);
         GeoMaths.computeNewPosition(coordinate, 0,0,0, velocity, 12, null);
+
+
     }
 
     @Test
@@ -244,45 +245,45 @@ public class GeoMathsTest {
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull() {
 
-        recalculateRawPosition(null, new GPSCoordinate(3,3,1), new GPSCoordinate(3,3,3)) ;
+        recalculatePosition(null, new GPSCoordinate(3,3,1), new GPSCoordinate(3,3,3)) ;
 
     }
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull1() {
 
-        Position p1 = new Position(5, null,2,null,null,null);
-        Position p2 = new Position(5, null,2,null,null,null);
+        Position p1 = new Position(5);
+        Position p2 = new Position(5);
 
         List<Position> list= new ArrayList<>();
         list.add(p1);
         list.add(p2);
 
-        recalculateRawPosition(list, null, new GPSCoordinate(3,3,3)) ;
+        recalculatePosition(list, null, new GPSCoordinate(3,3,3)) ;
 
     }
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull2() {
-        Position p1 = new Position(5, null,2,null,null,null);
-        Position p2 = new Position(5, null,2,null,null,null);
+        Position p1 = new Position(5);
+        Position p2 = new Position(5);
 
         List<Position> list = new ArrayList<>();
         list.add(p1);
         list.add(p2);
 
-        recalculateRawPosition(list, new GPSCoordinate(3,3,1), null) ;
+        recalculatePosition(list, new GPSCoordinate(3,3,1), null) ;
 
     }
     @Test
     public void testRecalculaterawposition() {
 
-        Position p1 = new Position(5, null,2,null,null,null);
+        Position p1 = new Position(5);
 
-        Position p2 = new Position(5, null,2,null,null,null);
-        Position p3 = new Position(5, null,2,null,null,null);
+        Position p2 = new Position(5);
+        Position p3 = new Position(5);
 
-        p1.setCartesianBrut(new CartesianCoordinate(0,0,0));
-        p2.setCartesianBrut(new CartesianCoordinate(2.77,2.77,-3.92));
-        p3.setCartesianBrut(new CartesianCoordinate(5,4,-7));
+        p1.setCartesianBrute(new CartesianCoordinate(0,0,0));
+        p2.setCartesianBrute(new CartesianCoordinate(2.77,2.77,-3.92));
+        p3.setCartesianBrute(new CartesianCoordinate(5,4,-7));
 
 
 
@@ -295,7 +296,7 @@ public class GeoMathsTest {
         GPSCoordinate ref = new GPSCoordinate(450_000_500, 450_000_000, 130_000);
         GPSCoordinate refsurface = new GPSCoordinate(450_000_000, 440_000_000, 140_000);
 
-        recalculateRawPosition(list, ref, refsurface) ;
+        recalculatePosition(list, ref, refsurface) ;
 
         assertEquals(refsurface.lat,list.get(2).getPositionRecalculated().lat);
         assertEquals(refsurface.lon,list.get(2).getPositionRecalculated().lon);

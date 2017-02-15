@@ -1,19 +1,16 @@
 package fr.onema.lib.geo;
 
+
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
-
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
- * <p>
- * <p>
  * Created by julien on 06/02/2017.
  */
 public class GeoMaths {
@@ -37,7 +34,6 @@ public class GeoMaths {
     public static double cartesianDistance(CartesianCoordinate pos1, CartesianCoordinate pos2) {
         Objects.requireNonNull(pos1);
         Objects.requireNonNull(pos2);
-
         return Math.sqrt(Math.pow(pos2.x - pos1.x, 2) + Math.pow(pos2.y - pos1.y, 2) + Math.pow(pos2.z - pos1.z, 2));
     }
 
@@ -53,7 +49,6 @@ public class GeoMaths {
         Objects.requireNonNull(b);
         CartesianCoordinate a2 = computeXYZfromLatLonAlt(deg2rad(a.lat / 10_000_000.), deg2rad(a.lon / 10_000_000.), deg2rad(a.alt / 1_000.));
         CartesianCoordinate b2 = computeXYZfromLatLonAlt(deg2rad(b.lat / 10_000_000.), deg2rad(b.lon / 10_000_000.), deg2rad(b.alt / 1_000.));
-
 
         return cartesianDistance(a2, b2);
 
@@ -184,15 +179,12 @@ public class GeoMaths {
     public static GPSCoordinate computeGPSCoordinateFromCartesian(GPSCoordinate refPoint, CartesianCoordinate point) {
         Objects.requireNonNull(refPoint);
         Objects.requireNonNull(point);
-
         double latRefRad = deg2rad(refPoint.lat / 10_000_000.);
         double lonRefRad = deg2rad(refPoint.lon / 10_000_000.);
         double altRefM = refPoint.alt / 1_000.;
-
         CartesianCoordinate refPointCartesian = computeXYZfromLatLonAlt(latRefRad, lonRefRad, altRefM);
         CartesianCoordinate pointECEF = new CartesianCoordinate(refPointCartesian.x + point.x, refPointCartesian.y + point.y,
                 refPointCartesian.z + point.z);
-
         double p = Math.sqrt((pointECEF.x * pointECEF.x) + (pointECEF.y * pointECEF.y));
         double b = R * (1 - F);
         double theta = Math.atan((pointECEF.z * R) / (p * b));
@@ -216,6 +208,7 @@ public class GeoMaths {
         double alt = (p / cos(lat)) - n;
 
         return new GPSCoordinate(Math.round(rad2deg(lat) * 10_000_000), Math.round(rad2deg(lon) * 10_000_000), Math.round(alt * 1_000));
+
     }
 
 
@@ -269,7 +262,7 @@ public class GeoMaths {
      * @param accelerometer    les données d'accelerometre
      * @return la nouvelle position estimée du drone
      */
-    public static CartesianCoordinate computeNewPosition(CartesianCoordinate last, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
+    public static CartesianCoordinate computeNewPosition(CartesianCoordinate last,double yaw, double pitch, double roll,CartesianVelocity previousVelocity,long time,  Accelerometer accelerometer){
         Objects.requireNonNull(last);
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
@@ -291,15 +284,14 @@ public class GeoMaths {
     }
 
 
-    public static void recalculateRawPosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    public static List <Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
         Objects.requireNonNull(ref);
         Objects.requireNonNull(resurface);
 
 
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
-        CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrut();
-
+        CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrute();
 
 
         double deltax = cartesianResurface.x - cartesianResurfaceBrut.x;
@@ -310,12 +302,13 @@ public class GeoMaths {
         for (int i = 0; i < rawPositions.size(); i++) {
 
             rawPositions.get(i).setPositionRecalculated(computeGPSCoordinateFromCartesian(ref, new CartesianCoordinate(
-                    rawPositions.get(i).getCartesianBrut().x + (deltax * ecart * i),
-                    rawPositions.get(i).getCartesianBrut().y + (deltay * ecart * i),
-                    rawPositions.get(i).getCartesianBrut().z + (deltaz * ecart * i))));
+                    rawPositions.get(i).getCartesianBrute().x + (deltax * ecart * i),
+                    rawPositions.get(i).getCartesianBrute().y + (deltay * ecart * i),
+                    rawPositions.get(i).getCartesianBrute().z + (deltaz * ecart * i))));
         }
-        
-        return;
+
+        return rawPositions;
+
     }
 
 
