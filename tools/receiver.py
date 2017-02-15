@@ -3,6 +3,7 @@ import socket
 import sys
 from datetime import datetime
 import mavlink10 as mavlink
+import re
 
 
 class Fifo(object):
@@ -10,7 +11,7 @@ class Fifo(object):
         self.buf = []
 
     def write(self, data):
-        self.buf += data
+        self.buf.append(data)
         return len(data)
 
     def read(self):
@@ -48,15 +49,15 @@ def parse_llh(msg, mav):
     :param mav: MAVLink pour l'envoie des messages
     :param msg: Message à parser
     """
-    splits = msg.split("   ")  # séparation avec 3 espaces
-
+    #splits = msg.split("   ")  # séparation avec 3 espaces
+    splitter = re.compile(r"(\s+|\S+)")
+    splits = splitter.findall(msg)
     time = datetime.now().time().microsecond
-    lat = float(splits[1])
-    lon = float(splits[2])
-    alt = float(splits[3])
-    signal_type = get_type(splits[4])
-    sat_nb = splits[5]
-
+    lat = int(float(splits[4]) * 10000000)
+    lon = int(float(splits[6]) * 10000000)
+    alt = int(float(splits[8]) * 1000)
+    signal_type = get_type(splits[10])
+    sat_nb = int(splits[12])
     mav_msg = mavlink.MAVLink_gps_raw_int_message(time, signal_type, lat, lon, alt, 0, 0, 0, 0, sat_nb)
     mav.send(mav_msg)
 
@@ -107,11 +108,9 @@ def receiver(tcp, udp, llh_length):
             chunks.append(chunk)
             bytes_recd += len(chunk)
 
-        print chunks
-        print b''.join(chunks).decode("ASCII")
-
         parse_llh(b''.join(chunks).decode("ASCII"), mav)
-        udp.sendto(fifo.read(), ("192.168.2.255", 14550))
+        to_send = fifo.read()
+        udp.sendto(to_send, ("192.168.42.255", 14550))
 
 
 
