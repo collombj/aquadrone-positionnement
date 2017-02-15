@@ -26,6 +26,7 @@ public class RootLayoutController {
     private double depthOffset = 0;
     private boolean isRunning;
     private final Configuration c;
+    private int diveDurationTolerance = 60;
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -136,28 +137,94 @@ public class RootLayoutController {
     }
 
     @FXML
-    private void executeMeasures() {
-        setRunning(true);
-        handleRunningStatus();
+    private ProgressBar durationProgressBar;
 
-        Task task = new Task<Void>() {
-            @Override public Void call() {
-                // TODO : insert implementation with startRecording() here
-                // horizontalOffset
-                // verticalOffset
-                // depthOffset
-                return null;
-            }
-        };
-        task.setOnSucceeded(event -> {
-            RootLayoutController.this.setRunning(false);
-            RootLayoutController.this.handleRunningStatus();
-        });
-        new Thread(task).start();
+    @FXML
+    private ProgressBar precisionProgressBar;
+
+    @FXML
+    private void executeMeasures() {
+        if (isRunning) {
+            setRunning(false);
+            handleRunningStatus();
+            // TODO : kill threads that previously handle Dive and Duration
+        } else {
+            setRunning(true);
+            handleRunningStatus();
+
+            Task diveDurationTask = new Task<Void>() {
+                @Override public Void call() {
+                    final double max = RootLayoutController.this.diveDurationTolerance * 2;
+                    for (double i = 0; i <= max; i++) {
+                        if (isCancelled()) {
+                            break;
+                        }
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            // ignore
+                        }
+                        updateProgress(i, max);
+                    }
+                    return null;
+                }
+            };
+            durationProgressBar.progressProperty().bind(diveDurationTask.progressProperty());
+            Thread duration = new Thread(diveDurationTask);
+
+            Task diveTask = new Task<Void>() {
+                @Override public Void call() {
+
+                    // TODO : insert implementation with startRecording() here
+                    // horizontalOffset
+                    // verticalOffset
+                    // depthOffset
+                    // diveDurationTolerance (seconds)
+                    for (int i = 0; i < diveDurationTolerance; i++) {
+                        if (isCancelled()) {
+                            // setRunning(false);
+                            // super.cancel();
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            // super.failed();
+                        }
+                    }
+                    // super.succeeded();
+                    return null;
+                }
+            };
+
+            diveTask.setOnSucceeded(event -> {
+                duration.interrupt();
+                setRunning(false);
+                handleRunningStatus();
+            });
+
+            diveTask.setOnCancelled(event -> {
+                duration.interrupt();
+                setRunning(false);
+                handleRunningStatus();
+            });
+
+            diveTask.setOnFailed(event -> {
+                duration.interrupt();
+                setRunning(false);
+                handleRunningStatus();
+            });
+
+            Thread dive = new Thread(diveTask);
+            duration.start();
+            dive.start();
+        }
     }
 
     private void handleRunningStatus() {
         if (!isRunning) {
+            durationProgressBar.progressProperty().unbind();
+            durationProgressBar.setProgress(0.0);
             progressIndicator.setVisible(false);
             runButton.setText("Démarrer mesures");
         } else {
@@ -165,23 +232,4 @@ public class RootLayoutController {
             runButton.setText("Stopper traitement");
         }
     }
-
-    /*
-
-    Task task = new Task<Void>() {
-    @Override public Void call() {
-        static final int max = 1000000;
-        for (int i=1; i<=max; i++) {
-            if (isCancelled()) {
-               break;
-            }
-            updateProgress(i, max);
-        }
-        return null;
-    }
-    };
-    ProgressBar bar = new ProgressBar();
-    bar.progressProperty().bind(task.progressProperty());
-    new Thread(task).start();
-     */
 }
