@@ -2,14 +2,12 @@ package fr.onema.app.view;
 
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
 import fr.onema.lib.tools.Configuration;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TitledPane;
+import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
@@ -26,6 +24,7 @@ public class RootLayoutController {
     private double horizontalOffset = 0;
     private double verticalOffset = 0;
     private double depthOffset = 0;
+    private boolean isRunning;
     private final Configuration c;
 
     @FXML
@@ -39,6 +38,12 @@ public class RootLayoutController {
 
     @FXML
     private Label mavlinkLabel;
+
+    @FXML
+    private Button runButton;
+
+    @FXML
+    private ProgressIndicator progressIndicator;
 
     /***
      * Constructeur du controlleur du RootLayout
@@ -57,6 +62,7 @@ public class RootLayoutController {
      */
     @FXML
     private void initialize() {
+        progressIndicator.setVisible(false);
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this), 0, 30_000);
     }
@@ -125,18 +131,57 @@ public class RootLayoutController {
         this.depthOffset = depthOffset;
     }
 
+    public void setRunning(boolean running) {
+        isRunning = running;
+    }
+
     @FXML
     private void executeMeasures() {
-        // TODO : remove temporary implementation with startRecording()
-        Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText(null);
-        alert.setContentText("horizontalOffset : " + horizontalOffset + "\n"
-                            + "verticalOffset : " + verticalOffset + "\n"
-                            + "depthOffset : " + depthOffset + "\n");
-        alert.showAndWait();
-        //
+        setRunning(true);
+        handleRunningStatus();
 
-        
+        Task task = new Task<Void>() {
+            @Override public Void call() {
+                // TODO : insert implementation with startRecording() here
+                // horizontalOffset
+                // verticalOffset
+                // depthOffset
+                return null;
+            }
+        };
+        task.setOnSucceeded(event -> {
+            RootLayoutController.this.setRunning(false);
+            RootLayoutController.this.handleRunningStatus();
+        });
+        new Thread(task).start();
     }
+
+    private void handleRunningStatus() {
+        if (!isRunning) {
+            progressIndicator.setVisible(false);
+            runButton.setText("Démarrer mesures");
+        } else {
+            progressIndicator.setVisible(true);
+            runButton.setText("Stopper traitement");
+        }
+    }
+
+    /*
+
+    Task task = new Task<Void>() {
+    @Override public Void call() {
+        static final int max = 1000000;
+        for (int i=1; i<=max; i++) {
+            if (isCancelled()) {
+               break;
+            }
+            updateProgress(i, max);
+        }
+        return null;
+    }
+    };
+    ProgressBar bar = new ProgressBar();
+    bar.progressProperty().bind(task.progressProperty());
+    new Thread(task).start();
+     */
 }
