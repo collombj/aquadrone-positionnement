@@ -19,25 +19,28 @@ import java.util.stream.Stream;
 //TODO TO BE CONTINUED
 public class MissingPointsGenerator {
     private String csvFilePath;
+    private final List<String> outputs;
     private final List<String> entries;
     private final List<GPSCoordinate> points;
-    private final List<Integer> measures;
+    private final List<Float> measures;
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
     private static final int REQUIRED_LENGTH = 5;
-
-    /*public String toCSV() {
-        Objects.requireNonNull(entries);
-        StringBuilder sb = new StringBuilder();
-        entries.forEach(x -> sb.append(x));
-        return sb.toString();
-    }*/
 
     private MissingPointsGenerator(String filePath) {
         Objects.requireNonNull(filePath);
         this.csvFilePath = filePath;
         entries = new ArrayList<>();
+        outputs = new ArrayList<>();
         points = new ArrayList<>();
         measures = new ArrayList<>();
+    }
+
+    public static MissingPointsGenerator build(String filePath){
+        MissingPointsGenerator generator = new MissingPointsGenerator(filePath);
+        generator.retrieveLines();
+        generator.retrieveInformationsFromLines();
+        generator.createOutputFile();
+        return generator;
     }
 
     private void retrieveInformationsFromLines(){
@@ -49,20 +52,15 @@ public class MissingPointsGenerator {
                 long x = Long.parseLong(tab[1]);
                 long y = Long.parseLong(tab[2]);
                 long alt = Long.parseLong(tab[3]);
-                int measure = Integer.parseInt(tab[4]);
+                float measure = Float.parseFloat(tab[4]);
 
                 measures.add(measure);
                 points.add(timestamp, new GPSCoordinate(x, y, alt));
+            } else {
+                LOGGER.log(Level.INFO,"The line '"+ entry + "' doesn't fit the requirements " +
+                        "(number of arguments = " + REQUIRED_LENGTH + ")");
             }
         });
-    }
-
-    public static MissingPointsGenerator build(String filePath){
-        MissingPointsGenerator generator = new MissingPointsGenerator(filePath);
-        generator.retrieveLines();
-        generator.retrieveInformationsFromLines();
-        //generator.
-        return generator;
     }
 
     private void retrieveLines(){
@@ -71,5 +69,15 @@ public class MissingPointsGenerator {
         }catch (IOException ioe){
             LOGGER.log(Level.SEVERE,"An error occured while adding file lines in the list");
         }
+    }
+
+    /*public*/ private void createOutputFile(){
+        createIntermediaryPoints();
+    }
+
+    private void createIntermediaryPoints(){
+        String longJohn = "I'm Long John";
+        outputs.add(longJohn);
+        outputs.forEach(s -> LOGGER.log(Level.INFO, s));
     }
 }
