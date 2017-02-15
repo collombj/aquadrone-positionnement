@@ -11,6 +11,14 @@ public class DiveEntity {
     private long startTime;
     private long endTime;
 
+
+    /**
+     * Constructeur par defaut
+     */
+    public DiveEntity() {
+
+    }
+
     /**
      * Constructeur
      *

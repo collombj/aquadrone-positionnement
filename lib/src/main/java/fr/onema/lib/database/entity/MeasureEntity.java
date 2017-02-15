@@ -9,8 +9,8 @@ import java.util.Objects;
  */
 public class MeasureEntity {
     private final long timestamp;
-    private final GPSCoordinate locationBrut;
-    private final GPSCoordinate locationCorrected;
+    private GPSCoordinate locationBrut;
+    private GPSCoordinate locationCorrected;
     private final int accelerationX;
     private final int accelerationY;
     private final int accelerationZ;
@@ -39,9 +39,9 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
-        Objects.requireNonNull(locationCorrected);
-        Objects.requireNonNull(measureValue);
+        //Objects.requireNonNull(locationBrut);
+        //Objects.requireNonNull(locationCorrected);
+        //Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
         this.locationCorrected = locationCorrected;
@@ -186,26 +186,45 @@ public class MeasureEntity {
         return measureValue;
     }
 
+
+    /**
+     * MEt a jour les coordonnées relevées
+     *
+     * @param locationBrut des coordonnées GPS
+     */
+    public void setLocationBrut(GPSCoordinate locationBrut) {
+        this.locationBrut = locationBrut;
+    }
+
+    /**
+     * Met a jour les coordonnées corrigées
+     *
+     * @param locationCorrected des coordonnées GPS
+     */
+    public void setLocationCorrected(GPSCoordinate locationCorrected) {
+        this.locationCorrected = locationCorrected;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
 
         MeasureEntity that = (MeasureEntity) o;
-        return !(id != that.id
-                || timestamp != that.timestamp
-                || accelerationX != that.accelerationX)
-                && !(accelerationY != that.accelerationY
-                || accelerationZ != that.accelerationZ
-                || Double.compare(roll, that.roll) != 0)
-                && !(Double.compare(pitch, that.pitch) != 0
-                || Double.compare(yaw, that.yaw) != 0
-                || precisionCm != that.precisionCm)
-                && (locationBrut != null ? locationBrut.equals(that.locationBrut) : that.locationBrut == null
-                && (locationCorrected != null ? locationCorrected.equals(that.locationCorrected) : that.locationCorrected == null
-                && (measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null)));
+
+        if (timestamp != that.timestamp) return false;
+        if (accelerationX != that.accelerationX) return false;
+        if (accelerationY != that.accelerationY) return false;
+        if (accelerationZ != that.accelerationZ) return false;
+        if (Double.compare(that.roll, roll) != 0) return false;
+        if (Double.compare(that.pitch, pitch) != 0) return false;
+        if (Double.compare(that.yaw, yaw) != 0) return false;
+        if (precisionCm != that.precisionCm) return false;
+        if (id != that.id) return false;
+        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
+        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
+            return false;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
 
     }
 

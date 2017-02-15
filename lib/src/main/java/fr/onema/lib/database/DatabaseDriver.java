@@ -244,15 +244,27 @@ public class DatabaseDriver {
             insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
 
             // location_corrected
-            insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-            insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-            insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            insertStatement.setInt(5, srid);
+            if (measureEntity.getLocationCorrected() == null) {
+                insertStatement.setNull(2, Types.BIGINT);
+                insertStatement.setNull(3, Types.BIGINT);
+                insertStatement.setNull(4, Types.BIGINT);
 
+            } else {
+                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            }
+            insertStatement.setInt(5, srid);
             // location_brut
-            insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-            insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-            insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            }
             insertStatement.setInt(9, srid);
 
             //acceleration XYZ

@@ -1,14 +1,15 @@
 package fr.onema.lib.geo;
 
+import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
- * <p>
- * <p>
  * Created by julien on 06/02/2017.
  */
 public class GeoMaths {
@@ -31,7 +32,6 @@ public class GeoMaths {
     public static double cartesianDistance(CartesianCoordinate pos1, CartesianCoordinate pos2) {
         Objects.requireNonNull(pos1);
         Objects.requireNonNull(pos2);
-
         return Math.sqrt(Math.pow(pos2.x - pos1.x, 2) + Math.pow(pos2.y - pos1.y, 2) + Math.pow(pos2.z - pos1.z, 2));
     }
 
@@ -47,8 +47,6 @@ public class GeoMaths {
         Objects.requireNonNull(b);
         CartesianCoordinate a2 = computeXYZfromLatLonAlt(a.lat, a.lon, a.alt);
         CartesianCoordinate b2 = computeXYZfromLatLonAlt(b.lat, b.lon, b.alt);
-
-
         return cartesianDistance(a2, b2);
 
     }
@@ -162,13 +160,11 @@ public class GeoMaths {
         double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
         double accelerationY = (((velocityCurrent.vy - velocityRef.vy) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
         double accelerationZ = (((velocityCurrent.vz - velocityRef.vz) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
-
         return new Accelerometer((int) Math.round(accelerationX), (int) Math.round(accelerationY), (int) Math.round(accelerationZ));
     }
 
     /**
      * Calcule les coordonnées GPS d'un point cartésien (qui utilise le point GPS de référence comme origine)
-     *
      * @param refPoint le point GPS de référence
      * @param point    le point cartésien
      * @return les coordonnées GPS du point cartésien
@@ -176,15 +172,12 @@ public class GeoMaths {
     public static GPSCoordinate computeGPSCoordinateFromCartesian(GPSCoordinate refPoint, CartesianCoordinate point) {
         Objects.requireNonNull(refPoint);
         Objects.requireNonNull(point);
-
         double latRefRad = deg2rad(refPoint.lat / 10_000_000.);
         double lonRefRad = deg2rad(refPoint.lon / 10_000_000.);
         double altRefM = refPoint.alt / 1_000.;
-
         CartesianCoordinate refPointCartesian = computeXYZfromLatLonAlt(latRefRad, lonRefRad, altRefM);
         CartesianCoordinate pointECEF = new CartesianCoordinate(refPointCartesian.x + point.x, refPointCartesian.y + point.y,
                 refPointCartesian.z + point.z);
-
         double p = Math.sqrt((pointECEF.x * pointECEF.x) + (pointECEF.y * pointECEF.y));
         double b = R * (1 - F);
         double theta = Math.atan((pointECEF.z * R) / (p * b));
@@ -197,18 +190,23 @@ public class GeoMaths {
         double e = Math.sqrt(finalOperation.doubleValue());
         BigDecimal finalOperation2 = r2Minusb2.divide(b2, BigDecimal.ROUND_UP);
         double ePrime = Math.sqrt(finalOperation2.doubleValue());
-
-
         double lon = Math.atan(pointECEF.y / pointECEF.x);
         double lat = Math.atan((pointECEF.z + (ePrime * ePrime * b * Math.sin(theta) * Math.sin(theta) * Math.sin(theta))) /
                 (p - (e * e * R * Math.cos(theta) * Math.cos(theta) * Math.cos(theta))));
-
         double n = R / Math.sqrt(1 - (e * e * Math.sin(lat) * Math.sin(lat)));
-
         double alt = (p / Math.cos(lat)) - n;
-
         return new GPSCoordinate(Math.round(rad2deg(lat) * 10_000_000), Math.round(rad2deg(lon) * 10_000_000), Math.round(alt * 1_000));
     }
 
-
+    // TODO : complete
+    public static List<MeasureEntity> recalculatePosition(List<MeasureEntity> measures) {
+        Random rand = new Random();
+        for (MeasureEntity measure : measures) {
+            int x = rand.nextInt(25000 - 1) + 1;
+            int y = rand.nextInt(25000 - 1) + 1;
+            int z = rand.nextInt(25000 - 1) + 1;
+            measure.setLocationCorrected(new GPSCoordinate(x, y, z));
+        }
+        return measures;
+    }
 }
