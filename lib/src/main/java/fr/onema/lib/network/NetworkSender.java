@@ -1,6 +1,5 @@
 package fr.onema.lib.network;
 
-import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.mavlink.messages.MAVLinkMessage;
 
@@ -9,7 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
 
 public class NetworkSender {
     private final int port;
@@ -84,7 +82,7 @@ public class NetworkSender {
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
-        sender.interrupt();
+        interruptThread();
         dsocket.close();
     }
 
@@ -116,8 +114,10 @@ public class NetworkSender {
                 try {
                     msg = queue.take();
                     send(msg);
-                } catch (InterruptedException | IOException e) {
+                } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                } catch (IOException e) {
+                    // TODO
                 }
             }
         });

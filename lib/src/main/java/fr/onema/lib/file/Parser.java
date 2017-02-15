@@ -8,6 +8,7 @@ import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
  * Classe utilitaire permettant de transformer une ligne CSV en entités
  */
 public class Parser {
+
     /***
      * Parse la ligne et la transforme en entrée de référence
      * @param line La ligne CSV à parser
