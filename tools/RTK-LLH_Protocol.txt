@@ -1,4 +1,4 @@
-Code ASCII reçus via TCP
+Code ASCII reÃ§us via TCP
 
 Exemple:
 1936 134358.100   48.838973125    2.587922095   144.8814   5   6   4.1635   2.6563  11.3351  -1.1073   1.5181  -3.5708   0.00    0.0
@@ -6,8 +6,8 @@ Exemple:
 Signification:
 GPS Week Reference [BLANK]
 GPS Seconds Of Week Reference [BLANK][BLANK][BLANK]
-Latitude° [BLANK][BLANK][BLANK]
-Longitude° [BLANK][BLANK][BLANK]
+LatitudeÂ° [BLANK][BLANK][BLANK]
+LongitudeÂ° [BLANK][BLANK][BLANK]
 Height(m) [BLANK][BLANK][BLANK]
 Q (1:fix,2:float,3:sbas,4:dgps,5:single,6:ppp) [BLANK][BLANK][BLANK]
 nb Of Satelittes [BLANK][BLANK][BLANK]
@@ -17,5 +17,5 @@ standard deviation Altitude [BLANK][BLANK][BLANK]
 Standard deviation Longitude-Latitude [BLANK][BLANK][BLANK]
 Standard deviation Latitude-Altitude [BLANK][BLANK][BLANK]
 Standard deviation Altitude-Longitude [BLANK][BLANK][BLANK]
-Age (différence entre l'heure Satelitte et l'heure de l'antenne - en seconde) [BLANK][BLANK][BLANK]
-Ambiguité (ratio)
+Age (diffÃ©rence entre l'heure Satelitte et l'heure de l'antenne - en seconde) [BLANK][BLANK][BLANK]
+AmbiguitÃ© (ratio)
