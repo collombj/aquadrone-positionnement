@@ -8,10 +8,8 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 
 public class VirtualizerEntry implements CSV {
+    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
-    private int gpsLat;
-    private int gpsLon;
-    private int gpsAlt;
     private final short xacc;
     private final short yacc;
     private final short zacc;
@@ -23,25 +21,28 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
-    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final boolean hasGPS;
+    private int gpsLat;
+    private int gpsLon;
+    private int gpsAlt;
 
     /**
      * Constructeur de Virtualizer
-     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
-     * @param gpsLat Latitude du GPS
-     * @param gpsLon Longitude du GPS
-     * @param gpsAlt Altitude du GPS
-     * @param xacc Acceleration en x
-     * @param yacc Acceleration en y
-     * @param zacc Acceleration en z
-     * @param roll roll du drone
-     * @param pitch pitch du drone
-     * @param yaw yaw du drone
-     * @param xmag Orientation magnétique en x
-     * @param ymag Orientation magnétique en y
-     * @param zmag Orientation magnétique en z
-     * @param pressure Pression
+     *
+     * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
+     * @param gpsLat      Latitude du GPS
+     * @param gpsLon      Longitude du GPS
+     * @param gpsAlt      Altitude du GPS
+     * @param xacc        Acceleration en x
+     * @param yacc        Acceleration en y
+     * @param zacc        Acceleration en z
+     * @param roll        roll du drone
+     * @param pitch       pitch du drone
+     * @param yaw         yaw du drone
+     * @param xmag        Orientation magnétique en x
+     * @param ymag        Orientation magnétique en y
+     * @param zmag        Orientation magnétique en z
+     * @param pressure    Pression
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
@@ -65,17 +66,18 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer sans le GPS
-     * @param timestamp Durée depuis 1er janvier 1970 en millisecondes
-     * @param xacc Acceleration en x
-     * @param yacc Acceleration en y
-     * @param zacc Acceleration en z
-     * @param roll roll du drone
-     * @param pitch pitch du drone
-     * @param yaw yaw du drone
-     * @param xmag Orientation magnétique en x
-     * @param ymag Orientation magnétique en y
-     * @param zmag Orientation magnétique en z
-     * @param pressure Pression
+     *
+     * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
+     * @param xacc        Acceleration en x
+     * @param yacc        Acceleration en y
+     * @param zacc        Acceleration en z
+     * @param roll        roll du drone
+     * @param pitch       pitch du drone
+     * @param yaw         yaw du drone
+     * @param xmag        Orientation magnétique en x
+     * @param ymag        Orientation magnétique en y
+     * @param zmag        Orientation magnétique en z
+     * @param pressure    Pression
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
@@ -96,6 +98,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message GPS en format MavLink
+     *
      * @return GPSMAVLinkMessage
      */
     public msg_gps_raw_int getGPSMessage() {
@@ -116,6 +119,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message IMU en format MavLink
+     *
      * @return IMUMAVLinkMessage
      */
     public msg_scaled_imu getIMUMessage() {
@@ -135,6 +139,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message Attitude en format MavLink
+     *
      * @return AttitudeMessage
      */
     public msg_attitude getAttitudeMessage() {
@@ -147,6 +152,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * retourne le message de pression en format MavLink
+     *
      * @return PressureMAVLinkMessage
      */
     public msg_scaled_pressure getPressureMessage() {
@@ -159,6 +165,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * retourne le message de temperature en format MavLink
+     *
      * @return PressureMAVLinkMessage
      */
     public msg_scaled_pressure getTemperatureMessage() {
@@ -175,6 +182,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS
+     *
      * @return gpsLat
      */
     public int getGpsLat() {
@@ -183,6 +191,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la longitude du GPS
+     *
      * @return gpsLon
      */
     public int getGpsLon() {
@@ -191,6 +200,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'altitude du GPS
+     *
      * @return gpsAlt
      */
     public int getGpsAlt() {
@@ -199,6 +209,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en X
+     *
      * @return xacc
      */
     public short getXacc() {
@@ -207,6 +218,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Y
+     *
      * @return yacc
      */
     public short getYacc() {
@@ -215,6 +227,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Z
+     *
      * @return zacc
      */
     public short getZacc() {
@@ -223,6 +236,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en X
+     *
      * @return xgyro
      */
     public double getRoll() {
@@ -231,6 +245,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Y
+     *
      * @return ygyro
      */
     public double getPitch() {
@@ -239,6 +254,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Z
+     *
      * @return zgyro
      */
     public double getYaw() {
@@ -247,6 +263,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en X
+     *
      * @return xmag
      */
     public short getXmag() {
@@ -255,6 +272,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Y
+     *
      * @return ymag
      */
     public short getYmag() {
@@ -263,6 +281,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Z
+     *
      * @return zmag
      */
     public short getZmag() {
@@ -271,6 +290,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la pression
+     *
      * @return pressure
      */
     public float getPressure() {
@@ -279,6 +299,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la temperature
+     *
      * @return temperature
      */
     public short getTemperature() {
@@ -287,12 +308,16 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère le boolean de la présence du GPS
+     *
      * @return boolean
      */
-    public boolean getHasGPS() { return hasGPS; }
+    public boolean getHasGPS() {
+        return hasGPS;
+    }
 
     /**
      * Renvoi une string des valeurs au format CSV
+     *
      * @return la chaine de caractère CSV
      */
     @Override
@@ -300,10 +325,11 @@ public class VirtualizerEntry implements CSV {
         return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
     }
 
-     /**
-      * Renvoi une string des champs au format CSV
-      * @return la chaine de caractère CSV
-      */
+    /**
+     * Renvoi une string des champs au format CSV
+     *
+     * @return la chaine de caractère CSV
+     */
     @Override
     public String getCSVHeader() {
         return HEADER;

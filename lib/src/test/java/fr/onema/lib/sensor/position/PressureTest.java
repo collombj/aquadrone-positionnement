@@ -1,9 +1,10 @@
 package fr.onema.lib.sensor.position;
 
 import org.junit.Test;
-
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
-import static org.junit.Assert.*;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by you on 07/02/2017.
@@ -14,6 +15,15 @@ public class PressureTest {
         msg_scaled_pressure msg = new msg_scaled_pressure();
         Pressure p = Pressure.build(msg);
         assertNotNull(p);
+    }
+
+    @Test
+    public void build2() {
+        Pressure p2 = Pressure.build(3, 1, 2);
+        assertEquals(p2.getTimestamp(), 3);
+        assertEquals(p2.getAbsolute(), 0, 0);
+        assertEquals(p2.getDifferential(), 0, 0);
+        assertEquals(p2.getTemperature(), 2);
     }
 
     @Test

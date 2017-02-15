@@ -19,32 +19,28 @@ import java.util.Random;
  * @since 10-02-2017
  */
 public class Position {
-
     private List<MeasureEntity> entities = new ArrayList<>();
     private List<Measure> measures = new ArrayList<>();
-
     private long timestamp;
-    private GPSCoordinate positionBrut = null;
+    private GPSCoordinate positionBrute = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
-
     private GPS gps;
     private IMU imu;
 
 
     /**
-     * Constructeur de Position.
-     *
-     * @param timestamp    Le timestamp de la position actuelle.
-     * @param positionBrut Les coordonnées brut de la position.
-     * @param direction    La direction de la position actuelle.
+     * Constructeur de la mesure de position
+     * @param timestamp Heure de la mesure
+     * @param positionBrute Coordonnées gps (latitude, longitude, altitude)
+     * @param direction Orientation du gps en degrés
      */
-    public Position(long timestamp, GPSCoordinate positionBrut, int direction, IMU imu, GPS gps) {
+    public Position(long timestamp, GPSCoordinate positionBrute, int direction, IMU imu, GPS gps) {
         if (imu == null && gps == null)
             throw new InvalidParameterException("Position need either an IMU or a GPS value");
         this.gps = gps;
         this.timestamp = timestamp;
-        this.positionBrut = positionBrut;
+        this.positionBrute = positionBrute;
         this.direction = direction;
         this.imu = imu;
     }
@@ -77,13 +73,17 @@ public class Position {
         return timestamp;
     }
 
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
     /**
-     * Obtient la position GPS brut de la position.
+     * Obtient la position GPS brute de la position.
      *
-     * @return La position GPS brut de la position.
+     * @return La position GPS brute de la position.
      */
-    public GPSCoordinate getPositionBrut() {
-        return positionBrut;
+    public GPSCoordinate getPositionBrute() {
+        return positionBrute;
     }
 
     /**
@@ -91,9 +91,9 @@ public class Position {
      *
      * @param positionBrut des coordonnées GPS
      */
-    public void setPositionBrut(GPSCoordinate positionBrut) {
-        this.positionBrut = positionBrut;
-        this.entities.forEach(a -> a.setLocationBrut(positionBrut));
+    public void setPositionBrute(GPSCoordinate positionBrute) {
+        this.positionBrute = positionBrute;
+        this.entities.forEach(a -> a.setLocationBrut(positionBrute));
     }
 
     /**
@@ -149,24 +149,18 @@ public class Position {
     public List<MeasureEntity> getMeasureEntities() {
         if (entities.isEmpty()) {
             for (Measure measure : measures) {
-                //TODO attendre merge pour supprimer id et la position recalculé
-                //TODO lien vers le entity information
-                entities.add(new MeasureEntity(timestamp, positionBrut, positionRecalculated,
+                // TODO attendre merge pour supprimer id et la position recalculé
+                // TODO lien vers le entity information
+                entities.add(new MeasureEntity(timestamp, positionBrute, positionRecalculated,
                         imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
                         imu.getGyroscope().getRoll(), imu.getGyroscope().getPitch(), imu.getGyroscope().getYaw(), -1, measure.getName()));
-
             }
         } else {
             for (int i = 0; i < measures.size(); i++) {
-
-                //TODO getter sur la position reclaculé de lmeasure entity
-                //TODO calcul distance Geomaths
-
+                // TODO getter sur la position reclaculé de lmeasure entity
+                // TODO calcul distance Geomaths
             }
-
         }
-
-
         return entities;
     }
 

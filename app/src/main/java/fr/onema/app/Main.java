@@ -13,9 +13,12 @@ import javafx.stage.Stage;
 public class Main extends Application {
     private Stage primaryStage;
 
+    public static void main(String[] args) {
+        launch(args);
+    }
+
     /***
      * Méthode start appelée lors de l'initialisation de l'application pour définir les paramètres du conteneur de base
-     * @param primaryStage Le conteneur principal
      * @throws Exception
      */
     @Override
@@ -23,20 +26,12 @@ public class Main extends Application {
         this.primaryStage = primaryStage;
         this.primaryStage.setTitle("App");
         this.primaryStage.resizableProperty().set(false);
-        initRootLayout(primaryStage);
-    }
-
-    private void initRootLayout(Stage primaryStage) throws java.io.IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
         fxmlLoader.setController(new RootLayoutController(Configuration.build("app/settings.properties")));
         fxmlLoader.load();
-        Scene rootScene = new Scene(fxmlLoader.getRoot());
-        primaryStage.setScene(rootScene);
+        primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
         primaryStage.sizeToScene();
+        primaryStage.setAlwaysOnTop(true);
         primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     }
 }

@@ -1,12 +1,10 @@
 package fr.onema.simulator;
 
 import fr.onema.lib.file.FileManager;
-import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
-import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
@@ -36,7 +34,7 @@ public class Generator {
     /***
      * Permet de convertir les données du fichier d'entrée en données virtualisées et les écrire dans le fichier spécifié
      */
-    public void convert() {
+    public void convert() throws IOException {
         for (ReferenceEntry e : inputReferencies) {
             IMU i = previous == null
                     ? IMU.build(new CartesianVelocity(0, 0, 0),
@@ -68,8 +66,7 @@ public class Generator {
                         p.getAbsolute(),
                         (short) t.getValueTemperature()));
             } catch (IOException e1) {
-                // TODO : exception handling
-                e1.printStackTrace();
+                throw e1;
             }
         }
     }

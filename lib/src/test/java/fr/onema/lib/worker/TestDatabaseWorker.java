@@ -9,6 +9,7 @@ import fr.onema.lib.tools.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import java.time.Duration;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -41,8 +42,6 @@ public class TestDatabaseWorker {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-
-
         dbWorker.start();
         dbWorker.newDive(dive);
         Thread.sleep(1000);
@@ -60,14 +59,11 @@ public class TestDatabaseWorker {
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));
         assertTrue(dive.getId() == dive2.getId());
-
         assertTrue(dive2.getStartTime() == start);
         assertTrue(dive2.getEndTime() == end);
-
         MeasureEntity entity2 = repository.getMeasureFrom(dive).get(0);
         assertFalse(entity.equals(entity2));
         assertTrue(entity.getId() == entity2.getId());
-
         assertTrue(entity2.getLocationCorrected().equals(correct));
 
     }

@@ -11,7 +11,7 @@ import java.util.Objects;
 
 /**
  * Created by strock on 06/02/2017.
- *
+ * <p>
  * Classe qui représente la centrale inertielle embarquée
  */
 public class IMU {
@@ -50,7 +50,6 @@ public class IMU {
     /**
      * Creation de l'imu  de simulation à parti de la classe  {@link GeoMaths}
      *
-     * @param refVelocity
      * @param prevTimestamp  timestamp de l'avant dernière mesure (ms)
      * @param prevCoordinate coodonnée de l'avant dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}
      * @param coordinate     coodonnée de l'avnt dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}

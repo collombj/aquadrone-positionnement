@@ -1,4 +1,3 @@
-
 package fr.onema.lib.database.entity;
 
 

@@ -19,7 +19,8 @@ public class Temperature extends Sensor implements Measure {
 
     /**
      * Factory methode pour créer une Temperature
-     * @param timestamp Timestamp de la Temperature.
+     *
+     * @param timestamp   Timestamp de la Temperature.
      * @param temperature Valeur de la température à l'instant donné.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
@@ -29,6 +30,7 @@ public class Temperature extends Sensor implements Measure {
 
     /**
      * Méthode permettant de créer une Temperature à partir d'un message PressureMAVLink
+     *
      * @param pressureMAVLinkMessage Message MAVLink provenant d'une pression.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */

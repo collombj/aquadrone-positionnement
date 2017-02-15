@@ -14,6 +14,7 @@ import java.util.Objects;
  * Classe représentant les mesures GPS
  */
 public class GPS extends Sensor {
+    private static final String HEADER = "timestamp,latitude,longitude,altitude,direction";
     private GPSCoordinate position;
     private float direction;
     private static String HEADER = "timestamp,latitude,longitude,altitude,direction";
