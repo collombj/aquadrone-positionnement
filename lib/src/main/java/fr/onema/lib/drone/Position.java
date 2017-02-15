@@ -7,7 +7,6 @@ import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
-import fr.onema.lib.sensor.position.Pressure;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
@@ -220,101 +219,26 @@ public class Position {
      * Afin de ce faire, il est nécessaire d'avoir un IMU, la position précédente et la vitesse précedente.
      *
      * @param previousPosition La position précédente.
-     * @param previousVelocity         La vitesse de la position précédente.
+     * @param previousVelocity La vitesse de la position précédente.
+     * @param refPoint
+     * @return la vitesse au cours du deplacement
      */
-    public void calculate(Position previousPosition, CartesianVelocity previousVelocity,GPSCoordinate refPoint) {
+    public CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
 
         //CartesianCoordinate last,CartesianVelocity previousVelocity,long time, double yaw, double pitch, double roll, Accelerometer accelerometer)
-
-
-        this.setCartesianBrute(GeoMaths.computeNewPosition(
+        GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),
                 imu.getGyroscope().getYaw(),
                 imu.getGyroscope().getPitch(),
                 imu.getGyroscope().getRoll(),
                 previousVelocity,
-                timestamp- previousPosition.getTimestamp(),
-                imu.getAccelerometer()));
+                timestamp - previousPosition.getTimestamp(),
+                imu.getAccelerometer());
 
+        this.setCartesianBrute(wrapper.getCoordinate());
 
-        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian( refPoint, cartesianBrute) );
+        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
+        return wrapper.getVelocity();
 
-    }
-
-    /**
-     * Retourne la liste de mesure avec les positions pour l'insert ou l'update de données.
-     *
-     * @return liste de mesure
-     */
-    public List<MeasureEntity> getMeasureEntities() {
-        if (entities.isEmpty()) {
-            for (Measure measure : measures) {
-                // TODO attendre merge pour supprimer id et la position recalculé
-                // TODO lien vers le entity information
-                entities.add(new MeasureEntity(timestamp, positionBrute, positionRecalculated,
-                        imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
-                        imu.getGyroscope().getRoll(), imu.getGyroscope().getPitch(), imu.getGyroscope().getYaw(), -1, measure.getName()));
-            }
-        } else {
-            for (int i = 0; i < measures.size(); i++) {
-                // TODO getter sur la position reclaculé de lmeasure entity
-                // TODO calcul distance Geomaths
-            }
-        }
-        return entities;
-    }
-
-    /**
-     * Définit le GPS de la position.
-     *
-     * @param gps Le GPS de la position.
-     */
-    public void setGps(GPS gps) {
-        this.gps = gps;
-    }
-
-    /**
-     * Ajoute une mesure à cette position.
-     *
-     * @param newMeasure Nouvelle mesure {@link Measure}
-     */
-    public void add(Measure newMeasure) {
-        measures.add(newMeasure);
-
-    }
-
-    /**
-     * Procède au calcule de la position actuelle grâce à la position précedente.
-     * Afin de ce faire, il est nécessaire d'avoir un GPS, IMU, Pressure associé à la position précédente.
-     *
-     * @param previousPosition La position précédente.
-     * @param velocity         La vitesse de la position précédente.
-     */
-    public void calculate(Position previousPosition, CartesianVelocity velocity, GPSCoordinate reference) {
-        // TODO
-        Random rand = new Random();
-        int x = rand.nextInt(25000 - 1) + 1;
-        int y = rand.nextInt(25000 - 1) + 1;
-        int z = rand.nextInt(25000 - 1) + 1;
-
-        this.setPositionBrute(new GPSCoordinate(x, y, z));
-    }
-
-    /**
-     * Vérifie si un GPS est associé à la position.
-     *
-     * @return Vrai si un GPS est associé. Sinon faux.
-     */
-    public boolean hasGPS() {
-        return this.gps != null;
-    }
-
-    /**
-     * Vérifie si un IMU est associé à la position.
-     *
-     * @return Vrai si un IMU est associé. Sinon faux.
-     */
-    public boolean hasIMU() {
-        return this.imu != null;
     }
 }

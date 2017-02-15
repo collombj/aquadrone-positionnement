@@ -3,16 +3,18 @@ package fr.onema.lib.geo;
 
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
- *
- *
+ * <p>
+ * <p>
  * Created by julien on 06/02/2017.
  */
 public class GeoMaths {
@@ -264,7 +266,7 @@ public class GeoMaths {
      * @param accelerometer    les données d'accelerometre
      * @return la nouvelle position estimée du drone
      */
-    public static CartesianCoordinate computeNewPosition(CartesianCoordinate last,double yaw, double pitch, double roll,CartesianVelocity previousVelocity,long time,  Accelerometer accelerometer){
+    public static MovementWrapper computeNewPosition(CartesianCoordinate last, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
         Objects.requireNonNull(last);
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
@@ -278,15 +280,15 @@ public class GeoMaths {
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
 
         CartesianCoordinate velocityRotated = doRotation(velocityVector, -yaw, -pitch, -roll);
-
-        return new CartesianCoordinate(
+        CartesianCoordinate computedCoords = new CartesianCoordinate(
                 last.x + (velocityRotated.x * (time / 1000.)),
                 last.y + (velocityRotated.y * (time / 1000.)),
                 last.z + (velocityRotated.z * (time / 1000.)));
+        return new MovementWrapper(computedCoords, velocity);
     }
 
 
-    public static List <Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    public static List<Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
         Objects.requireNonNull(ref);
         Objects.requireNonNull(resurface);
@@ -310,8 +312,40 @@ public class GeoMaths {
         }
 
         return rawPositions;
-
     }
 
 
+    /**
+     * Cette classe sert à retourner à la fois une vitesse et une coordonnées dans un meme object
+     */
+    public static class MovementWrapper {
+        private CartesianCoordinate coordinate;
+        private CartesianVelocity velocity;
+
+        /**
+         * Le constructeur
+         * @param coordinate les coordonnees calculees
+         * @param velocity la vitesse calculée
+         */
+        public MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
+            this.coordinate = coordinate;
+            this.velocity = velocity;
+        }
+
+        /**
+         * Permet d obtenir les coordonnées
+         * @return des coordonnées cartésiennes
+         */
+        public CartesianCoordinate getCoordinate() {
+            return coordinate;
+        }
+
+        /**
+         * Permet d'obtenir la velocité
+         * @return des coordonnées gps
+         */
+        public CartesianVelocity getVelocity() {
+            return velocity;
+        }
+    }
 }

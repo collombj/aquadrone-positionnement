@@ -4,8 +4,10 @@ package fr.onema.lib.geo;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import static fr.onema.lib.geo.GeoMaths.recalculatePosition;
 import static junit.framework.TestCase.assertEquals;
 
@@ -220,7 +222,7 @@ public class GeoMathsTest {
 
         CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(ref, test);
 
-        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, -Math.PI / 2, 0, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0));
+        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, -Math.PI / 2, 0, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0)).getCoordinate();
 
         assertEquals(cartesianCoordinate.x, newPo.x, 0.0001);
         assertEquals(cartesianCoordinate.y, newPo.y, 0.0001);
@@ -234,7 +236,7 @@ public class GeoMathsTest {
 
         CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(ref, test);
 
-        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, 0, -Math.PI / 2, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0));
+        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, 0, -Math.PI / 2, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0)).getCoordinate();
 
         assertEquals(cartesianCoordinate.x + 1.5, newPo.x, 0.0001);
         assertEquals(cartesianCoordinate.y, newPo.y, 0.0001);

@@ -2,6 +2,7 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
@@ -49,14 +50,19 @@ public class Dive {
         // si c'est le premier point
         if (positions.isEmpty()) {
             // si la premiere position n a pas de gps, on la rejette
-            if (position.getPositionBrute() == null)
+            if (!position.hasGPS())
                 return;
             position.setPositionBrute(position.getGps().getPosition());
+            position.setCartesianBrute(new CartesianCoordinate(0, 0, 0));
+            lastVitesse = new CartesianVelocity(0, 0, 0);
             reference = position.getPositionBrute();
 
 
         } else {//si ce n'est pas le premier point on calcule
-            position.calculate(positions.get(positions.size() - 1), lastVitesse, reference);
+            if (!position.hasIMU()) { // on ignore les paquets sans imu
+                return;
+            }
+            lastVitesse = position.calculate(positions.get(positions.size() - 1), lastVitesse, reference);
         }
 
         updateMeasuresAndPosition(position);
@@ -93,6 +99,7 @@ public class Dive {
         if (!position.hasGPS())
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS");
         position.setPositionBrute(position.getGps().getPosition());
+        position.calculate(positions.get(positions.size() - 1), lastVitesse, reference);
         if (state == RECORD)
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
 

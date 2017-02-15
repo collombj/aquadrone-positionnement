@@ -44,6 +44,7 @@ public class DiveTest {
         position.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
                 System.currentTimeMillis() + 2000, previous2));
         position.add(Temperature.build(System.currentTimeMillis(), 250));
+        position.setGps(GPS.build(System.currentTimeMillis(),4,1,2,250));
         dive.add(position);
 
         Thread.sleep(200);
