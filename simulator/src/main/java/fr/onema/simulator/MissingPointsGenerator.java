@@ -17,17 +17,19 @@ import java.util.stream.Stream;
  * Created by Jérôme on 14/02/2017.
  */
 
-//TODO TO BE CONTINUED
 public class MissingPointsGenerator {
-    private String csvFilePath;
-    private final List<String> entries;
-    private final List<Point> pointsInput;
-    private final List<Point> pointsOutput;
+    private String csvFilePath; //Don't supposed to be accessed remotely
+    private final List<String> entries; //Don't supposed to be accessed remotely
+    private final List<Point> pointsInput; //Don't supposed to be accessed remotely
+    private final List<Point> pointsOutput; //Don't supposed to be accessed remotely
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
     private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
 
+    /**
+     * Classe interne représentant un point (des coordonnées, un timestamp et une valeur de température)
+     */
     public static class Point {
         private final GPSCoordinate coordinates;
         private final float measure;
@@ -63,12 +65,27 @@ public class MissingPointsGenerator {
         pointsOutput = new ArrayList<>();
     }
 
+    /**
+     * Builder de la classe. Il s'occupe d'instancier un générateur de points manquants, de récupérer les lignes
+     * du fichier passé en argument dans une liste et d'en extraire les informations présentes pour faire une
+     * liste de points
+     * @param filePath chemin du fichier CSV d'entrée
+     * @return un objet MissingPointsGenerator
+     */
     public static MissingPointsGenerator build(String filePath){
         Objects.requireNonNull(filePath);
         MissingPointsGenerator generator = new MissingPointsGenerator(filePath);
         generator.retrieveLines();
         generator.retrieveInformationsFromLines();
         return generator;
+    }
+
+    private void retrieveLines(){
+        try (Stream<String> s = Files.lines(Paths.get(csvFilePath))) {
+            s.skip(1).forEach(entries::add);
+        }catch (IOException ioe){
+            LOGGER.log(Level.SEVERE,"An error occurred while adding file lines in the list");
+        }
     }
 
     private void retrieveInformationsFromLines(){
@@ -90,15 +107,12 @@ public class MissingPointsGenerator {
         });
     }
 
-    private void retrieveLines(){
-        try (Stream<String> s = Files.lines(Paths.get(csvFilePath))) {
-            s.skip(1).forEach(entries::add);
-        }catch (IOException ioe){
-            LOGGER.log(Level.SEVERE,"An error occurred while adding file lines in the list");
-        }
-    }
-
-    /*public*/private void populate(){
+    /**
+     * Crée et remplit le fichier de sortie, qui contient tous les points du fichiers de départ,
+     * plus les points générés dans le builder
+     */
+    public void generateOutput(){
+        Objects.requireNonNull(csvFilePath);
         String stringPath = "temp.csv";
         List<String> outputs;
         Path filePath = Paths.get(stringPath);
