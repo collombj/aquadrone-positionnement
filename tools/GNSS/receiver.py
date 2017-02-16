@@ -1,9 +1,9 @@
 # coding=utf-8
-import socket
-import sys
-from datetime import datetime
-import mavlink10 as mavlink
 import re
+import socket
+from datetime import datetime
+
+import mavlink10 as mavlink
 
 
 class Fifo(object):
@@ -49,7 +49,7 @@ def parse_llh(msg, mav):
     :param mav: MAVLink pour l'envoie des messages
     :param msg: Message à parser
     """
-    #splits = msg.split("   ")  # séparation avec 3 espaces
+    # splits = msg.split("   ")  # séparation avec 3 espaces
     splitter = re.compile(r"(\s+|\S+)")
     splits = splitter.findall(msg)
     time = datetime.now().time().microsecond
@@ -59,6 +59,7 @@ def parse_llh(msg, mav):
     signal_type = get_type(splits[10])
     sat_nb = int(splits[12])
     mav_msg = mavlink.MAVLink_gps_raw_int_message(time, signal_type, lat, lon, alt, 0, 0, 0, 0, sat_nb)
+    print mav_msg
     mav.send(mav_msg)
 
 
@@ -97,7 +98,6 @@ def receiver(tcp, udp, llh_length):
     fifo = Fifo()
     mav = mavlink.MAVLink(fifo, 200)
     while True:
-        print "Received"
         chunks = []
         bytes_recd = 0
         while bytes_recd < llh_length:
@@ -110,8 +110,7 @@ def receiver(tcp, udp, llh_length):
 
         parse_llh(b''.join(chunks).decode("ASCII"), mav)
         to_send = fifo.read()
-        udp.sendto(to_send, ("192.168.42.255", 14550))
-
+        udp.sendto(to_send, ("192.168.2.255", 14550))
 
 
 ####
@@ -119,15 +118,10 @@ def receiver(tcp, udp, llh_length):
 ####
 llh_length_static = 133
 
-if len(sys.argv) != 3:
-    print "[IP] [PORT] are required"
-    exit(-1)
-
-ip_arg = sys.argv[1]
-port_arg = sys.argv[2]
+ip_arg = "192.168.42.1"
+port_arg = 9001
 
 while True:
-    print "Init"
     try:
         st = init_socket_tcp(ip_arg, port_arg)
         su = init_socket_udp()

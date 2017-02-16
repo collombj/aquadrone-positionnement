@@ -2,12 +2,6 @@
 
 wifiName="Slave"
 wifiPassword="emlidreach"
-interfaceWln="wlan0"
-interfaceEth="eth0"
-ipRTKSlave="192.168.42.1"
-ipRTKMaster="192.168.2.1"
-portSynchroRTK="9000"
-portExportRTK="9001"
 
 
 
@@ -30,18 +24,11 @@ network={
 }
 EOL
 
-# Activation de la nouvelle configuration sur wlan0
-ifdown $interfaceWln > /dev/null 2>&1
-ifup $interfaceWln > /dev/null 2>&1
-dhclient -v $interfaceWln > /dev/null 2>&1
+# Add auto launch
+cmd='/home/pi/GNSS/starter.sh'
+sudo sed -i -e "\%$cmd%d" \
+-e "0,/^[^#]*exit 0/s%%$cmd\n&%" \
+/etc/rc.local
 
-# Activation du port forwarding
-echo '1' | tee /proc/sys/net/ipv4/conf/$interfaceWln/forwarding > /dev/null 2>&1
-echo '1' | tee /proc/sys/net/ipv4/conf/$interfaceEth/forwarding > /dev/null 2>&1
-
-iptables -t nat -F
-iptables --table nat --append POSTROUTING --out-interface $interfaceEth -j MASQUERADE
-iptables --table nat --append POSTROUTING --out-interface $interfaceWln -j MASQUERADE
-iptables -A PREROUTING -t nat -i $interfaceWln -p tcp --dport $portSynchroRTK -j DNAT --to $ipRTKMaster:$portSynchroRTK
-iptables -A PREROUTING -t nat -i $interfaceEth -p tcp --dport $portExportRTK -j DNAT --to $ipRTKSlave:$portExportRTK
-iptables-save
+chmod +x /home/pi/GNSS/starter.sh
+chmod +x /home/pi/GNSS/worker.sh
