@@ -3,6 +3,7 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Measure;
 import fr.onema.lib.drone.Position;
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -19,6 +20,7 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.*;
 
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
@@ -40,6 +42,7 @@ public class MessageWorker implements Worker {
     private final BlockingQueue<MAVLinkMessage> messages = new ArrayBlockingQueue<>(200);
     // Worker thread that treats the MAVLinkMessages
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
+    private Logger logger;
     // Represents the dive currently associated
     private Dive dive;
     private String lastMessageType;
@@ -63,6 +66,16 @@ public class MessageWorker implements Worker {
         this.currentPos = null;
         this.lastPos = null;
         this.mavLinkConnection = false;
+        this.logger = null;
+    }
+
+    /**
+     * Assigne un logger au messageWorker.
+     *
+     * @param fileManager Le fileManager associé au logger du messageWorker.
+     */
+    void setLogger(FileManager fileManager) {
+        this.logger = new Logger(Objects.requireNonNull(fileManager));
     }
 
     /**
@@ -73,6 +86,9 @@ public class MessageWorker implements Worker {
      */
     void newMessage(MAVLinkMessage message) throws InterruptedException {
         this.messages.put(Objects.requireNonNull(message));
+        if(this.logger != null) {
+            this.logger.newMAVLinkMessage(Objects.requireNonNull(message));
+        }
     }
 
     /**
@@ -171,7 +187,8 @@ public class MessageWorker implements Worker {
                     if (gpsData.fix_type < FIX_THRESHOLD)
                         return; // IGNORE the value : lack of precision.
                     addOrCreateToPosition(gpsData.time_usec, gpsData.getClass().getCanonicalName());
-                    processGPSData(GPS.build(gpsData), gpsData);
+                    GPS gps = GPS.build(gpsData);
+                    processGPSData(gps, gpsData);
                     break; // GPS
                 case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
                     if (bufferMavLink.get() == null) {
@@ -241,7 +258,7 @@ public class MessageWorker implements Worker {
         }
 
         private void processPressureData(Pressure pressure, msg_scaled_pressure pressureData) throws InterruptedException {
-            if ((currentPos.hasGPS() || currentPos.hasIMU())) {
+            if (currentPos.hasGPS() || currentPos.hasIMU()) {
                 dive.add(currentPos);
             }
             add(Temperature.build(pressureData));

@@ -1,6 +1,10 @@
 package fr.onema.lib.virtualizer.entry;
 
 import fr.onema.lib.file.CSV;
+import fr.onema.lib.sensor.Temperature;
+import fr.onema.lib.sensor.position.GPS;
+import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
@@ -61,6 +65,47 @@ public class VirtualizerEntry implements CSV {
         this.zmag = zmag;
         this.pressure = pressure;
         this.temperature = temperature;
+        this.hasGPS = true;
+    }
+
+    public VirtualizerEntry(GPS gps, IMU imu, Pressure pressure) {
+        if(gps == null) {
+            this.gpsLat = 0;
+            this.gpsLon = 0;
+            this.gpsAlt = 0;
+        } else {
+            this.gpsLat = gps.getPosition().lat;
+            this.gpsLon = gps.getPosition().lon;
+            this.gpsAlt = gps.getPosition().alt;
+        }
+        if(imu == null) {
+            this.xacc = 0;
+            this.yacc = 0;
+            this.zacc = 0;
+            this.roll = 0;
+            this.pitch = 0;
+            this.yaw = 0;
+            this.xmag = 0;
+            this.ymag = 0;
+            this.zmag = 0;
+        } else {
+            this.xacc = imu.getAccelerometer().getxAcceleration();
+            this.yacc = imu.getAccelerometer().getyAcceleration();
+            this.zacc = imu.getAccelerometer().getzAcceleration();
+            this.roll = imu.getGyroscope().getRoll();
+            this.pitch = imu.getGyroscope().getPitch();
+            this.yaw = imu.getGyroscope().getYaw();
+            this.xmag = imu.getCompass().getxMagnetic();
+            this.ymag = imu.getCompass().getyMagnetic();
+            this.zmag = imu.getCompass().getzMagnetic();
+        }
+        if(pressure == null) {
+            this.pressure = 0;
+            this.temperature = 0;
+        } else {
+            this.pressure = pressure.getAbsolute();
+            this.temperature = pressure.getTemperature();
+        }
         this.hasGPS = true;
     }
 

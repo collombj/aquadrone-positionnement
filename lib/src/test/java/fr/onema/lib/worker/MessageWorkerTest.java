@@ -22,8 +22,8 @@ public class MessageWorkerTest {
 
     private static Deque<MAVLinkMessage> mavLinkMessageList;
 
-    private static void populateMavLinkMessageList() {
-        mavLinkMessageList = new ArrayDeque<>(210);
+    static Deque<MAVLinkMessage> populateMavLinkMessageList() {
+        Deque<MAVLinkMessage> mavLinkMessageList = new ArrayDeque<>(210);
         VirtualizerEntry simulatedValue;
         for (int i = 0; i < 50; i++) {
             simulatedValue = new VirtualizerEntry(
@@ -48,11 +48,12 @@ public class MessageWorkerTest {
             mavLinkMessageList.add(simulatedValue.getPressureMessage());
             mavLinkMessageList.add(simulatedValue.getTemperatureMessage());
         }
+        return mavLinkMessageList;
     }
 
     @BeforeClass
     public static void createWorker() {
-        populateMavLinkMessageList();
+        mavLinkMessageList = populateMavLinkMessageList();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
