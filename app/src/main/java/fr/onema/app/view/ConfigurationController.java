@@ -1,5 +1,6 @@
 package fr.onema.app.view;
 
+import fr.onema.app.Main;
 import fr.onema.app.model.GraphicUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -8,6 +9,8 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+
+import java.util.Objects;
 
 /**
  * Created by you on 13/02/2017.
@@ -37,6 +40,9 @@ public class ConfigurationController {
     @FXML
     private Spinner<Double> depthSpinner;
 
+    @FXML
+    private Button applyButton;
+
     /***
      * Méthode permettant l'initialisation des valeurs dans les spinners
      */
@@ -46,7 +52,7 @@ public class ConfigurationController {
     }
 
     public void init(RootLayoutController parent) {
-        this.parent = parent;
+        this.parent = Objects.requireNonNull(parent);
     }
 
     @FXML
@@ -140,8 +146,6 @@ public class ConfigurationController {
         }
     }
 
-    @FXML
-    private Button applyButton;
 
     /***
      * Apply settings to the next dive operation

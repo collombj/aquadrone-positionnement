@@ -1,5 +1,6 @@
 package fr.onema.app.model;
 
+import fr.onema.app.Main;
 import fr.onema.app.view.RootLayoutController;
 import javafx.scene.paint.Color;
 
@@ -15,9 +16,11 @@ import java.util.TimerTask;
  */
 public class CheckDependenciesAvailabilityTask extends TimerTask {
     private final RootLayoutController rlc;
+    private final Main main;
 
-    public CheckDependenciesAvailabilityTask(RootLayoutController rlc) {
+    public CheckDependenciesAvailabilityTask(RootLayoutController rlc, Main main) {
         this.rlc = Objects.requireNonNull(rlc);
+        this.main = Objects.requireNonNull(main);
     }
 
     /***
@@ -25,7 +28,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
      */
     @Override
     public void run() {
-        if (GraphicUtils.checkPostgresAvailability(rlc.getConfiguration())) {
+        if (GraphicUtils.checkPostgresAvailability(main.getConfiguration())) {
             rlc.updateDatabaseColor(Color.GREEN);
         } else {
             rlc.updateDatabaseColor(Color.RED);

@@ -1,7 +1,7 @@
 package fr.onema.app.view;
 
+import fr.onema.app.Main;
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
-import fr.onema.lib.tools.Configuration;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -26,11 +26,15 @@ import java.util.Timer;
  * Controlleur associé à la vue RootLayout.fxml
  */
 public class RootLayoutController {
+    private final Main main;
     private double horizontalOffset = 0;
     private double verticalOffset = 0;
     private double depthOffset = 0;
-    private final Configuration c;
-    private int diveDurationTolerance = 30;
+
+    // TODO : gestion des paramètres via le fichier de configuration
+    private int diveDurationTolerance = 120;
+    private int precision = 50;
+
     private volatile BooleanProperty isRunning = new SimpleBooleanProperty();
     private StringProperty startButtonLabel = new SimpleStringProperty();
     private Thread diveProgress = new Thread();
@@ -62,18 +66,9 @@ public class RootLayoutController {
 
     /***
      * Constructeur du controlleur du RootLayout
-     * @param c Fichier de configuration comprenant les infos de la base Postgres
      */
-    public RootLayoutController(Configuration c) {
-        this.c = Objects.requireNonNull(c);
-    }
-
-    /***
-     * Getter de la configuration associée à la vue Root de l'application
-     * @return Configuration du RootLayout
-     */
-    public Configuration getConfiguration() {
-        return c;
+    public RootLayoutController(Main main) {
+        this.main = Objects.requireNonNull(main);
     }
 
     /***
@@ -122,7 +117,7 @@ public class RootLayoutController {
             });
         });
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this), 0, 30_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 30_000);
     }
 
     /***
@@ -193,6 +188,7 @@ public class RootLayoutController {
         if (isRunning.get()) {
             dive.interrupt();
             diveProgress.interrupt();
+            main.stopExecution();
             setRunning(false);
         } else {
             setupDiveProgressThread();
@@ -211,15 +207,10 @@ public class RootLayoutController {
             @Override
             protected Void call() throws Exception {
                 try {
-                    // TODO : insert implementation with startRecording() here
-                    Thread.sleep(3000);
-                    System.out.println("Task completed with followings parameters : \n"
-                            + "Horizontal Offset = " + horizontalOffset + "\n"
-                            + "Vertical Offset = " + verticalOffset + "\n"
-                            + "Depth Offset = " + depthOffset + "\n"
-                            + "Duration Tolerance = " + diveDurationTolerance + "\n"
-                            + "Precision = NOT IMPLEMENTED YET"
-                    );
+                    // TODO : remove
+                    Thread.sleep(60000);
+                    //
+                    main.execute(horizontalOffset, verticalOffset, depthOffset, diveDurationTolerance, precision);
                 } catch (InterruptedException e) {
                     // ignore
                 } finally {
