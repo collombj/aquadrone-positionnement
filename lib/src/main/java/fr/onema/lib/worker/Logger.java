@@ -14,7 +14,6 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
@@ -43,9 +42,9 @@ public class Logger implements Worker {
     private long lastMessage = 0;
 
     /**
-     * Create a Logger.
+     * Créer un Logger.
      *
-     * @param fileManager The associated that will create the logging file.
+     * @param fileManager Le FileManager qui va servir à écrire les données issues du logger..
      */
     Logger(FileManager fileManager) {
         this.fileManager = fileManager;
@@ -55,10 +54,10 @@ public class Logger implements Worker {
     }
 
     /**
-     * Add a new MavLinkMessage to the tracer queue.
+     * Ajoute un nouveau message MAVLink à la file des messsages du Logger.
      *
-     * @param message The MAVLinkMessage that will be traced.
-     * @return True is the message has been properly inserted into the queue.
+     * @param message Le message MAVLink qui doit être ajouté.
+     * @return Vrai si le message à bien été ajouté. Faux sinon.
      */
     boolean newMAVLinkMessage(MAVLinkMessage message) {
         return this.messages.offer(Objects.requireNonNull(message));
@@ -141,6 +140,11 @@ public class Logger implements Worker {
 
         @Override
         public void run() {
+            try {
+                fileManager.openFileForResults();
+            } catch (IOException e) {
+                FileManager.LOGGER.log(Level.SEVERE, e.getMessage());
+            }
             while(!Thread.interrupted()) {
                 try {
                     MAVLinkMessage mavLinkMessage = messages.take();

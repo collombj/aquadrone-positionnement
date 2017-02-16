@@ -4,6 +4,7 @@ import fr.onema.lib.File.FileManagerTest;
 import fr.onema.lib.file.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
+import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -15,6 +16,8 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 import java.io.File;
 import java.io.IOException;
 import java.util.Deque;
+import java.util.List;
+import java.util.concurrent.BlockingDeque;
 
 import static org.junit.Assert.*;
 
@@ -27,11 +30,16 @@ public class LoggerTest {
     private static Logger logger;
     private final static FileManager fileManager = new FileManager(refFile, virtualizedFile, resultsFile);
 
-    private static Deque<MAVLinkMessage> mavLinkMessageList;
+    private static BlockingDeque<MAVLinkMessage> mavLinkMessageList;
 
     @BeforeClass
     public static void prepare() throws Exception {
-        FileManagerTest.delete();
+        File ref = new File(refFile);
+        ref.delete();
+        File v = new File(virtualizedFile);
+        v.delete();
+        File res = new File(resultsFile);
+        res.delete();
         mavLinkMessageList = MessageWorkerTest.populateMavLinkMessageList();
         logger = new Logger(fileManager);
         logger.start();
@@ -39,7 +47,12 @@ public class LoggerTest {
 
     @AfterClass
     public static void delete() {
-        FileManagerTest.delete();
+        File ref = new File(refFile);
+        ref.delete();
+        File v = new File(virtualizedFile);
+        v.delete();
+        File res = new File(resultsFile);
+        res.delete();
         logger.stop();
     }
 
@@ -47,13 +60,20 @@ public class LoggerTest {
     @Test
     public void newMAVLinkMessage() throws Exception {
 
-        while(!mavLinkMessageList.isEmpty()) {
-            logger.newMAVLinkMessage(mavLinkMessageList.getFirst());
-        }
+        new Thread(() -> {
+            while(!mavLinkMessageList.isEmpty()) {
+                logger.newMAVLinkMessage(mavLinkMessageList.pop());
+            }
+        }).start();
+        Thread.sleep(1000);
+        List<VirtualizerEntry> virtualizerEntryList = fileManager.readVirtualizedEntries();
+        assertFalse(virtualizerEntryList.isEmpty());
+        assertTrue(virtualizerEntryList.get(2).getTimestamp() != 0);
     }
 
     @Test (expected = NullPointerException.class)
     public void newMAVLinkMessageNull() {
         logger.newMAVLinkMessage(null);
     }
+
 }

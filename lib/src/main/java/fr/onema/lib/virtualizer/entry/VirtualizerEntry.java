@@ -14,21 +14,21 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 public class VirtualizerEntry implements CSV {
     public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
-    private final short xacc;
-    private final short yacc;
-    private final short zacc;
+    private final int xacc;
+    private final int yacc;
+    private final int zacc;
     private final double roll;
     private final double pitch;
     private final double yaw;
-    private final short xmag;
-    private final short ymag;
-    private final short zmag;
+    private final int xmag;
+    private final int ymag;
+    private final int zmag;
     private final float pressure;
-    private final short temperature;
+    private final int temperature;
     private boolean hasGPS;
-    private int gpsLat;
-    private int gpsLon;
-    private int gpsAlt;
+    private long gpsLat;
+    private long gpsLon;
+    private long gpsAlt;
 
     /**
      * Constructeur de Virtualizer
@@ -48,7 +48,7 @@ public class VirtualizerEntry implements CSV {
      * @param pressure    Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, long gpsLat, long gpsLon, long gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
         this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
@@ -56,6 +56,12 @@ public class VirtualizerEntry implements CSV {
         this.hasGPS = true;
     }
 
+    /**
+     * Constructeur de Virtualizer à partir de données GPS, IMU et Pressure.
+     * @param gps       Objet GPS
+     * @param imu       Objet IMU
+     * @param pressure  Objet Pressure
+     */
     public VirtualizerEntry(GPS gps, IMU imu, Pressure pressure) {
         if(gps == null) {
             this.gpsLat = 0;
@@ -94,6 +100,13 @@ public class VirtualizerEntry implements CSV {
             this.pressure = pressure.getAbsolute();
             this.temperature = pressure.getTemperature();
         }
+        if(gps != null) {
+            this.timestamp = gps.getTimestamp();
+        } else if (pressure != null) {
+            this.timestamp = pressure.getTimestamp();
+        } else {
+            this.timestamp = 0;
+        }
         this.hasGPS = true;
     }
 
@@ -112,7 +125,7 @@ public class VirtualizerEntry implements CSV {
      * @param pressure    Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
         this.timestamp = timestamp;
         this.xacc = xacc;
         this.yacc = yacc;
@@ -216,7 +229,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return gpsLat
      */
-    public int getGpsLat() {
+    public long getGpsLat() {
         return gpsLat;
     }
 
@@ -225,7 +238,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return gpsLon
      */
-    public int getGpsLon() {
+    public long getGpsLon() {
         return gpsLon;
     }
 
@@ -234,7 +247,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return gpsAlt
      */
-    public int getGpsAlt() {
+    public long getGpsAlt() {
         return gpsAlt;
     }
 
@@ -243,7 +256,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return xacc
      */
-    public short getXacc() {
+    public int getXacc() {
         return xacc;
     }
 
@@ -252,7 +265,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return yacc
      */
-    public short getYacc() {
+    public int getYacc() {
         return yacc;
     }
 
@@ -261,7 +274,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return zacc
      */
-    public short getZacc() {
+    public int getZacc() {
         return zacc;
     }
 
@@ -297,7 +310,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return xmag
      */
-    public short getXmag() {
+    public int getXmag() {
         return xmag;
     }
 
@@ -306,7 +319,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return ymag
      */
-    public short getYmag() {
+    public int getYmag() {
         return ymag;
     }
 
@@ -315,7 +328,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return zmag
      */
-    public short getZmag() {
+    public int getZmag() {
         return zmag;
     }
 
@@ -333,7 +346,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return temperature
      */
-    public short getTemperature() {
+    public int getTemperature() {
         return temperature;
     }
 

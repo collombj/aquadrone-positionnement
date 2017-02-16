@@ -38,19 +38,19 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
-                Integer.parseInt(s[2]),
-                Integer.parseInt(s[1]),
-                Integer.parseInt(s[3]),
-                Short.parseShort(s[4]),
-                Short.parseShort(s[5]),
-                Short.parseShort(s[6]),
+                Long.parseLong(s[2]),
+                Long.parseLong(s[1]),
+                Long.parseLong(s[3]),
+                Integer.parseInt(s[4]),
+                Integer.parseInt(s[5]),
+                Integer.parseInt(s[6]),
                 Double.parseDouble(s[7]),
                 Double.parseDouble(s[8]),
                 Double.parseDouble(s[9]),
-                Short.parseShort(s[10]),
-                Short.parseShort(s[11]),
-                Short.parseShort(s[12]),
+                Integer.parseInt(s[10]),
+                Integer.parseInt(s[11]),
+                Integer.parseInt(s[12]),
                 Float.parseFloat(s[13]),
-                Short.parseShort(s[14]));
+                Integer.parseInt(s[14]));
     }
 }

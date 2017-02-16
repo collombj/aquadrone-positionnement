@@ -12,6 +12,8 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import static org.junit.Assert.*;
 
@@ -20,14 +22,14 @@ public class MessageWorkerTest {
     private static MessageWorker messageWorker = new MessageWorker();
     private static Thread insertThread;
 
-    private static Deque<MAVLinkMessage> mavLinkMessageList;
+    private static BlockingDeque<MAVLinkMessage> mavLinkMessageList;
 
-    static Deque<MAVLinkMessage> populateMavLinkMessageList() {
-        Deque<MAVLinkMessage> mavLinkMessageList = new ArrayDeque<>(210);
+    static BlockingDeque<MAVLinkMessage> populateMavLinkMessageList() {
+        BlockingDeque<MAVLinkMessage> mavLinkMessageList = new LinkedBlockingDeque<>(210);
         VirtualizerEntry simulatedValue;
-        for (int i = 0; i < 50; i++) {
+        for (int i = 0; i < 10000; i = i+200) {
             simulatedValue = new VirtualizerEntry(
-                    System.currentTimeMillis(),
+                    System.currentTimeMillis()+i,
                     i,
                     i,
                     i,
