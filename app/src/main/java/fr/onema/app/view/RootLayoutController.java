@@ -2,6 +2,11 @@ package fr.onema.app.view;
 
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
 import fr.onema.lib.tools.Configuration;
+import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -24,9 +29,12 @@ public class RootLayoutController {
     private double horizontalOffset = 0;
     private double verticalOffset = 0;
     private double depthOffset = 0;
-    private boolean isRunning;
     private final Configuration c;
-    private int diveDurationTolerance = 60;
+    private int diveDurationTolerance = 30;
+    private volatile BooleanProperty isRunning = new SimpleBooleanProperty();
+    private StringProperty startButtonLabel = new SimpleStringProperty();
+    private Thread diveProgress = new Thread();
+    private Thread dive = new Thread();
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -46,6 +54,12 @@ public class RootLayoutController {
     @FXML
     private ProgressIndicator progressIndicator;
 
+    @FXML
+    private ProgressBar durationProgressBar;
+
+    @FXML
+    private ProgressBar precisionProgressBar;
+
     /***
      * Constructeur du controlleur du RootLayout
      * @param c Fichier de configuration comprenant les infos de la base Postgres
@@ -54,8 +68,44 @@ public class RootLayoutController {
         this.c = Objects.requireNonNull(c);
     }
 
+    /***
+     * Getter de la configuration associée à la vue Root de l'application
+     * @return Configuration du RootLayout
+     */
     public Configuration getConfiguration() {
         return c;
+    }
+
+    /***
+     * Setter de la valeur de l'offset horizontal spécifier dans les paramètres
+     * @param horizontalOffset La valeur de l'offset horizontal
+     */
+    public void setHorizontalOffset(double horizontalOffset) {
+        this.horizontalOffset = horizontalOffset;
+    }
+
+    /***
+     * Setter de la valeur de l'offset vertical spécifier dans les paramètres
+     * @param verticalOffset La valeur de l'offset vertical
+     */
+    public void setVerticalOffset(double verticalOffset) {
+        this.verticalOffset = verticalOffset;
+    }
+
+    /***
+     * Setter de la valeur de l'offset de profondeur spécifier dans les paramètres
+     * @param depthOffset La valeur de l'offset de profondeur
+     */
+    public void setDepthOffset(double depthOffset) {
+        this.depthOffset = depthOffset;
+    }
+
+    /***
+     * Setter de la valeur d'état de la plongée
+     * @param running La valeur de l'état de plongée
+     */
+    private void setRunning(boolean running) {
+        isRunning.setValue(running);
     }
 
     /***
@@ -64,15 +114,30 @@ public class RootLayoutController {
     @FXML
     private void initialize() {
         progressIndicator.setVisible(false);
+        runButton.textProperty().bindBidirectional(startButtonLabel);
+        startButtonLabel.setValue("Démarrer mesures");
+        isRunning.addListener((observable, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                handleRunningStatus();
+            });
+        });
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this), 0, 30_000);
     }
 
+    /***
+     * Permet de mettre à jour la couleur du Label d'état de la connexion Mavlink
+     * @param c La couleur à appliquer
+     */
     @FXML
     public void updateDatabaseColor(Color c) {
         dbLabel.setTextFill(c);
     }
 
+    /***
+     * Permet de mettre à jour la couleur du Label d'état de la connexion Mavlink
+     * @param c La couleur à appliquer
+     */
     @FXML
     public void updateMavlinkColor(Color c) {
         mavlinkLabel.setTextFill(c);
@@ -120,116 +185,87 @@ public class RootLayoutController {
         }
     }
 
-    public void setHorizontalOffset(double horizontalOffset) {
-        this.horizontalOffset = horizontalOffset;
-    }
-
-    public void setVerticalOffset(double verticalOffset) {
-        this.verticalOffset = verticalOffset;
-    }
-
-    public void setDepthOffset(double depthOffset) {
-        this.depthOffset = depthOffset;
-    }
-
-    public void setRunning(boolean running) {
-        isRunning = running;
-    }
-
-    @FXML
-    private ProgressBar durationProgressBar;
-
-    @FXML
-    private ProgressBar precisionProgressBar;
-
+    /***
+     * Méthode exécutée par le bouton Start / Stop plongée
+     */
     @FXML
     private void executeMeasures() {
-        if (isRunning) {
+        if (isRunning.get()) {
+            dive.interrupt();
+            diveProgress.interrupt();
             setRunning(false);
-            handleRunningStatus();
-            // TODO : kill threads that previously handle Dive and Duration
         } else {
+            setupDiveProgressThread();
+            setupDiveThread();
             setRunning(true);
-            handleRunningStatus();
-
-            Task diveDurationTask = new Task<Void>() {
-                @Override public Void call() {
-                    final double max = RootLayoutController.this.diveDurationTolerance * 2;
-                    for (double i = 0; i <= max; i++) {
-                        if (isCancelled()) {
-                            break;
-                        }
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            // ignore
-                        }
-                        updateProgress(i, max);
-                    }
-                    return null;
-                }
-            };
-            durationProgressBar.progressProperty().bind(diveDurationTask.progressProperty());
-            Thread duration = new Thread(diveDurationTask);
-
-            Task diveTask = new Task<Void>() {
-                @Override public Void call() {
-
-                    // TODO : insert implementation with startRecording() here
-                    // horizontalOffset
-                    // verticalOffset
-                    // depthOffset
-                    // diveDurationTolerance (seconds)
-                    for (int i = 0; i < diveDurationTolerance; i++) {
-                        if (isCancelled()) {
-                            // setRunning(false);
-                            // super.cancel();
-                            break;
-                        }
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // super.failed();
-                        }
-                    }
-                    // super.succeeded();
-                    return null;
-                }
-            };
-
-            diveTask.setOnSucceeded(event -> {
-                duration.interrupt();
-                setRunning(false);
-                handleRunningStatus();
-            });
-
-            diveTask.setOnCancelled(event -> {
-                duration.interrupt();
-                setRunning(false);
-                handleRunningStatus();
-            });
-
-            diveTask.setOnFailed(event -> {
-                duration.interrupt();
-                setRunning(false);
-                handleRunningStatus();
-            });
-
-            Thread dive = new Thread(diveTask);
-            duration.start();
+            diveProgress.start();
             dive.start();
         }
     }
 
+    /***
+     * Permet de configurer la thread assurant l'opération de plongée
+     */
+    private void setupDiveThread() {
+        Task diveTask = new Task() {
+            @Override
+            protected Void call() throws Exception {
+                try {
+                    // TODO : insert implementation with startRecording() here
+                    Thread.sleep(3000);
+                    System.out.println("Task completed with followings parameters : \n"
+                            + "Horizontal Offset = " + horizontalOffset + "\n"
+                            + "Vertical Offset = " + verticalOffset + "\n"
+                            + "Depth Offset = " + depthOffset + "\n"
+                            + "Duration Tolerance = " + diveDurationTolerance + "\n"
+                            + "Precision = NOT IMPLEMENTED YET"
+                    );
+                } catch (InterruptedException e) {
+                    // ignore
+                } finally {
+                    setRunning(false);
+                    Thread.currentThread().interrupt();
+                }
+                return null;
+            }
+        };
+        dive = new Thread(diveTask);
+    }
+
+    /***
+     * Permet de configurer la thread assurant le graphique de la barre de progression de plongée
+     */
+    private void setupDiveProgressThread() {
+        Task diveProgressTask = new Task() {
+            @Override public Void call() {
+                final double max = RootLayoutController.this.diveDurationTolerance * 5;
+                for (double i = 0; i <= max; i++) {
+                    try {
+                        Thread.sleep(200);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    updateProgress(i, max);
+                }
+                return null;
+            }
+        };
+        durationProgressBar.progressProperty().bind(diveProgressTask.progressProperty());
+        diveProgress = new Thread(diveProgressTask);
+    }
+
+    /***
+     * Met à jour les éléments de la vue en fonction du status de l'opération de plongée
+     */
     private void handleRunningStatus() {
-        if (!isRunning) {
+        if (!isRunning.getValue()) {
             durationProgressBar.progressProperty().unbind();
             durationProgressBar.setProgress(0.0);
             progressIndicator.setVisible(false);
-            runButton.setText("Démarrer mesures");
+            startButtonLabel.setValue("Démarrer mesures");
         } else {
             progressIndicator.setVisible(true);
-            runButton.setText("Stopper traitement");
+            startButtonLabel.setValue("Stopper traitement");
         }
     }
 }
