@@ -57,7 +57,7 @@ public class MessageWorker implements Worker {
      * Attention, après l'instanciation la pluspars des champs seront encore null. Ils seront créés en cours de
      * communication avec avec le serveur.
      */
-    MessageWorker() {
+    public MessageWorker() {
         this.dive = null;
         this.inDive = false;
         this.currentPos = null;

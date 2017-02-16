@@ -12,9 +12,12 @@ import java.util.Objects;
 /***
  * Classe permettant l'accès à des méthodes utilitaires propres à l'application graphique
  */
-public class Utils {
+public class GraphicUtils {
+    public static final double HORIZONTAL_DEFAULT_VALUE = 0;
+    public static final double VERTICAL_DEFAULT_VALUE = 0;
+    public static final double DEPTH_DEFAULT_VALUE = 0;
 
-    private Utils() {
+    private GraphicUtils() {
     }
 
     /***
