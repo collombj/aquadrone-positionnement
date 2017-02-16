@@ -119,10 +119,10 @@ public class MissingPointsGenerator {
             String[] members = entry.split(",");
             if(members.length == REQUIRED_LENGTH) {
                 long timestamp = Long.parseLong(members[0]);
-                long lon = Long.parseLong(members[1].replace(".",","));//X
-                long lat = Long.parseLong(members[2].replace(".",","));//Y
-                long alt = Long.parseLong(members[3].replace(".",","));//Z
-                float measure = Float.parseFloat(members[4].replace(".",","));
+                long lon = (long) (Double.valueOf(members[1])*10_000_000);//X
+                long lat = (long) (Double.valueOf(members[2])*10_000_000);//Y
+                long alt = (long) (Double.valueOf(members[3])*1_000);//Z
+                float measure = Float.parseFloat(members[4]);
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, timestamp);
                 pointsInput.add(point);
             } else {
@@ -142,11 +142,15 @@ public class MissingPointsGenerator {
         String stringPath = "temp.csv";
         List<String> outputs;
         Path filePath = Paths.get(stringPath);
+
         for(int i = 0 ; i < pointsInput.size() -1 ; i++){
             createIntermediaryPoints(pointsInput.get(i),pointsInput.get(i+1));
+            if (i == pointsInput.size()-2){
+                pointsOutput.add(pointsInput.get(i+1));
+            }
         }
-        outputs = formatToCSV();
 
+        outputs = formatToCSV();
         try{
             Files.write(filePath, outputs, Charset.forName("UTF-8"));
         }catch(IOException ioe){
@@ -170,9 +174,12 @@ public class MissingPointsGenerator {
         Path filePath = Paths.get(stringPath);
         for(int i = 0 ; i < pointsInput.size() -1 ; i++){
             createIntermediaryPoints(pointsInput.get(i),pointsInput.get(i+1));
+            if (i == pointsInput.size()-2){
+                pointsOutput.add(pointsInput.get(i+1));
+            }
         }
-        outputs = formatToCSV();
 
+        outputs = formatToCSV();
         try{
             Files.write(filePath, outputs, Charset.forName("UTF-8"));
         }catch(IOException ioe){
