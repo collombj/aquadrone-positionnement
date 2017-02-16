@@ -33,36 +33,6 @@ public class ServerListener implements Worker {
     }
 
     /**
-     * Permet de convertir un tableau de bytes en long
-     *
-     * @param b un tableau de bytes
-     * @return un long
-     */
-    public static long bytesToLong(byte[] b) {
-        long result = 0;
-        for (int i = 0; i < 8; i++) {
-            result <<= 8;
-            result |= (b[i] & 0xFF);
-        }
-        return result * -1;
-    }
-
-    /**
-     * Permet de convertir un tableau de bytes en long
-     *
-     * @param b un tableau de bytes
-     * @return un long
-     */
-    public static int bytesToInt(byte[] b) {
-        int result = 0;
-        for (int i = 0; i < 4; i++) {
-            result <<= 8;
-            result |= (b[i] & 0xFF);
-        }
-        return result * -1;
-    }
-
-    /**
      * Permet de démarrer la Thread d'écoute qui réçoit et transmet les mavlink messages
      */
     public void startThread() {
@@ -74,29 +44,8 @@ public class ServerListener implements Worker {
                     sk.receive(dgp);
                     byte[] b = dgp.getData();
                     MAVLinkReader reader = new MAVLinkReader();
-                    MAVLinkMessage mesg;
-                    mesg = reader.getNextMessage(dgp.getData(), dgp.getLength());
-                    if (mesg.getClass() == msg_gps_raw_int.class) {
-                        long tmpTime = bytesToLong(b);
-                        if (lastReceivedTimestamp <= tmpTime) {
-                            lastReceivedTimestamp = tmpTime;
-                            pressureValid = true;
-                        } else {
-                            pressureValid = false;
-                            break;
-                        }
-                    }
-                    if (mesg.getClass() == msg_scaled_imu.class || mesg.getClass() == msg_scaled_pressure.class) {
-                        int tmpTime = bytesToInt(b);
-                        if (timeUsec <= tmpTime) {
-                            timeUsec = tmpTime;
-                            pressureValid = true;
-                        } else {
-                            pressureValid = false;
-                            break;
-                        }
-                    }
-                    if (gpsValid || pressureValid) {
+                    MAVLinkMessage mesg = reader.getNextMessage(dgp.getData(), dgp.getLength());
+                    if (testValidityMavlinkMessage(mesg)) {
                         while (mesg != null) {
                             // TODO Implémenter MessageWorker
                             if (reader.nbUnreadMessages() != 0) {
@@ -113,6 +62,41 @@ public class ServerListener implements Worker {
         });
         listener.start();
     }
+
+    /**
+     * Permet de récupérer le timestamp message Mavlink
+     *
+     * @param s une String mavlink
+     * @return un long
+     */
+    public long bytesToNumber(String s) {
+        int start = s.indexOf("=");
+        int end = s.indexOf(" ", start);
+        String sub = s.substring(start+1, end);
+        return Long.parseLong(sub);
+    }
+
+    private boolean testValidityMavlinkMessage(MAVLinkMessage mesg) {
+        long tmpTime = bytesToNumber(mesg.toString());
+        if (mesg.getClass() == msg_gps_raw_int.class) {
+            if (lastReceivedTimestamp <= tmpTime) {
+                lastReceivedTimestamp = tmpTime;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        if (mesg.getClass() == msg_scaled_imu.class || mesg.getClass() == msg_scaled_pressure.class) {
+            if (timeUsec <= tmpTime) {
+                timeUsec = (int)tmpTime;
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Permet de démarrer la thread

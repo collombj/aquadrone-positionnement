@@ -10,6 +10,7 @@ import static org.junit.Assert.assertNotNull;
  * @since 06-02-2017
  */
 public class TemperatureTest {
+    private static Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
 
     @Test
     public void testGetter() {
@@ -28,4 +29,33 @@ public class TemperatureTest {
         assertNotNull(temperature1);
     }
 
+    @Test
+    public void toCSV() throws Exception {
+        assertEquals(temperature.toCSV(), String.valueOf(temperature.getValueTemperature()));
+    }
+
+    @Test
+    public void getCSVHeader() throws Exception {
+        assertEquals(temperature.getCSVHeader(), "temperature");
+    }
+
+    @Test
+    public void getName() throws Exception {
+        assertEquals(temperature.getName(), "Temperature");
+    }
+
+    @Test
+    public void getUnit() throws Exception {
+        assertEquals(temperature.getUnit(), "° Celcius");
+    }
+
+    @Test
+    public void getType() throws Exception {
+        assertEquals(temperature.getType(), "Integer");
+    }
+
+    @Test
+    public void getDisplay() throws Exception {
+        assertEquals(temperature.getDisplay(), "Timestamp=" + temperature.getTimestamp() + " valueTemperature=" + temperature.getValueTemperature());
+    }
 }
