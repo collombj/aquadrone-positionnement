@@ -3,11 +3,15 @@ package fr.onema.lib.geo;
 /**
  * Created by julien on 06/02/2017.
  */
-// TODO : complete
+
+/***
+ * Classe permettant de modéliser des coordonnées gps (latitude, longitude, altitude)
+ */
 public class GPSCoordinate {
     public final long lat;
     public final long lon;
     public final long alt;
+
     /**
      * Construit une coordonnée GPS (lat, lon, alt)
      *
@@ -24,10 +28,9 @@ public class GPSCoordinate {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (o == null) return false;
+        if(getClass() != o.getClass()) return false;
         GPSCoordinate that = (GPSCoordinate) o;
-
         if (lat != that.lat) return false;
         if (lon != that.lon) return false;
         return alt == that.alt;

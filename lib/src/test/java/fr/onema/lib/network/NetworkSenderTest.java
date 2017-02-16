@@ -2,25 +2,19 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
-import org.mavlink.messages.MAVLinkMessage;
 
 import java.io.IOException;
-import java.net.*;
-import java.nio.ByteBuffer;
-import java.nio.channels.DatagramChannel;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.net.ServerSocket;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class NetworkSenderTest {
-    public static final String ASCII = "ASCII";
 
     @Test
     public void constructorNotNull() throws IOException {
         NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
-        networkSender.openConnection();
         assertNotNull(networkSender);
         networkSender.closeConnection();
     }
@@ -30,7 +24,7 @@ public class NetworkSenderTest {
         NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
         ServerSocket server = new ServerSocket(1239);
         networkSender.openConnection();
-        assertNotNull(networkSender.getChannel());
+        assertNotNull(networkSender.getDsocket());
         networkSender.closeConnection();
         server.close();
     }
@@ -41,8 +35,8 @@ public class NetworkSenderTest {
         ServerSocket server = new ServerSocket(1239);
         networkSender.openConnection();
         networkSender.closeConnection();
+        assertTrue(networkSender.getDsocket().isClosed());
         server.close();
-        assertFalse(networkSender.getChannel().isConnected());
     }
 
     @Test
@@ -56,8 +50,8 @@ public class NetworkSenderTest {
     @Test
     public void addTest() throws IOException {
         NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
-        networkSender.openConnection();
         VirtualizerEntry vir = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        networkSender.openConnection();
         networkSender.add(vir);
         networkSender.getQueue().contains(vir);
         networkSender.closeConnection();
@@ -65,40 +59,27 @@ public class NetworkSenderTest {
 
     @Test
     public void sendMessage() throws IOException, InterruptedException {
-        ArrayBlockingQueue<String> list = new ArrayBlockingQueue<String>(10);
-        Thread sender = new Thread(() -> {
-                DatagramChannel server = null;
-                try {
-                    server = DatagramChannel.open();
-                    server.bind(new InetSocketAddress(1239));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ByteBuffer buff = ByteBuffer.allocate(1024);
-                try {
-                    server.receive(buff);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                buff.flip();
-                try {
-                    list.put(Charset.forName(ASCII).decode(buff).toString());
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    server.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        });
-        sender.start();
+        NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
+        sender.openConnection();
+        ServerListener serverListener = new ServerListener(1239);
+        serverListener.start();
+        VirtualizerEntry virtual = new VirtualizerEntry(1, 2,3,4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        sender.add(virtual);
+        sender.closeConnection();
+        serverListener.stop();
+    }
 
-        NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
-        VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
-        MAVLinkMessage msg = virtual.getIMUMessage();
-        networkSender.add(virtual);
-        assertEquals(msg.toString(), list.take());
-        networkSender.closeConnection();
+    @Test
+    public void getPortTest() throws IOException {
+        NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
+        assertEquals(1239,sender.getPort());
+        sender.closeConnection();
+    }
+
+    @Test
+    public void getHostTest() throws IOException {
+        NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
+        assertEquals("127.0.0.1",sender.getHost());
+        sender.closeConnection();
     }
 }

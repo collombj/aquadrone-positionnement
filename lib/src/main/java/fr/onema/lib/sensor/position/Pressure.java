@@ -6,12 +6,15 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 /**
  * Created by Theo on 06/02/2017.
  */
-// TODO : complete
+
+/***
+ * Classe permettant la représentation d'une mesure de pression
+ */
 public class Pressure extends Sensor {
+    private static final String HEADER = "timestamp,asbolute,differential,temperature";
     private final float absolute;
     private final float differential;
     private final int temperature;
-    private static String HEADER = "timestamp,asbolute,differential,temperature";
 
     private Pressure(long timestamp, float absolute, float differential, int temperature) {
         super(timestamp);
@@ -20,12 +23,22 @@ public class Pressure extends Sensor {
         this.temperature = temperature;
     }
 
-    // TODO : complete
+    /***
+     * Factory de la mesure de pression
+     * @param msg Message mavlink correspondant à la pression
+     * @return l'objet représentant la mesure gps
+     */
     public static Pressure build(msg_scaled_pressure msg) {
         return new Pressure(msg.time_boot_ms, msg.press_abs, msg.press_diff, msg.temperature);
     }
 
-    // TODO : complete
+    /***
+     * Factory de la mesure de pression
+     * @param timestamp L'heure de la mesure
+     * @param altitude La valeur d'altitude de la mesure
+     * @param temperature La valeur de température de la mesure
+     * @return L'objet représentant la mesure gps
+     */
     public static Pressure build(long timestamp, int altitude, int temperature) {
         // TODO : complete --> calcul de la pression à partir de l'altitude (et température ?)
         int absolute = 0;
@@ -33,7 +46,8 @@ public class Pressure extends Sensor {
     }
 
     /**
-     * Retourne la valeur absolute
+     * Retourne la valeur absolue de la pression
+     *
      * @return absolute
      */
     public float getAbsolute() {
@@ -42,6 +56,7 @@ public class Pressure extends Sensor {
 
     /**
      * retourne la valeur differentielle
+     *
      * @return differential
      */
     public float getDifferential() {
@@ -58,7 +73,7 @@ public class Pressure extends Sensor {
 
     @Override
     public String toCSV() {
-        return getTimestamp() + "," + getAbsolute() + "," + getDifferential() + "," + getTemperature() ;
+        return getTimestamp() + "," + getAbsolute() + "," + getDifferential() + "," + getTemperature();
     }
 
     @Override

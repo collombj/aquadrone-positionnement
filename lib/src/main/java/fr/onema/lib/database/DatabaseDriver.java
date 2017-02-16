@@ -2,6 +2,7 @@ package fr.onema.lib.database;
 
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.database.entity.MeasureInformationEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
 
@@ -114,7 +115,7 @@ public class DatabaseDriver {
         try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) AS brutX," +
                 "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
                 "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
-                " accelerationY, accelerationZ, rotationX, rotationY, rotationZ, precision_cm, measure_value" +
+                " accelerationY, accelerationZ, roll, pitch, yaw, precision_cm, measure_value" +
                 "  FROM Measure WHERE dive_id=? ORDER BY id")) {
             ps.setInt(1, dive.getId());
             ResultSet results = ps.executeQuery();
@@ -131,15 +132,15 @@ public class DatabaseDriver {
                 int accelerationX = Integer.parseInt(results.getString("accelerationX"));
                 int accelerationY = Integer.parseInt(results.getString("accelerationY"));
                 int accelerationZ = Integer.parseInt(results.getString("accelerationZ"));
-                int rotationX = Integer.parseInt(results.getString("rotationX"));
-                int rotationY = Integer.parseInt(results.getString("rotationY"));
-                int rotationZ = Integer.parseInt(results.getString("rotationZ"));
+                double roll = Double.parseDouble(results.getString("roll"));
+                double pitch = Double.parseDouble(results.getString("pitch"));
+                double yaw = Double.parseDouble(results.getString("yaw"));
 
                 int precisionCm = Integer.parseInt(results.getString("precision_cm"));
                 String measureValue = results.getString("measure_value");
                 mesures.add(new MeasureEntity(id, timestamp, new GPSCoordinate(brutX, brutY, brutZ),
                         new GPSCoordinate(correctX, correctY, correctZ), accelerationX, accelerationY, accelerationZ,
-                        rotationX, rotationY, rotationZ, precisionCm, measureValue));
+                        roll, pitch, yaw, precisionCm, measureValue));
 
             }
         }
@@ -216,9 +217,9 @@ public class DatabaseDriver {
                 "accelerationz," +
                 "precision_cm," +
                 "measure_value," +
-                "rotationx," +
-                "rotationy," +
-                "rotationz," +
+                "roll," +
+                "pitch," +
+                "yaw," +
                 "dive_id," +
                 "measureinformation_id" +
                 ") VALUES (" +
@@ -244,15 +245,27 @@ public class DatabaseDriver {
             insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
 
             // location_corrected
-            insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-            insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-            insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            insertStatement.setInt(5, srid);
+            if (measureEntity.getLocationCorrected() == null) {
+                insertStatement.setNull(2, Types.BIGINT);
+                insertStatement.setNull(3, Types.BIGINT);
+                insertStatement.setNull(4, Types.BIGINT);
 
+            } else {
+                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            }
+            insertStatement.setInt(5, srid);
             // location_brut
-            insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-            insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-            insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            }
             insertStatement.setInt(9, srid);
 
             //acceleration XYZ
@@ -267,9 +280,9 @@ public class DatabaseDriver {
             insertStatement.setString(14, measureEntity.getMeasureValue());
 
             // rotationXYZ
-            insertStatement.setInt(15, measureEntity.getRotationX());
-            insertStatement.setInt(16, measureEntity.getRotationY());
-            insertStatement.setInt(17, measureEntity.getRotationZ());
+            insertStatement.setDouble(15, measureEntity.getRoll());
+            insertStatement.setDouble(16, measureEntity.getPitch());
+            insertStatement.setDouble(17, measureEntity.getYaw());
 
             // dive_id
             insertStatement.setInt(18, diveID);
@@ -294,6 +307,112 @@ public class DatabaseDriver {
         }
         return -1;
     }
+
+
+    public int insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) throws SQLException {
+        PreparedStatement insertStatement = null;
+        String insertString = "INSERT INTO Measure(" +
+                "timestamp," +
+                "location_corrected," +
+                "location_brut," +
+                "accelerationx," +
+                "accelerationy," +
+                "accelerationz," +
+                "precision_cm," +
+                "measure_value," +
+                "roll," +
+                "pitch," +
+                "yaw," +
+                "dive_id," +
+                "measureinformation_id" +
+                ") VALUES (" +
+                "?" +
+                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                ",?" +
+                "," +
+                "(SELECT id FROM measure_information WHERE name=? ORDER BY id DESC LIMIT 1)" +
+                ")" +
+                "RETURNING ID";
+
+        try {
+            insertStatement = connector.prepareStatement(insertString);
+
+            // Timestamp
+            insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
+
+            // location_corrected
+            if (measureEntity.getLocationCorrected() == null) {
+                insertStatement.setNull(2, Types.BIGINT);
+                insertStatement.setNull(3, Types.BIGINT);
+                insertStatement.setNull(4, Types.BIGINT);
+
+            } else {
+                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
+                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
+                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+            }
+            insertStatement.setInt(5, srid);
+            // location_brut
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
+                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
+                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+            }
+            insertStatement.setInt(9, srid);
+
+            //acceleration XYZ
+            insertStatement.setInt(10, measureEntity.getAccelerationX());
+            insertStatement.setInt(11, measureEntity.getAccelerationY());
+            insertStatement.setInt(12, measureEntity.getAccelerationZ());
+
+            //precision_cm
+            insertStatement.setInt(13, measureEntity.getPrecisionCm());
+
+            // measure_value
+            insertStatement.setString(14, measureEntity.getMeasureValue());
+
+            // rotationXYZ
+            insertStatement.setDouble(15, measureEntity.getRoll());
+            insertStatement.setDouble(16, measureEntity.getPitch());
+            insertStatement.setDouble(17, measureEntity.getYaw());
+
+            // dive_id
+            insertStatement.setInt(18, diveID);
+
+            //measureInfoName
+            insertStatement.setString(19, measureInfoName
+            );
+            ResultSet generatedKeys = insertStatement.executeQuery();
+
+
+            if (generatedKeys.next()) {
+                measureEntity.setId(generatedKeys.getInt(1));
+                return generatedKeys.getInt(1);
+            }
+
+        } finally
+
+        {
+            if (insertStatement != null) {
+                insertStatement.close();
+            }
+        }
+        return -1;
+    }
+
 
     /**
      * Mets à jour la position d'une mesure.
@@ -343,7 +462,7 @@ public class DatabaseDriver {
     public void sendNotification(String message) throws SQLException {
         Objects.requireNonNull(message);
         try (Statement ps = connector.createStatement()) {
-            ps.execute("NOTIFY " + message );
+            ps.execute("NOTIFY " + message);
         }
     }
 
@@ -360,5 +479,53 @@ public class DatabaseDriver {
             ps.setInt(2, diveId);
             ps.execute();
         }
+    }
+
+
+    /**
+     * Retourne les informations relatives à un type de mesures dans la base de données
+     *
+     * @param measureInfoId l'identifiant de la mesure en base de données
+     * @return La MeasureInformationEntity representant l'entité en base
+     * @throws SQLException
+     */
+    public MeasureInformationEntity getMeasureInfo(int measureInfoId) throws SQLException {
+        try (PreparedStatement ps = connector.prepareStatement(
+                "SELECT * FROM measure_information WHERE id=?")) {
+            ps.setInt(1,measureInfoId);
+            ResultSet results = ps.executeQuery();
+            if (results.next()) {
+                int id = Integer.parseInt(results.getString("id"));
+                String type = results.getString("type");
+                String display = results.getString("display");
+                String unit = results.getString("unit");
+                String name = results.getString("name");
+                return new MeasureInformationEntity(id, name, unit, type, display);
+            }
+            return null;
+        }
+    }
+
+    /**
+     * Retourne les informations relatives à un type de mesures dans la base de données
+     * @param name le nom de l'entité en base
+     * @return La MeasureInformationEntity representant l'entité en base
+     * @throws SQLException
+     */
+    public MeasureInformationEntity getMeasureInfoFromName(String name) throws SQLException {
+        try (PreparedStatement ps = connector.prepareStatement(
+                "SELECT * FROM measure_information WHERE name=? LIMIT 1")) {
+            ps.setString(1,name);
+            ResultSet results = ps.executeQuery();
+            if (results.next()) {
+                int id = Integer.parseInt(results.getString("id"));
+                String type = results.getString("type");
+                String display = results.getString("display");
+                String unit = results.getString("unit");
+                return new MeasureInformationEntity(id, name, unit, type, display);
+            }
+            return null;
+        }
+
     }
 }

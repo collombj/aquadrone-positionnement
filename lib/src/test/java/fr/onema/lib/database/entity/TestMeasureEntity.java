@@ -3,6 +3,7 @@ package fr.onema.lib.database.entity;
 import fr.onema.lib.geo.GPSCoordinate;
 import org.junit.Test;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -15,10 +16,10 @@ public class TestMeasureEntity {
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
     private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
 
-
     @Test
     public void testCreateAndGet() {
         MeasureEntity e = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
+        MeasureEntity e2 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
         assertNotNull(e);
         assertTrue(e.getId() == 1);
         assertTrue(e.getLocationBrut().equals(brut));
@@ -26,12 +27,14 @@ public class TestMeasureEntity {
         assertTrue(e.getAccelerationX() == 1);
         assertTrue(e.getAccelerationY() == 2);
         assertTrue(e.getAccelerationZ() == 3);
-        assertTrue(e.getRotationX() == 1);
-        assertTrue(e.getRotationY() == 2);
-        assertTrue(e.getRotationZ() == 3);
+        assertTrue(e.getRoll() == 1.0);
+        assertTrue(e.getPitch() == 2.0);
+        assertTrue(e.getYaw() == 3.0);
         assertTrue(e.getPrecisionCm() == 2);
-
         assertTrue(e.getMeasureValue().equals("uneMes"));
+        assertTrue(e.equals(e2));
+        assertFalse(e.equals(null));
+        assertFalse(e.hashCode() != e2.hashCode());
     }
 
     @Test(expected = IllegalArgumentException.class)

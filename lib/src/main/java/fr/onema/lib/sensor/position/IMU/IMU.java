@@ -4,10 +4,15 @@ import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
+import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
+
+import java.util.Objects;
 
 /**
  * Created by strock on 06/02/2017.
+ * <p>
+ * Classe qui représente la centrale inertielle embarquée
  */
 public class IMU {
     private final Accelerometer accelerometer;
@@ -33,9 +38,11 @@ public class IMU {
      * @param msg recuperation du flux mavlink
      * @return
      */
-    public static IMU build(msg_scaled_imu msg) {
+    public static IMU build(msg_scaled_imu msg, msg_attitude msgAttitude) {
+        Objects.requireNonNull(msg);
+        Objects.requireNonNull(msgAttitude);
         Accelerometer accelerometer = new Accelerometer(msg.xacc, msg.yacc, msg.zacc);
-        Gyroscope gyroscope = new Gyroscope(msg.xgyro, msg.ygyro, msg.zgyro);
+        Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(accelerometer, gyroscope, compass);
     }
@@ -43,7 +50,6 @@ public class IMU {
     /**
      * Creation de l'imu  de simulation à parti de la classe  {@link GeoMaths}
      *
-     * @param refVelocity
      * @param prevTimestamp  timestamp de l'avant dernière mesure (ms)
      * @param prevCoordinate coodonnée de l'avant dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}
      * @param coordinate     coodonnée de l'avnt dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}
@@ -51,6 +57,10 @@ public class IMU {
      * @return un imu sans gyroscope et compas
      */
     public static IMU build(CartesianVelocity refVelocity, long prevTimestamp, GPSCoordinate prevCoordinate, long timestamp, GPSCoordinate coordinate) {
+        Objects.requireNonNull(refVelocity);
+        Objects.requireNonNull(prevCoordinate);
+        Objects.requireNonNull(coordinate);
+
         CartesianCoordinate cartCoordinate = GeoMaths.computeCartesianPosition(prevCoordinate, coordinate);
         CartesianVelocity velocity = GeoMaths.computeVelocityFromCartesianCoordinate(cartCoordinate, timestamp - prevTimestamp);
         Accelerometer accelerometer = GeoMaths.computeAccelerometerData(refVelocity, velocity, timestamp - prevTimestamp);

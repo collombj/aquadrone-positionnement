@@ -12,14 +12,15 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 public class Temperature extends Sensor implements Measure {
     private int valueTemperature;
 
-    private Temperature(long timestamp, int temperature) {
+    public Temperature(long timestamp, int temperature) {
         super(timestamp);
         this.valueTemperature = temperature;
     }
 
     /**
      * Factory methode pour créer une Temperature
-     * @param timestamp Timestamp de la Temperature.
+     *
+     * @param timestamp   Timestamp de la Temperature.
      * @param temperature Valeur de la température à l'instant donné.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
@@ -29,6 +30,7 @@ public class Temperature extends Sensor implements Measure {
 
     /**
      * Méthode permettant de créer une Temperature à partir d'un message PressureMAVLink
+     *
      * @param pressureMAVLinkMessage Message MAVLink provenant d'une pression.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
@@ -43,15 +45,6 @@ public class Temperature extends Sensor implements Measure {
      */
     public int getValueTemperature() {
         return valueTemperature;
-    }
-
-    /**
-     * Getter de Temperature
-     *
-     * @return Le timestamp associé à la valeur de Temperature.
-     */
-    public long getTimestamp() {
-        return super.timestamp;
     }
 
     @Override
