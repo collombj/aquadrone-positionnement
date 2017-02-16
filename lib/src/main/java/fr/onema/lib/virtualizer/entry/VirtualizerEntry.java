@@ -25,14 +25,13 @@ public class VirtualizerEntry implements CSV {
     private final short zmag;
     private final float pressure;
     private final short temperature;
-    private final boolean hasGPS;
+    private boolean hasGPS;
     private int gpsLat;
     private int gpsLon;
     private int gpsAlt;
 
     /**
      * Constructeur de Virtualizer
-     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param gpsLat      Latitude du GPS
      * @param gpsLon      Longitude du GPS
@@ -50,21 +49,10 @@ public class VirtualizerEntry implements CSV {
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
-        this.timestamp = timestamp;
+        this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
         this.gpsAlt = gpsAlt;
-        this.xacc = xacc;
-        this.yacc = yacc;
-        this.zacc = zacc;
-        this.roll = roll;
-        this.pitch = pitch;
-        this.yaw = yaw;
-        this.xmag = xmag;
-        this.ymag = ymag;
-        this.zmag = zmag;
-        this.pressure = pressure;
-        this.temperature = temperature;
         this.hasGPS = true;
     }
 
@@ -111,7 +99,6 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer sans le GPS
-     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param xacc        Acceleration en x
      * @param yacc        Acceleration en y
@@ -153,11 +140,10 @@ public class VirtualizerEntry implements CSV {
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
         msg.alt = this.gpsAlt;
-        // Il me dit de mettre tous les bits à 1 si on connait pas la valeur
-        msg.eph = Short.MAX_VALUE; // Dilution horizontale
-        msg.epv = Short.MAX_VALUE; // Dilution verticale
-        msg.vel = Short.MAX_VALUE; // vitesse sol calculée par le gps
-        msg.cog = Short.MAX_VALUE; // Direction du mouvement
+        msg.eph = Short.MAX_VALUE;
+        msg.epv = Short.MAX_VALUE;
+        msg.vel = Short.MAX_VALUE;
+        msg.cog = Short.MAX_VALUE;
         msg.satellites_visible = 255;
         return msg;
     }

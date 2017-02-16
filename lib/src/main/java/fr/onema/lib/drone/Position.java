@@ -1,21 +1,22 @@
 package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Représente une position. Cette position doit avoir plusieurs mesures associées dont: IMU, GPS et Pressure.
  * Au sein de cette classe nous avons une liste de Measure et de MeasureEntity associées à la position courante.
  *
- * @author phil
+ * @author strock
  * @since 10-02-2017
  */
 public class Position {
@@ -23,6 +24,7 @@ public class Position {
     private List<Measure> measures = new ArrayList<>();
     private long timestamp;
     private GPSCoordinate positionBrute = null;
+    private CartesianCoordinate cartesianBrute = null;
     private GPSCoordinate positionRecalculated = null;
     private int direction;
     private GPS gps;
@@ -31,10 +33,12 @@ public class Position {
 
     /**
      * Constructeur de la mesure de position
-     * @param timestamp Heure de la mesure
+     *
+     * @param timestamp     Heure de la mesure
      * @param positionBrute Coordonnées gps (latitude, longitude, altitude)
-     * @param direction Orientation du gps en degrés
+     * @param direction     Orientation du gps en degrés
      */
+
     public Position(long timestamp, GPSCoordinate positionBrute, int direction, IMU imu, GPS gps) {
         if (imu == null && gps == null)
             throw new InvalidParameterException("Position need either an IMU or a GPS value");
@@ -56,6 +60,16 @@ public class Position {
     }
 
     /**
+     * recupère a position brute cartésienne. Utile pour le calcul de la position recalculé
+     *
+     * @return
+     */
+    public CartesianCoordinate getCartesianBrute() {
+        return cartesianBrute;
+    }
+
+
+    /**
      * Récupère la liste des MeasureEntity associés à cette position.
      *
      * @return La liste des MeasureEntity associés à cette position.
@@ -73,6 +87,11 @@ public class Position {
         return timestamp;
     }
 
+    /**
+     * met à jour le timestamp
+     *
+     * @param timestamp
+     */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
     }
@@ -85,6 +104,16 @@ public class Position {
     public GPSCoordinate getPositionBrute() {
         return positionBrute;
     }
+
+    /**
+     * met a jour la position brute cartésienne
+     *
+     * @param cartesianBrute
+     */
+    public void setCartesianBrute(CartesianCoordinate cartesianBrute) {
+        this.cartesianBrute = cartesianBrute;
+    }
+
 
     /**
      * Met a jour la coordonnées brutes
@@ -128,6 +157,10 @@ public class Position {
         return imu;
     }
 
+    public GPS getGps() {
+        return gps;
+    }
+
     /**
      * Définit l'IMU de la position.
      *
@@ -141,28 +174,6 @@ public class Position {
         return measures;
     }
 
-    /**
-     * Retourne la liste de mesure avec les positions pour l'insert ou l'update de données.
-     *
-     * @return liste de mesure
-     */
-    public List<MeasureEntity> getMeasureEntities() {
-        if (entities.isEmpty()) {
-            for (Measure measure : measures) {
-                // TODO attendre merge pour supprimer id et la position recalculé
-                // TODO lien vers le entity information
-                entities.add(new MeasureEntity(timestamp, positionBrute, positionRecalculated,
-                        imu.getAccelerometer().getxAcceleration(), imu.getAccelerometer().getyAcceleration(), imu.getAccelerometer().getzAcceleration(),
-                        imu.getGyroscope().getRoll(), imu.getGyroscope().getPitch(), imu.getGyroscope().getYaw(), -1, measure.getName()));
-            }
-        } else {
-            for (int i = 0; i < measures.size(); i++) {
-                // TODO getter sur la position reclaculé de lmeasure entity
-                // TODO calcul distance Geomaths
-            }
-        }
-        return entities;
-    }
 
     /**
      * Définit le GPS de la position.
@@ -183,22 +194,6 @@ public class Position {
 
     }
 
-    /**
-     * Procède au calcule de la position actuelle grâce à la position précedente.
-     * Afin de ce faire, il est nécessaire d'avoir un GPS, IMU, Pressure associé à la position précédente.
-     *
-     * @param previousPosition La position précédente.
-     * @param velocity         La vitesse de la position précédente.
-     */
-    public void calculate(Position previousPosition, CartesianVelocity velocity) {
-        // TODO
-        Random rand = new Random();
-        int x = rand.nextInt(25000 - 1) + 1;
-        int y = rand.nextInt(25000 - 1) + 1;
-        int z = rand.nextInt(25000 - 1) + 1;
-
-        this.setPositionBrute(new GPSCoordinate(x, y, z));
-    }
 
     /**
      * Vérifie si un GPS est associé à la position.
@@ -216,5 +211,34 @@ public class Position {
      */
     public boolean hasIMU() {
         return this.imu != null;
+    }
+
+    /**
+     * Procède au calcule de la position actuelle grâce à la position précedente.
+     * Cette position précédente est enregistré en coordonnées cartésienes et en Gps
+     * Afin de ce faire, il est nécessaire d'avoir un IMU, la position précédente et la vitesse précedente.
+     *
+     * @param previousPosition La position précédente.
+     * @param previousVelocity La vitesse de la position précédente.
+     * @param refPoint
+     * @return la vitesse au cours du deplacement
+     */
+    public CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
+
+        //CartesianCoordinate last,CartesianVelocity previousVelocity,long time, double yaw, double pitch, double roll, Accelerometer accelerometer)
+        GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
+                previousPosition.getCartesianBrute(),
+                imu.getGyroscope().getYaw(),
+                imu.getGyroscope().getPitch(),
+                imu.getGyroscope().getRoll(),
+                previousVelocity,
+                timestamp - previousPosition.getTimestamp(),
+                imu.getAccelerometer());
+
+        this.setCartesianBrute(wrapper.getCoordinate());
+
+        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
+        return wrapper.getVelocity();
+
     }
 }

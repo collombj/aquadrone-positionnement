@@ -170,7 +170,7 @@ public class MessageWorker implements Worker {
     private class MavLinkMessagesThreadWorker implements Runnable {
 
 
-        private void computeMavLinkMessage(MAVLinkMessage mavLinkMessage) throws InterruptedException {
+        private void computeMavLinkMessage(MAVLinkMessage mavLinkMessage) throws Exception {
 
             // If Dive doesn't exist
             if (dive == null) {
@@ -273,12 +273,11 @@ public class MessageWorker implements Worker {
             updateState(imu.getClass().getCanonicalName(), imuData.time_boot_ms);
         }
 
-        private void processGPSData(GPS gps, msg_gps_raw_int gpsData) {
+        private void processGPSData(GPS gps, msg_gps_raw_int gpsData) throws Exception {
             if (inDive && !currentPos.hasGPS()) { // If no GPS signal prior the message
                 currentPos.setGps(gps); // Possible duplicate (see UC4)
-                dive.add(currentPos);
                 measuresWaiting.clear();
-                dive.endDive();
+                dive.endDive(currentPos);
                 dive = new Dive(gpsData.time_usec);
             } else if (currentPos.hasGPS()) {
                 dive.add(currentPos);
@@ -300,6 +299,8 @@ public class MessageWorker implements Worker {
                     computeMavLinkMessage(messages.take());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }

@@ -47,15 +47,6 @@ public class Temperature extends Sensor implements Measure {
         return valueTemperature;
     }
 
-    /**
-     * Getter de Temperature
-     *
-     * @return Le timestamp associé à la valeur de Temperature.
-     */
-    public long getTimestamp() {
-        return super.timestamp;
-    }
-
     @Override
     public String toCSV() {
         return String.valueOf(getValueTemperature());
