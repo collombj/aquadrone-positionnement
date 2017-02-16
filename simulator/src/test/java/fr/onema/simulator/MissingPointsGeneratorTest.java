@@ -40,7 +40,7 @@ public class MissingPointsGeneratorTest {
         try {
             File path = File.createTempFile(fileName, ".csv");
             LOGGER.log(Level.INFO, "path:" + path);
-            //path.deleteOnExit();
+            path.deleteOnExit();
             PrintWriter writer = new PrintWriter(path.getCanonicalFile(), "UTF-8");
             writer.println(content);
             writer.close();
