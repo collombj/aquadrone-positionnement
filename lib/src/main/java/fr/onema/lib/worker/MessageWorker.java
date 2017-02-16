@@ -91,6 +91,10 @@ public class MessageWorker implements Worker {
         return this.measuresWaiting.isEmpty();
     }
 
+    public Map<String, Long> getMeasuresStates() {
+        return measuresStates;
+    }
+
     /**
      * Ajoute une objet Temperature à la liste des mesures.
      * Ces mesures seront associées à une position.
