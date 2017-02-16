@@ -9,7 +9,6 @@ import fr.onema.lib.tools.Configuration;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.time.Duration;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -45,7 +44,7 @@ public class TestDatabaseWorker {
         dbWorker.start();
         dbWorker.newDive(dive);
         Thread.sleep(1000);
-        dbWorker.insertMeasure(entity, dive.getId(), 1);
+        dbWorker.insertMeasure(entity, dive.getId(), "temperature");
         Thread.sleep(1000);
         dbWorker.updatePosition(entity.getId(), correct, 0);
         dbWorker.startRecording(start, dive.getId());

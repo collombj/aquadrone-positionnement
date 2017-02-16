@@ -3,6 +3,7 @@ package fr.onema.lib.database.repository;
 import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.database.entity.MeasureInformationEntity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
 
@@ -84,8 +85,19 @@ public class MeasureRepository {
      * @param mesure La Measure a mettre en base
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
-    public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, int measureId) throws SQLException {
-        mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureId));
+    public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, String measureInfoName) throws SQLException {
+        mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoName));
+        return mesure;
+    }
+
+    /**
+     * Permet d'insérer en base une Measure
+     *
+     * @param mesure La Measure a mettre en base
+     * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
+     */
+    public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, int measureInfoId) throws SQLException {
+        mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoId));
         return mesure;
     }
 
@@ -130,6 +142,30 @@ public class MeasureRepository {
     public void closeConnection() throws SQLException {
         dbDriver.closeConnection();
     }
+
+
+    /**
+     * Retourne les informations relatives à un type de mesures dans la base de données
+     *
+     * @param measureInfosId l'identifiant de la mesure en base de données
+     * @return La MeasureInformationEntity representant l'entité en base
+     * @throws SQLException
+     */
+    public MeasureInformationEntity getMeasureInfo(int measureInfosId) throws SQLException {
+        return dbDriver.getMeasureInfo(measureInfosId);
+    }
+
+    /**
+     * Retourne les informations relatives à un type de mesures dans la base de données
+     *
+     * @param name le nom de l'entité en base
+     * @return La MeasureInformationEntity representant l'entité en base
+     * @throws SQLException
+     */
+    public MeasureInformationEntity getMeasureInfoFromName(String name) throws SQLException {
+        return dbDriver.getMeasureInfoFromName(name);
+    }
+
 
     /**
      * Cette classe sert de factory a MeasureRepository
