@@ -1,7 +1,6 @@
 package fr.onema.app.view;
 
 import fr.onema.app.Main;
-import fr.onema.app.model.GraphicUtils;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
@@ -70,12 +69,12 @@ public class ConfigurationController {
      */
     @FXML
     public void resetConfigurationLayout() {
-        horizontalSlider.adjustValue(GraphicUtils.HORIZONTAL_DEFAULT_VALUE);
-        verticalSlider.adjustValue(GraphicUtils.VERTICAL_DEFAULT_VALUE);
-        depthSlider.adjustValue(GraphicUtils.DEPTH_DEFAULT_VALUE);
-        updateSpinner(horizontalSpinner, GraphicUtils.HORIZONTAL_DEFAULT_VALUE);
-        updateSpinner(verticalSpinner, GraphicUtils.VERTICAL_DEFAULT_VALUE);
-        updateSpinner(depthSpinner, GraphicUtils.DEPTH_DEFAULT_VALUE);
+        horizontalSlider.adjustValue(Main.HORIZONTAL_DEFAULT_VALUE);
+        verticalSlider.adjustValue(Main.VERTICAL_DEFAULT_VALUE);
+        depthSlider.adjustValue(Main.DEPTH_DEFAULT_VALUE);
+        updateSpinner(horizontalSpinner, Main.HORIZONTAL_DEFAULT_VALUE);
+        updateSpinner(verticalSpinner, Main.VERTICAL_DEFAULT_VALUE);
+        updateSpinner(depthSpinner, Main.DEPTH_DEFAULT_VALUE);
     }
 
     /***
@@ -145,7 +144,6 @@ public class ConfigurationController {
             }
         }
     }
-
 
     /***
      * Apply settings to the next dive operation
