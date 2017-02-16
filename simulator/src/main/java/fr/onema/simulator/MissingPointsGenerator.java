@@ -24,7 +24,7 @@ public class MissingPointsGenerator {
     private final List<Point> pointsInput; //Don't supposed to be accessed remotely
     private final List<Point> pointsOutput; //Don't supposed to be accessed remotely
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
-    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
+    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,direction,temperature";
     private static final int REQUIRED_LENGTH = 6;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
 
