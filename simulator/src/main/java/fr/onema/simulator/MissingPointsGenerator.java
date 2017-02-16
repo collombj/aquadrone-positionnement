@@ -25,7 +25,7 @@ public class MissingPointsGenerator {
     private final List<Point> pointsOutput; //Don't supposed to be accessed remotely
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
-    private static final int REQUIRED_LENGTH = 5;
+    private static final int REQUIRED_LENGTH = 6;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
 
     /**
@@ -33,25 +33,31 @@ public class MissingPointsGenerator {
      */
     public static class Point {
         private final GPSCoordinate coordinates;
-        private final float measure;
+        private final int measure;
+        private final int direction;
         private final long timestamp;
 
-        Point(GPSCoordinate coordinates, float value, long timestamp){
+        Point(GPSCoordinate coordinates, int value, int direction, long timestamp){
             this.coordinates = coordinates;
             this.measure = value;
+            this.direction = direction;
             this.timestamp = timestamp;
         }
 
         String toCSV(){
-            return timestamp + "," + coordinates.lon + "," + coordinates.lat + "," + coordinates.alt + "," + measure;
+            return timestamp + "," + coordinates.lon + "," + coordinates.lat + "," + coordinates.alt + "," + direction + "," + measure;
         }
 
         GPSCoordinate getCoordinates() {
             return coordinates;
         }
 
-        float getMeasure() {
+        int getMeasure() {
             return measure;
+        }
+
+        int getDirection() {
+            return direction;
         }
 
         long getTimestamp() {
@@ -122,8 +128,9 @@ public class MissingPointsGenerator {
                 long lon = (long) (Double.valueOf(members[1])*10_000_000);//X
                 long lat = (long) (Double.valueOf(members[2])*10_000_000);//Y
                 long alt = (long) (Double.valueOf(members[3])*1_000);//Z
-                float measure = Float.parseFloat(members[4]);
-                Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, timestamp);
+                int direction = Integer.parseInt(members[4]);
+                int measure = (int)(Float.parseFloat(members[5])*100);
+                Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, direction, timestamp);
                 pointsInput.add(point);
             } else {
                 LOGGER.log(Level.INFO,"The line '"+ entry + "' doesn't fit the requirements " +
@@ -201,19 +208,22 @@ public class MissingPointsGenerator {
         double distance = GeoMaths.gpsDistance(previousCoordinates, nextCoordinates);
 
         long nbPoints = Math.round(distance/DISTANCE_BETWEEN_POINTS);
+        int nbPointsInt = (int)nbPoints;
         long diffLat = nextCoordinates.lat - previousCoordinates.lat;
         long diffLon = nextCoordinates.lon - previousCoordinates.lon;
         long diffAlt = nextCoordinates.alt - previousCoordinates.alt;
-        float diffMeasure = nextPoint.getMeasure() - previousPoint.getMeasure();
+        int diffMeasure = nextPoint.getMeasure() - previousPoint.getMeasure();
+        int diffDir = nextPoint.getDirection() - previousPoint.getDirection();
         long diffTimeStamp = nextPoint.getTimestamp() - previousPoint.getTimestamp();
 
         for(int i =0;i<nbPoints;i++){
             long latitude = previousCoordinates.lat + i*(diffLat/nbPoints);
             long longitude = previousCoordinates.lon + i*(diffLon/nbPoints);
             long altitude = previousCoordinates.alt + i*(diffAlt/nbPoints);
-            float measure = previousPoint.getMeasure() + i*(diffMeasure/nbPoints);
+            int measure = previousPoint.getMeasure() + i*(diffMeasure/nbPointsInt);
+            int direction = previousPoint.getDirection() + i*(diffDir/nbPointsInt);
             long timestamp = previousPoint.getTimestamp() + i*(diffTimeStamp/nbPoints);
-            Point point = new Point(new GPSCoordinate(latitude,longitude,altitude),measure,timestamp);
+            Point point = new Point(new GPSCoordinate(latitude,longitude,altitude),measure,direction,timestamp);
             pointsOutput.add(point);
         }
     }
