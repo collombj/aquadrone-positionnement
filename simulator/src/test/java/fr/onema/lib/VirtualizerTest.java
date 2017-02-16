@@ -111,7 +111,7 @@ public class VirtualizerTest {
                     v.getPitch(),
                     v.getYaw(),
                     0,
-                    Short.toString(v.getTemperature()));
+                    Integer.toString(v.getTemperature()));
             try {
                 repository.insertMeasure(measure, finalDive.getId(), 1);
             } catch (SQLException e) {

@@ -10,17 +10,17 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 public class VirtualizerEntry implements CSV {
     public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
-    private final short xacc;
-    private final short yacc;
-    private final short zacc;
+    private final int xacc;
+    private final int yacc;
+    private final int zacc;
     private final double roll;
     private final double pitch;
     private final double yaw;
-    private final short xmag;
-    private final short ymag;
-    private final short zmag;
+    private final int xmag;
+    private final int ymag;
+    private final int zmag;
     private final float pressure;
-    private final short temperature;
+    private final int temperature;
     private boolean hasGPS;
     private int gpsLat;
     private int gpsLon;
@@ -44,7 +44,7 @@ public class VirtualizerEntry implements CSV {
      * @param pressure    Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
         this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
@@ -67,7 +67,7 @@ public class VirtualizerEntry implements CSV {
      * @param pressure    Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, short xacc, short yacc, short zacc, double roll, double pitch, double yaw, short xmag, short ymag, short zmag, float pressure, short temperature) {
+    public VirtualizerEntry(long timestamp, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
         this.timestamp = timestamp;
         this.xacc = xacc;
         this.yacc = yacc;
@@ -198,7 +198,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return xacc
      */
-    public short getXacc() {
+    public int getXacc() {
         return xacc;
     }
 
@@ -207,7 +207,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return yacc
      */
-    public short getYacc() {
+    public int getYacc() {
         return yacc;
     }
 
@@ -216,7 +216,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return zacc
      */
-    public short getZacc() {
+    public int getZacc() {
         return zacc;
     }
 
@@ -252,7 +252,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return xmag
      */
-    public short getXmag() {
+    public int getXmag() {
         return xmag;
     }
 
@@ -261,7 +261,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return ymag
      */
-    public short getYmag() {
+    public int getYmag() {
         return ymag;
     }
 
@@ -270,7 +270,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return zmag
      */
-    public short getZmag() {
+    public int getZmag() {
         return zmag;
     }
 
@@ -288,7 +288,7 @@ public class VirtualizerEntry implements CSV {
      *
      * @return temperature
      */
-    public short getTemperature() {
+    public int getTemperature() {
         return temperature;
     }
 
@@ -321,4 +321,54 @@ public class VirtualizerEntry implements CSV {
         return HEADER;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        VirtualizerEntry that = (VirtualizerEntry) o;
+
+        if (timestamp != that.timestamp) return false;
+        if (xacc != that.xacc) return false;
+        if (yacc != that.yacc) return false;
+        if (zacc != that.zacc) return false;
+        if (Double.compare(that.roll, roll) != 0) return false;
+        if (Double.compare(that.pitch, pitch) != 0) return false;
+        if (Double.compare(that.yaw, yaw) != 0) return false;
+        if (xmag != that.xmag) return false;
+        if (ymag != that.ymag) return false;
+        if (zmag != that.zmag) return false;
+        if (Float.compare(that.pressure, pressure) != 0) return false;
+        if (temperature != that.temperature) return false;
+        if (hasGPS != that.hasGPS) return false;
+        if (gpsLat != that.gpsLat) return false;
+        if (gpsLon != that.gpsLon) return false;
+        return gpsAlt == that.gpsAlt;
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = (int) (timestamp ^ (timestamp >>> 32));
+        result = 31 * result + xacc;
+        result = 31 * result + yacc;
+        result = 31 * result + zacc;
+        temp = Double.doubleToLongBits(roll);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(pitch);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(yaw);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + xmag;
+        result = 31 * result + ymag;
+        result = 31 * result + zmag;
+        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + temperature;
+        result = 31 * result + (hasGPS ? 1 : 0);
+        result = 31 * result + gpsLat;
+        result = 31 * result + gpsLon;
+        result = 31 * result + gpsAlt;
+        return result;
+    }
 }

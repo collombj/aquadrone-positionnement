@@ -10,7 +10,7 @@ public class ReferenceEntry implements CSV {
     private final int lon;
     private final int alt;
     private final float direction;
-    private final short temperature;
+    private final int temperature;
 
     /**
      * Le constructeur de classe, pour attribuer une valeur aux attributs
@@ -22,7 +22,7 @@ public class ReferenceEntry implements CSV {
      * @param direction   la direction que prend le point
      * @param temperature la température au niveau du point
      */
-    public ReferenceEntry(long timestamp, int lat, int lon, int alt, float direction, short temperature) {
+    public ReferenceEntry(long timestamp, int lat, int lon, int alt, float direction, int temperature) {
         if (timestamp < 0 || direction < 0) {
             throw new IllegalArgumentException("Negative value for 'timestamp' or 'direction'");
         } else {
@@ -109,5 +109,31 @@ public class ReferenceEntry implements CSV {
     @Override
     public String getCSVHeader() {
         return HEADER;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReferenceEntry that = (ReferenceEntry) o;
+
+        if (timestamp != that.timestamp) return false;
+        if (lat != that.lat) return false;
+        if (lon != that.lon) return false;
+        if (alt != that.alt) return false;
+        if (Float.compare(that.direction, direction) != 0) return false;
+        return temperature == that.temperature;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (timestamp ^ (timestamp >>> 32));
+        result = 31 * result + lat;
+        result = 31 * result + lon;
+        result = 31 * result + alt;
+        result = 31 * result + (direction != +0.0f ? Float.floatToIntBits(direction) : 0);
+        result = 31 * result + temperature;
+        return result;
     }
 }
