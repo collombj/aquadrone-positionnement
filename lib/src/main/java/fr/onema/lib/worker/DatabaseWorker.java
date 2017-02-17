@@ -23,6 +23,7 @@ public class DatabaseWorker implements Worker {
     private static DatabaseWorker INSTANCE = new DatabaseWorker();
     private Thread dbWorkerThread;
     private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private String notificationKey;
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -113,7 +114,8 @@ public class DatabaseWorker implements Worker {
     /**
      * Le constructeur est privé pour garantir l'unicité du singleton
      */
-    private DatabaseWorker(){}
+    private DatabaseWorker() {
+    }
 
     /**
      * Permet d'obtenir la seule instance de databaseworker
@@ -131,6 +133,7 @@ public class DatabaseWorker implements Worker {
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
     public void init(Configuration configuration) {
+        notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
             try {
                 MeasureRepository repository =
@@ -169,7 +172,7 @@ public class DatabaseWorker implements Worker {
      * @param dive une DiveEntity
      */
     public void newDive(DiveEntity dive) {
-        if (!actionQueue.offer(new DatabaseAction(newDiveAux, dive))){
+        if (!actionQueue.offer(new DatabaseAction(newDiveAux, dive))) {
             FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.newDive : Dive insertion failed");
         }
     }
@@ -177,8 +180,8 @@ public class DatabaseWorker implements Worker {
     /**
      * Permet d'inserer une MeasureEntity
      *
-     * @param measureEntity la MeasureEntity à insérer en base
-     * @param diveID        l'identifiant de la plongée de la mesure
+     * @param measureEntity   la MeasureEntity à insérer en base
+     * @param diveID          l'identifiant de la plongée de la mesure
      * @param measureInfoName l'identifiant du type de mesure
      */
     public void insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) {
@@ -226,11 +229,9 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet d'envoyer des notifications à la base de données
-     *
-     * @param message le message a notifier
      */
-    public void sendNotification(String message) {
-        if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, message))) {
+    public void sendNotification() {
+        if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, notificationKey))) {
             FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
         }
     }

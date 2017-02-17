@@ -32,13 +32,13 @@ public class Dive {
     /**
      * Crée une nouvelle Dive
      *
-     * @param timestamp l'heure de début de la plongée
      */
-    public Dive(long timestamp) {
+    public Dive() {
         diveEntity = new DiveEntity();
         dbWorker.newDive(diveEntity);
         numberOfmovement = 0;
         state = ON;
+
     }
 
     /**
@@ -85,9 +85,12 @@ public class Dive {
                     -1,
                     measure.getValue());
             dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
+
             measures.add(entity);
         }
         positions.add(position);
+        //prevenir la base que l'on a inséré des mesures
+        dbWorker.sendNotification();
     }
 
 
@@ -106,9 +109,7 @@ public class Dive {
         updateMeasuresAndPosition(position);
         // Creation de la liste des mesures recalculées
         positions = GeoMaths.recalculatePosition(positions, reference, position.getPositionBrute());
-        for (Position pos : positions) {
-            createUpdatedMeasuresList(pos);
-        }
+        positions.forEach(this::createUpdatedMeasuresList);
         updateMeasuresInBase();
     }
 
@@ -154,6 +155,8 @@ public class Dive {
         for (MeasureEntity measure : measures) {
             dbWorker.updatePosition(measure.getId(), measure.getLocationCorrected(), measure.getPrecisionCm());
         }
+        //prevenir la base qu'on a modifié des mesures
+        dbWorker.sendNotification();
     }
 
 

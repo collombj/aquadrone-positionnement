@@ -162,7 +162,7 @@ public class MessageWorker implements Worker {
 
             // If Dive doesn't exist
             if (dive == null) {
-                dive = new Dive(System.currentTimeMillis());
+                dive = new Dive();
                 currentPos = new Position(System.currentTimeMillis());
             }
 
@@ -265,7 +265,7 @@ public class MessageWorker implements Worker {
                 currentPos.setGps(gps); // Possible duplicate (see UC4)
                 measuresWaiting.clear();
                 dive.endDive(currentPos);
-                dive = new Dive(gpsData.time_usec);
+                dive = new Dive();
             } else if (currentPos.hasGPS()) {
                 dive.add(currentPos);
             }

@@ -22,8 +22,8 @@ public class TestMeasureRepository {
     private final Configuration configuration;
     private final MeasureRepository repository;
 
-    private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
-    private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
+    private GPSCoordinate brut = new GPSCoordinate(1234_567l, 1000_000l, 1000_000l);
+    private GPSCoordinate correct = new GPSCoordinate(2000_000l, 2000_000l, 2000_000l);
 
     public TestMeasureRepository() throws FileNotFoundException, SQLException, ClassNotFoundException {
         this.configuration = Configuration.build("settingsTest.properties");
@@ -65,12 +65,15 @@ public class TestMeasureRepository {
 
         MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
         repository.insertMeasure(mesure, dive.getId(), 1);
+
         List<MeasureEntity> mesures = repository.getMeasureFrom(dive);
-        MeasureEntity mes2 = mesures.get(0);
-        if (mes2 != null) {
-            assertTrue(mesure.equals(mes2));
-        } else {
-            throw new Exception("Aucune valeur trouvée en base");
+        if (mesures != null && mesures.size() > 0) {
+            MeasureEntity mes2 = mesures.get(0);
+            if (mes2 != null) {
+                assertTrue(mesure.equals(mes2));
+            } else {
+                throw new Exception("Aucune valeur trouvée en base");
+            }
         }
         repository.closeConnection();
     }
@@ -85,14 +88,14 @@ public class TestMeasureRepository {
         MeasureEntity mesure = new MeasureEntity(System.currentTimeMillis(), brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
         repository.insertMeasure(mesure, dive.getId(), 1);
 
-        repository.updateMeasure(mesure.getId(), new GPSCoordinate(3230, 3230, 3230), 25);
+        repository.updateMeasure(mesure.getId(), new GPSCoordinate(3230000_000l, 3230000_000l, 3230000_000l), 25);
         List<MeasureEntity> mesures = repository.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
             if (mes2 != null) {
-                assertTrue(mes2.getLocationCorrected().lon == 3230);
-                assertTrue(mes2.getLocationCorrected().lat == 3230);
-                assertTrue(mes2.getLocationCorrected().alt == 3230);
+                assertTrue(mes2.getLocationCorrected().lon == 3230000_000l);
+                assertTrue(mes2.getLocationCorrected().lat == 3230000_000l);
+                assertTrue(mes2.getLocationCorrected().alt == 3230000_000l);
             } else {
                 throw new Exception("Aucune valeur trouvée en base");
             }

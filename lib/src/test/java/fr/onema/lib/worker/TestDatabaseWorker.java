@@ -49,7 +49,7 @@ public class TestDatabaseWorker {
         dbWorker.updatePosition(entity.getId(), correct, 0);
         dbWorker.startRecording(start, dive.getId());
         dbWorker.stopRecording(end, dive.getId());
-        dbWorker.sendNotification("notification");
+        dbWorker.sendNotification();
     }
 
     @Test
