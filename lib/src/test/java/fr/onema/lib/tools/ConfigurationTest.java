@@ -65,9 +65,9 @@ public class ConfigurationTest {
     public void testRead() throws Exception {
         Configuration config = Configuration.build(filePath.getAbsolutePath());
 
-        assertEquals(1, config.getFlow().getLat());
-        assertEquals(2, config.getFlow().getLon());
-        assertEquals(3, config.getFlow().getAlt());
+        assertEquals(1, config.getFlow().getLat(), 0);
+        assertEquals(2, config.getFlow().getLon(), 0);
+        assertEquals(3, config.getFlow().getAlt(), 0);
 
         assertEquals("db.local", config.getDatabaseInformation().getHostname());
         assertEquals(5432, config.getDatabaseInformation().getPort());
@@ -86,44 +86,44 @@ public class ConfigurationTest {
         Configuration config = Configuration.build(filePath.getAbsolutePath());
         Configuration configBis;
 
-        int lat = config.getFlow().getLat();
-        int lon = config.getFlow().getLon();
-        int alt = config.getFlow().getAlt();
+        double lat = config.getFlow().getLat();
+        double lon = config.getFlow().getLon();
+        double alt = config.getFlow().getAlt();
 
         config.setCorrection(lat, lon, alt);
         configBis = Configuration.build(filePath.getAbsolutePath());
-        assertEquals(lat, config.getFlow().getLat());
-        assertEquals(lon, config.getFlow().getLon());
-        assertEquals(alt, config.getFlow().getAlt());
-        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat());
-        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon());
-        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt());
+        assertEquals(lat, config.getFlow().getLat(), 0);
+        assertEquals(lon, config.getFlow().getLon(), 0);
+        assertEquals(alt, config.getFlow().getAlt(), 0);
+        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat(), 0);
+        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon(), 0);
+        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt(), 0);
 
         config.setCorrection(lat + 1, lon, alt);
         configBis = Configuration.build(filePath.getAbsolutePath());
-        assertEquals(lat + 1, config.getFlow().getLat());
-        assertEquals(lon, config.getFlow().getLon());
-        assertEquals(alt, config.getFlow().getAlt());
-        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat());
-        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon());
-        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt());
+        assertEquals(lat + 1, config.getFlow().getLat(), 0);
+        assertEquals(lon, config.getFlow().getLon(), 0);
+        assertEquals(alt, config.getFlow().getAlt(), 0);
+        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat(), 0);
+        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon(), 0);
+        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt(), 0);
 
         config.setCorrection(lat, lon + 1, alt);
         configBis = Configuration.build(filePath.getAbsolutePath());
-        assertEquals(lat, config.getFlow().getLat());
-        assertEquals(lon + 1, config.getFlow().getLon());
-        assertEquals(alt, config.getFlow().getAlt());
-        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat());
-        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon());
-        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt());
+        assertEquals(lat, config.getFlow().getLat(), 0);
+        assertEquals(lon + 1, config.getFlow().getLon(), 0);
+        assertEquals(alt, config.getFlow().getAlt(), 0);
+        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat(), 0);
+        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon(), 0);
+        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt(), 0);
 
         config.setCorrection(lat, lon, alt + 1);
         configBis = Configuration.build(filePath.getAbsolutePath());
-        assertEquals(lat, config.getFlow().getLat());
-        assertEquals(lon, config.getFlow().getLon());
-        assertEquals(alt + 1, config.getFlow().getAlt());
-        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat());
-        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon());
-        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt());
+        assertEquals(lat, config.getFlow().getLat(), 0);
+        assertEquals(lon, config.getFlow().getLon(), 0);
+        assertEquals(alt + 1, config.getFlow().getAlt(), 0);
+        assertEquals(configBis.getFlow().getLat(), config.getFlow().getLat(), 0);
+        assertEquals(configBis.getFlow().getLon(), config.getFlow().getLon(), 0);
+        assertEquals(configBis.getFlow().getAlt(), config.getFlow().getAlt(), 0);
     }
 }

@@ -141,4 +141,8 @@ public class ServerListener implements Worker {
     public DatagramSocket getSk() {
         return sk;
     }
+
+    public MessageWorker getMessageWorker() {
+        return messageWorker;
+    }
 }
