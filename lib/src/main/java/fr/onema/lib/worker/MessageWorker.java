@@ -40,17 +40,15 @@ public class MessageWorker implements Worker {
     private final BlockingQueue<MAVLinkMessage> messages = new ArrayBlockingQueue<>(200);
     // Worker thread that treats the MAVLinkMessages
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
+    private final AtomicReference<MAVLinkMessage> bufferMavLink = new AtomicReference<>();
     // Represents the dive currently associated
     private Dive dive;
     private String lastMessageType;
-
     private Boolean inDive;
     private Position currentPos;
     private GPS lastPos;
     private Boolean mavLinkConnection;
     private long firstInfo = 0;
-
-    private final AtomicReference<MAVLinkMessage> bufferMavLink = new AtomicReference<>();
 
     /**
      * Constructeur de MessageWorker
@@ -71,7 +69,7 @@ public class MessageWorker implements Worker {
      * @param message Le message MavLink à traiter.
      * @throws InterruptedException En cas d'intérruption du thread courant.
      */
-    void newMessage(MAVLinkMessage message) throws InterruptedException {
+    public void newMessage(MAVLinkMessage message) throws InterruptedException {
         this.messages.put(Objects.requireNonNull(message));
     }
 
