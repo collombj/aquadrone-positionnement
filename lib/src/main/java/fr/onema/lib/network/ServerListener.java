@@ -4,6 +4,7 @@ import fr.onema.lib.worker.MessageWorker;
 import fr.onema.lib.worker.Worker;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
@@ -15,11 +16,11 @@ import java.net.SocketException;
 
 public class ServerListener implements Worker {
     private final int port;
-    byte[] buf;
-    DatagramPacket dgp;
-    DatagramSocket sk = null;
+    private byte[] buf;
+    private DatagramPacket datagramPacket;
+    private DatagramSocket datagramSocket = null;
     private long lastReceivedTimestamp = 0;
-    private int timeUsec = 0;
+    private int lastTimeUsec = 0;
     private Thread listener;
     private MessageWorker messageWorker = new MessageWorker();
 
@@ -39,14 +40,14 @@ public class ServerListener implements Worker {
         listener = new Thread(() -> {
             while (!Thread.interrupted()) {
                 buf = new byte[1000];
-                dgp = new DatagramPacket(buf, buf.length);
+                datagramPacket = new DatagramPacket(buf, buf.length);
                 try {
-                    sk.receive(dgp);
+                    datagramSocket.receive(datagramPacket);
                     MAVLinkReader reader = new MAVLinkReader();
-                    MAVLinkMessage mesg = reader.getNextMessage(dgp.getData(), dgp.getLength());
+                    MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
                     if (testValidityMavlinkMessage(mesg)) {
                         while (mesg != null) {
-                            this.messageWorker.newMessage(mesg);
+                            this.messageWorker.newMessage(lastReceivedTimestamp, mesg);
                             if (reader.nbUnreadMessages() != 0) {
                                 mesg = reader.getNextMessageWithoutBlocking();
                             } else {
@@ -64,36 +65,30 @@ public class ServerListener implements Worker {
         listener.start();
     }
 
-    /**
-     * Permet de récupérer le timestamp message Mavlink
-     *
-     * @param s une String mavlink
-     * @return un long
-     */
-    public long bytesToNumber(String s) {
-        int start = s.indexOf("=");
-        int end = s.indexOf(" ", start);
-        String sub = s.substring(start+1, end);
-        return Long.parseLong(sub);
-    }
-
     private boolean testValidityMavlinkMessage(MAVLinkMessage mesg) {
-        long tmpTime = bytesToNumber(mesg.toString());
-        if (mesg.getClass() == msg_gps_raw_int.class) {
+        long tmpTime;
+        if (mesg instanceof msg_gps_raw_int) {
+            tmpTime = ((msg_gps_raw_int) mesg).time_usec;
             if (lastReceivedTimestamp <= tmpTime) {
                 lastReceivedTimestamp = tmpTime;
                 return true;
-            } else {
-                return false;
             }
+            return false;
         }
-        if (mesg.getClass() == msg_scaled_imu.class || mesg.getClass() == msg_scaled_pressure.class) {
-            if (timeUsec <= tmpTime) {
-                timeUsec = (int)tmpTime;
-                return true;
-            } else {
-                return false;
-            }
+
+        if (mesg instanceof msg_scaled_imu) {
+            tmpTime = ((msg_scaled_imu) mesg).time_boot_ms;
+        } else if (mesg instanceof msg_scaled_pressure) {
+            tmpTime = ((msg_scaled_pressure) mesg).time_boot_ms;
+        } else if (mesg instanceof msg_attitude) {
+            tmpTime = ((msg_attitude) mesg).time_boot_ms;
+        } else {
+            tmpTime = 0;
+        }
+
+        if (lastTimeUsec <= tmpTime) {
+            lastTimeUsec = (int) tmpTime;
+            return true;
         }
         return false;
     }
@@ -115,7 +110,7 @@ public class ServerListener implements Worker {
     @Override
     public void stop() {
         listener.interrupt();
-        sk.close();
+        datagramSocket.close();
         this.messageWorker.stop();
     }
 
@@ -124,7 +119,7 @@ public class ServerListener implements Worker {
      */
     public void openConnexion() {
         try {
-            sk = new DatagramSocket(port);
+            datagramSocket = new DatagramSocket(port);
         } catch (SocketException e) {
             // TODO
         }
@@ -138,8 +133,8 @@ public class ServerListener implements Worker {
         return listener;
     }
 
-    public DatagramSocket getSk() {
-        return sk;
+    public DatagramSocket getDatagramSocket() {
+        return datagramSocket;
     }
 
     public MessageWorker getMessageWorker() {

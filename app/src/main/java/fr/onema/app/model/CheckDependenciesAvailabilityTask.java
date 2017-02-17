@@ -7,7 +7,6 @@ import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.scene.paint.Color;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimerTask;
@@ -39,7 +38,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
             rlc.updateDatabaseColor(Color.RED);
         }
 
-        if (checkMavlinkAvailability(main.getMessageWorker())) {
+        if (checkMavlinkAvailability(main.getMessageWorker(), main.getConfiguration())) {
             rlc.updateMavlinkColor(Color.GREEN);
         } else {
             rlc.updateMavlinkColor(Color.RED);
@@ -73,7 +72,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
      * Permet de vérifier l'état du flux Mavlink
      * @return L'état du flux
      */
-    public static boolean checkMavlinkAvailability(MessageWorker worker) {
-        return worker.getMavLinkConnection();
+    public static boolean checkMavlinkAvailability(MessageWorker worker, Configuration conf) {
+        return System.currentTimeMillis() - worker.getMavLinkConnection() < conf.getDiveData().getFrequencetestmavlink();
     }
 }

@@ -52,6 +52,15 @@ public class Position {
     /**
      * Constructeur de Position seulement avec timestamp. Les autres valeurs des capteurs peuvent être associés plus
      * tard grâce aux setters.
+     *  
+     */
+    public Position() {
+        // Nothing instantiated
+    }
+
+    /**
+     * Constructeur de Position seulement avec timestamp. Les autres valeurs des capteurs peuvent être associés plus
+     * tard grâce aux setters.
      *
      * @param timestamp Le timestamp de la positione actuelle.
      */
@@ -191,7 +200,6 @@ public class Position {
      */
     public void add(Measure newMeasure) {
         measures.add(newMeasure);
-
     }
 
 
@@ -225,6 +233,9 @@ public class Position {
      */
     public CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
 
+        if (this.hasGPS()) {
+            this.positionRecalculated = this.positionBrute;
+        }
         //CartesianCoordinate last,CartesianVelocity previousVelocity,long time, double yaw, double pitch, double roll, Accelerometer accelerometer)
         GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),

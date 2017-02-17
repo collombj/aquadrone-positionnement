@@ -31,11 +31,12 @@ public class GPS extends Sensor {
 
     /***
      * Builder de l'objet GPS
+     * @param timestamp
      * @param msg Message correspondant à la mesure GPS en protocole MavLink
      */
-    public static GPS build(msg_gps_raw_int msg) {
+    public static GPS build(long timestamp, msg_gps_raw_int msg) {
         Objects.requireNonNull(msg);
-        return new GPS(msg.time_usec, msg.lat, msg.lon, msg.alt, msg.cog);
+        return new GPS(timestamp, msg.lat, msg.lon, msg.alt, msg.cog);
     }
 
     /***

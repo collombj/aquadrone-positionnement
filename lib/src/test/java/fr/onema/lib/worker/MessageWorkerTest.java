@@ -57,7 +57,7 @@ public class MessageWorkerTest {
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
-                    messageWorker.newMessage(mavLinkMessageList.removeFirst());
+                    messageWorker.newMessage(27091994, mavLinkMessageList.removeFirst());
                     Thread.currentThread().sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

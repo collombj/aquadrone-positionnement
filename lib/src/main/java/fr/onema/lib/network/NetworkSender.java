@@ -48,10 +48,12 @@ public class NetworkSender {
             }
         }
         MAVLinkMessage msgIMU = entry.getIMUMessage();
+        MAVLinkMessage msgAttitude = entry.getAttitudeMessage();
         MAVLinkMessage msgPressure = entry.getPressureMessage();
         MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
         try {
             queue.put(msgIMU);
+            queue.put(msgAttitude);
             queue.put(msgPressure);
             queue.put(msgTemperature);
         } catch (InterruptedException e) {

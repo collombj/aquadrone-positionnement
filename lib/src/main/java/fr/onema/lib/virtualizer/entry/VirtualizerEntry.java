@@ -49,7 +49,10 @@ public class VirtualizerEntry implements CSV {
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
         this.gpsAlt = gpsAlt;
-        this.hasGPS = true;
+
+        if(gpsLat != 0 && gpsLon != 0) {
+            this.hasGPS = true;
+        }
     }
 
     /**
@@ -110,7 +113,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_scaled_imu getIMUMessage() {
         msg_scaled_imu msg = new msg_scaled_imu();
-        msg.time_boot_ms = System.currentTimeMillis();
+        msg.time_boot_ms = timestamp;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
@@ -129,11 +132,12 @@ public class VirtualizerEntry implements CSV {
      * @return AttitudeMessage
      */
     public msg_attitude getAttitudeMessage() {
-        msg_attitude msgAttitude = new msg_attitude();
-        msgAttitude.roll = (float) this.roll;
-        msgAttitude.pitch = (float) this.pitch;
-        msgAttitude.yaw = (float) this.yaw;
-        return msgAttitude;
+        msg_attitude msg = new msg_attitude();
+        msg.time_boot_ms = timestamp;
+        msg.roll = (float) this.roll;
+        msg.pitch = (float) this.pitch;
+        msg.yaw = (float) this.yaw;
+        return msg;
     }
 
     /**
@@ -143,7 +147,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_scaled_pressure getPressureMessage() {
         msg_scaled_pressure msg = new msg_scaled_pressure();
-        msg.time_boot_ms = System.currentTimeMillis();
+        msg.time_boot_ms = timestamp;
         msg.press_abs = this.pressure;
         msg.temperature = this.temperature;
         return msg;
@@ -156,7 +160,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_scaled_pressure getTemperatureMessage() {
         msg_scaled_pressure msg = new msg_scaled_pressure();
-        msg.time_boot_ms = System.currentTimeMillis();
+        msg.time_boot_ms = timestamp;
         msg.press_abs = this.pressure;
         msg.temperature = this.temperature;
         return msg;

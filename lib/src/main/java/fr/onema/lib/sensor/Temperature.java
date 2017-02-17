@@ -31,11 +31,13 @@ public class Temperature extends Sensor implements Measure {
     /**
      * Méthode permettant de créer une Temperature à partir d'un message PressureMAVLink
      *
+     *
+     * @param timestamp
      * @param pressureMAVLinkMessage Message MAVLink provenant d'une pression.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
-    public static Temperature build(msg_scaled_pressure pressureMAVLinkMessage) {
-        return Temperature.build(System.currentTimeMillis(), pressureMAVLinkMessage.temperature);
+    public static Temperature build(long timestamp, msg_scaled_pressure pressureMAVLinkMessage) {
+        return Temperature.build(timestamp, pressureMAVLinkMessage.temperature);
     }
 
     /**
@@ -59,7 +61,7 @@ public class Temperature extends Sensor implements Measure {
 
     @Override
     public String getName() {
-        return "Temperature";
+        return "temperature";
     }
 
     @Override

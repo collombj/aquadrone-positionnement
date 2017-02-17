@@ -38,7 +38,7 @@ public class DiveTest {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-        dive = new Dive(System.currentTimeMillis());
+        dive = new Dive();
         Thread.sleep(200);
         Position position = new Position(System.currentTimeMillis());
         position.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),

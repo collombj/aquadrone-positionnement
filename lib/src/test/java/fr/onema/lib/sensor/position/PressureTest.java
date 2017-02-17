@@ -6,14 +6,11 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Created by you on 07/02/2017.
- */
 public class PressureTest {
     @Test
     public void build() throws Exception {
         msg_scaled_pressure msg = new msg_scaled_pressure();
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertNotNull(p);
     }
 
@@ -30,7 +27,7 @@ public class PressureTest {
     public void getAbsolute() throws Exception {
         msg_scaled_pressure msg = new msg_scaled_pressure();
         msg.press_abs = 3;
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertEquals(3.0, p.getAbsolute(), 0);
     }
 
@@ -38,7 +35,7 @@ public class PressureTest {
     public void getDifferential() throws Exception {
         msg_scaled_pressure msg = new msg_scaled_pressure();
         msg.press_diff = 3;
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertEquals(3.0, p.getDifferential(), 0);
     }
 
@@ -46,7 +43,7 @@ public class PressureTest {
     public void getTemperature() throws Exception {
         msg_scaled_pressure msg = new msg_scaled_pressure();
         msg.temperature = 3;
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertEquals(3.0, p.getTemperature(), 0);
     }
 
@@ -57,14 +54,14 @@ public class PressureTest {
         msg.temperature = 4;
         msg.press_diff = 3;
         msg.press_abs = 2;
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertEquals(p.toCSV(),"1,2.0,3.0,4");
     }
 
     @Test
     public void getCSVHeader() throws Exception {
         msg_scaled_pressure msg = new msg_scaled_pressure();
-        Pressure p = Pressure.build(msg);
+        Pressure p = Pressure.build(27091994, msg);
         assertEquals(p.getCSVHeader(), "timestamp,asbolute,differential,temperature");
     }
 

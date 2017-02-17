@@ -6,6 +6,7 @@ import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
+import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.worker.DatabaseWorker;
 
 import java.util.ArrayList;
@@ -31,10 +32,8 @@ public class Dive {
 
     /**
      * Crée une nouvelle Dive
-     *
-     * @param timestamp l'heure de début de la plongée
      */
-    public Dive(long timestamp) {
+    public Dive() {
         diveEntity = new DiveEntity();
         dbWorker.newDive(diveEntity);
         numberOfmovement = 0;
@@ -50,19 +49,30 @@ public class Dive {
         // si c'est le premier point
         if (positions.isEmpty()) {
             // si la premiere position n a pas de gps, on la rejette
-            if (!position.hasGPS())
+            if (!position.hasGPS()) {
                 return;
+            }
+
             position.setPositionBrute(position.getGps().getPosition());
             position.setCartesianBrute(new CartesianCoordinate(0, 0, 0));
             lastVitesse = new CartesianVelocity(0, 0, 0);
             reference = position.getPositionBrute();
-
-
         } else {//si ce n'est pas le premier point on calcule
-            if (!position.hasIMU()) { // on ignore les paquets sans imu
+            if (!position.hasIMU() && !position.hasGPS()) { // on ignore les paquets sans imu
                 return;
             }
-            lastVitesse = position.calculate(positions.get(positions.size() - 1), lastVitesse, reference);
+
+            Position lastPos = positions.get(positions.size() - 1);
+            if (position.hasGPS()) {
+                position.setPositionBrute(position.getGps().getPosition());
+                position.setCartesianBrute(GeoMaths.computeCartesianPosition(reference, position.getPositionBrute()));
+                lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
+                        lastPos.getCartesianBrute(),
+                        position.getCartesianBrute(),
+                        position.getTimestamp() - lastPos.getTimestamp());
+            } else if (position.hasIMU()) {
+                lastVitesse = position.calculate(lastPos, lastVitesse, reference);
+            }
         }
 
         updateMeasuresAndPosition(position);
@@ -72,16 +82,17 @@ public class Dive {
         for (Measure measure : position.getMeasures()) {
             // créer l'entité
             // l'insérer en base
+            IMU imu = position.getImu();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
                     position.getPositionRecalculated(),
-                    position.getImu().getAccelerometer().getxAcceleration(),
-                    position.getImu().getAccelerometer().getyAcceleration(),
-                    position.getImu().getAccelerometer().getzAcceleration(),
-                    position.getImu().getGyroscope().getRoll(),
-                    position.getImu().getGyroscope().getPitch(),
-                    position.getImu().getGyroscope().getRoll(),
+                    imu == null ? 0 : imu.getAccelerometer().getxAcceleration(),
+                    imu == null ? 0 : imu.getAccelerometer().getyAcceleration(),
+                    imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
+                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    imu == null ? 0 : imu.getGyroscope().getPitch(),
+                    imu == null ? 0 : imu.getGyroscope().getRoll(),
                     -1,
                     measure.getValue());
             dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
@@ -94,7 +105,7 @@ public class Dive {
     /**
      * Termine la plongée
      */
-    public void endDive(Position position) throws Exception {
+    public void endDive(Position position) {
         Objects.requireNonNull(position);
         if (!position.hasGPS())
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS");
@@ -133,9 +144,9 @@ public class Dive {
         }
     }
 
-    private void updateMeasuresInBase() throws Exception {
+    private void updateMeasuresInBase() {
         if (measures.size() != measuresUpdated.size())
-            throw new Exception("Erreur algorithme : nombre de mesures differents apres recalcul");
+            throw new IllegalStateException("Erreur algorithme : nombre de mesures differents apres recalcul");
 
         MeasureEntity e1;
         MeasureEntity e2;
@@ -145,7 +156,7 @@ public class Dive {
             e2 = measuresUpdated.get(i);
 
             if (!e1.diveEquals(e2)) {
-                throw new Exception("Erreur algorithme : ordre des mesures non préservé");
+                throw new IllegalStateException("Erreur algorithme : ordre des mesures non préservé");
             }
             e1.setLocationCorrected(e2.getLocationCorrected());
             e1.setPrecisionCm(e2.getPrecisionCm());

@@ -16,7 +16,7 @@ public class IMUTest {
     public void build() {
         msg_scaled_imu msg = new msg_scaled_imu();
         msg_attitude msgAttitude = new msg_attitude();
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu);
     }
 
@@ -30,7 +30,7 @@ public class IMUTest {
         msgAttitude.roll = 1;
         msgAttitude.pitch = 1;
         msgAttitude.yaw = 1;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
         assertEquals(3, imu.getAccelerometer().getxAcceleration());
         assertEquals(4, imu.getAccelerometer().getyAcceleration());
@@ -47,7 +47,7 @@ public class IMUTest {
         msgAttitude.roll = 1;
         msgAttitude.pitch = 1;
         msgAttitude.yaw = 1;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getGyroscope());
         assertEquals(1.0, imu.getGyroscope().getRoll(), 0);
         assertEquals(1.0, imu.getGyroscope().getPitch(), 0);
@@ -61,7 +61,7 @@ public class IMUTest {
         msg.xmag = 3;
         msg.ymag = 4;
         msg.zmag = 5;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getCompass());
         assertEquals(3, imu.getCompass().getxMagnetic());
         assertEquals(4, imu.getCompass().getyMagnetic());
