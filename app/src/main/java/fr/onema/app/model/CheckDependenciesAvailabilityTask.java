@@ -44,18 +44,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
         } else {
             rlc.updateMavlinkColor(Color.RED);
         }
-
-        /*
-        checkSensorsAvailability(main.getMessageWorker()).entrySet().forEach(e -> {
-            // clear tab
-            // insert sensors states
-        });
-        */
-        Map<String, Long> map = new HashMap<>();
-        map.put("Balises GPS", (long) 69696969);
-        map.put("Capteur pression", (long) 69696969);
-        map.put("Sonde temperature", (long) 69696969);
-        rlc.updateSensors(map);
+        rlc.updateSensors(checkSensorsAvailability(main.getMessageWorker()));
     }
 
     private static Map<String, Long> checkSensorsAvailability(MessageWorker worker) {
