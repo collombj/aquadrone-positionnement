@@ -3,24 +3,22 @@ package fr.onema.app.view;
 import fr.onema.app.Main;
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.Region;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.util.Objects;
-import java.util.Timer;
+import java.util.*;
 
 /***
  * Controlleur associé à la vue RootLayout.fxml
@@ -39,6 +37,7 @@ public class RootLayoutController {
     private StringProperty startButtonLabel = new SimpleStringProperty();
     private Thread diveProgress = new Thread();
     private Thread dive = new Thread();
+    private List<TableSensor> sensors = new ArrayList<>();
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -117,7 +116,7 @@ public class RootLayoutController {
             });
         });
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 30_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 10_000);
     }
 
     /***
@@ -169,6 +168,7 @@ public class RootLayoutController {
             stage.sizeToScene();
             stage.initOwner(root);
             stage.setAlwaysOnTop(true);
+            stage.resizableProperty().setValue(false);
             ConfigurationController controller = loader.getController();
             controller.initialize();
             controller.insertSpinnerValues(horizontalOffset, verticalOffset, depthOffset);
@@ -258,5 +258,55 @@ public class RootLayoutController {
             progressIndicator.setVisible(true);
             startButtonLabel.setValue("Stopper traitement");
         }
+    }
+
+    @FXML
+    private TableView<TableSensor> sensorsTableView;
+
+    @FXML
+    private TableColumn<TableSensor, Integer> id;
+
+    @FXML
+    private TableColumn<TableSensor, String> type;
+
+    @FXML
+    private TableColumn<TableSensor, Long> state;
+
+    /***
+     *
+     */
+    public class TableSensor {
+        private final int id;
+        private final String type;
+        private final long state;
+
+        public TableSensor(int id, String type, long state) {
+            this.id = id;
+            this.type = Objects.requireNonNull(type);
+            this.state = state;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public long getState() {
+            return state;
+        }
+    }
+
+    public void updateSensors(Map<String, Long> map) {
+        id.setCellValueFactory(new PropertyValueFactory<TableSensor, Integer>("id"));
+        type.setCellValueFactory(new PropertyValueFactory<TableSensor, String>("type"));
+        state.setCellValueFactory(new PropertyValueFactory<TableSensor, Long>("state"));
+        // TODO : handle ID
+        sensors.clear();
+        map.entrySet().forEach(e -> sensors.add(new TableSensor(0, e.getKey(), e.getValue())));
+        sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.refresh();
     }
 }

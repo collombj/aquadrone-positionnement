@@ -17,6 +17,10 @@ import java.util.logging.Logger;
  * Classe Main de l'application graphique
  */
 public class Main extends Application {
+    public static final double HORIZONTAL_DEFAULT_VALUE = 0;
+    public static final double VERTICAL_DEFAULT_VALUE = 0;
+    public static final double DEPTH_DEFAULT_VALUE = 0;
+
     private Stage primaryStage;
     private ServerListener server;
     private DatabaseWorker databaseWorker;
@@ -70,6 +74,11 @@ public class Main extends Application {
 
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+
+    public MessageWorker getMessageWorker() {
+        return messageWorker;
     }
 
     public void stopExecution() {
