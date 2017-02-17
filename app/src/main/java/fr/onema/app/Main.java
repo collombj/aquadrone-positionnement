@@ -1,6 +1,7 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
+import fr.onema.lib.drone.Dive;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -19,16 +20,10 @@ public class Main extends Application {
     public static final double HORIZONTAL_DEFAULT_VALUE = 0;
     public static final double VERTICAL_DEFAULT_VALUE = 0;
     public static final double DEPTH_DEFAULT_VALUE = 0;
-
-    public Stage getParent() {
-        return parent;
-    }
-
     private Stage parent;
     private ServerListener server;
-    private DatabaseWorker databaseWorker;
-    private MessageWorker messageWorker;
     private Configuration configuration;
+    private DatabaseWorker databaseWorker;
 
     // TODO : replace with customized logging system
     private Logger logger;
@@ -43,13 +38,9 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // TODO : complete
         this.configuration = Configuration.build("settings.properties");
         this.server = new ServerListener(14550);
         this.databaseWorker = DatabaseWorker.getInstance();
-        this.messageWorker = new MessageWorker();
-        //
-
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
@@ -63,28 +54,30 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-    public void execute(double horizontalOffset, double verticalOffset, double depthOffset, int diveDurationTolerance, double precision) {
-
-        // TODO : implement UC 4 here
+    public void execute() {
+        server.getMessageWorker().startRecording();
 
         System.out.println("Task completed with followings parameters : \n"
-                + "Horizontal Offset = " + horizontalOffset + "\n"
-                + "Vertical Offset = " + verticalOffset + "\n"
-                + "Depth Offset = " + depthOffset + "\n"
-                + "Duration Tolerance = " + diveDurationTolerance + "\n"
-                + "Precision = " + precision);
+                + "Horizontal Offset = " + configuration.getFlow().getLat() + "\n"
+                + "Vertical Offset = " + configuration.getFlow().getLon() + "\n"
+                + "Depth Offset = " + configuration.getFlow().getAlt() + "\n"
+                + "Duration Tolerance = " + configuration.getDiveData().getDureemax() + "\n"
+                + "Precision = " + configuration.getDiveData().getPrecision());
     }
 
     public Configuration getConfiguration() {
         return configuration;
     }
 
-
     public MessageWorker getMessageWorker() {
-        return messageWorker;
+        return server.getMessageWorker();
+    }
+
+    public Stage getParent() {
+        return parent;
     }
 
     public void stopExecution() {
-        // TODO : close everything here
+        server.getMessageWorker().stopRecording();
     }
 }

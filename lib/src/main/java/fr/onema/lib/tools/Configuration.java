@@ -52,9 +52,9 @@ public class Configuration {
         );
         this.geo = new Geo(Integer.parseInt(properties.getProperty(GEO_SRID)));
         this.flow = new Flow(
-                Integer.parseInt(properties.getProperty(FLOW_LAT)),
-                Integer.parseInt(properties.getProperty(FLOW_LON)),
-                Integer.parseInt(properties.getProperty(FLOW_ALT))
+                Double.parseDouble(properties.getProperty(FLOW_LAT)),
+                Double.parseDouble(properties.getProperty(FLOW_LON)),
+                Double.parseDouble(properties.getProperty(FLOW_ALT))
         );
 
         this.diveData = new DiveData(Double.parseDouble(properties.getProperty(DIVEDATA_PRECISION)),
@@ -99,7 +99,7 @@ public class Configuration {
      *                     -Si l'écriture dans ce fichier plante
      *                     -Si on ne peut pas fermer le fichier de sortie(probablement parce qu'il l'est déjà)
      */
-    public void setCorrection(int x, int y, int z) throws IOException {
+    public void setCorrection(double x, double y, double z) throws IOException {
         if (flow.update(x, y, z)) {
             update();
         }
@@ -113,21 +113,16 @@ public class Configuration {
         properties.put(DB_USER, database.getUsername());
         properties.put(DB_TOKEN, database.getPassword());
         properties.put(DB_NOTIFY_KEY, database.getNotifyKey());
-
         properties.put(GEO_SRID, Integer.toString(geo.getSrid()));
-
-        properties.put(FLOW_LAT, Integer.toString(flow.getLat()));
-        properties.put(FLOW_LON, Integer.toString(flow.getLon()));
-        properties.put(FLOW_ALT, Integer.toString(flow.getAlt()));
-
+        properties.put(FLOW_LAT, Double.toString(flow.getLat()));
+        properties.put(FLOW_LON, Double.toString(flow.getLon()));
+        properties.put(FLOW_ALT, Double.toString(flow.getAlt()));
         properties.put(DIVEDATA_PRECISION, Double.toString(diveData.getPrecision()));
         properties.put(DIVEDATA_DUREE_MAX, Integer.toString(diveData.getDureemax()));
         properties.put(DIVEDATA_MOUVEMENTS_MAX, Integer.toString(diveData.getMouvementsmax()));
         properties.put(DIVEDATA_DELAI_CAPTEUR_HS, Integer.toString(diveData.getDelaicapteurhs()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK, Integer.toString(diveData.getFrequencetestmavlink()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE, Integer.toString(diveData.getFrequencetestdatabase()));
-
-
         PrintStream output = new PrintStream(path);
         properties.store(output, null);
     }
@@ -175,11 +170,11 @@ public class Configuration {
      * Class représentant le courant d'eau
      */
     public static final class Flow {
-        private int lat;
-        private int lon;
-        private int alt;
+        private double lat;
+        private double lon;
+        private double alt;
 
-        Flow(int lat, int lon, int alt) {
+        Flow(double lat, double lon, double alt) {
             this.lat = lat;
             this.lon = lon;
             this.alt = alt;
@@ -190,7 +185,7 @@ public class Configuration {
          *
          * @return Le courant en latitude
          */
-        public int getLat() {
+        public double getLat() {
             return lat;
         }
 
@@ -199,7 +194,7 @@ public class Configuration {
          *
          * @return Le courant en longitude
          */
-        public int getLon() {
+        public double getLon() {
             return lon;
         }
 
@@ -208,11 +203,11 @@ public class Configuration {
          *
          * @return Le courant en profondeur
          */
-        public int getAlt() {
+        public double getAlt() {
             return alt;
         }
 
-        boolean update(int lat, int lon, int alt) {
+        boolean update(double lat, double lon, double alt) {
             boolean edited = false;
 
             if (lat != this.lat) {
@@ -357,8 +352,6 @@ public class Configuration {
             this.delaicapteurhs = delaicapteurhs;
             this.frequencetestmavlink = frequencetestmavlink;
             this.frequencetestdatabase = frequencetestdatabase;
-
-
         }
 
         /**
