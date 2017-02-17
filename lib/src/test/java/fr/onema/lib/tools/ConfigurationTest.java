@@ -25,7 +25,13 @@ public class ConfigurationTest {
             "database.user=user\n" +
             "database.password=pwd\n" +
             "database.notify-key=test_key\n" +
-            "geo.srid=2154";
+            "geo.srid=2154\n" +
+            "divedata.precision=0.5\n" +
+            "divedata.dureemax=5\n" +
+            "divedata.mouvementsmax=4\n" +
+            "divedata.delaicapteurhs=2\n" +
+            "divedata.frequencetestmavlink=1\n" +
+            "divedata.frequencetestdatabase=1";
     private File filePath;
 
     @Before
@@ -71,6 +77,8 @@ public class ConfigurationTest {
         assertEquals("test_key", config.getDatabaseInformation().getNotifyKey());
 
         assertEquals(2154, config.getGeo().getSrid());
+
+        assertEquals(0.5, config.getDiveData().getPrecision(), 0);
     }
 
     @Test
