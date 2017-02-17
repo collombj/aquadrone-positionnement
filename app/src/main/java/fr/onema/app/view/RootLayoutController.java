@@ -3,8 +3,8 @@ package fr.onema.app.view;
 import fr.onema.app.Main;
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,11 +28,6 @@ public class RootLayoutController {
     private double horizontalOffset = 0;
     private double verticalOffset = 0;
     private double depthOffset = 0;
-
-    // TODO : gestion des paramètres via le fichier de configuration
-    private int diveDurationTolerance = 120;
-    private int precision = 50;
-
     private volatile BooleanProperty isRunning = new SimpleBooleanProperty();
     private StringProperty startButtonLabel = new SimpleStringProperty();
     private Thread diveProgress = new Thread();
@@ -115,8 +110,9 @@ public class RootLayoutController {
                 handleRunningStatus();
             });
         });
+
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 10_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 3_000);
     }
 
     /***
@@ -206,17 +202,9 @@ public class RootLayoutController {
         Task diveTask = new Task() {
             @Override
             protected Void call() throws Exception {
-                try {
-                    // TODO : remove
-                    Thread.sleep(60000);
-                    //
-                    main.execute(horizontalOffset, verticalOffset, depthOffset, diveDurationTolerance, precision);
-                } catch (InterruptedException e) {
-                    // ignore
-                } finally {
-                    setRunning(false);
-                    Thread.currentThread().interrupt();
-                }
+                main.execute(horizontalOffset, verticalOffset, depthOffset, main.getConfiguration().getDiveData().getDureemax(), main.getConfiguration().getDiveData().getPrecision());
+                setRunning(false);
+                Thread.currentThread().interrupt();
                 return null;
             }
         };
@@ -229,7 +217,7 @@ public class RootLayoutController {
     private void setupDiveProgressThread() {
         Task diveProgressTask = new Task() {
             @Override public Void call() {
-                final double max = RootLayoutController.this.diveDurationTolerance * 5;
+                final double max = main.getConfiguration().getDiveData().getDureemax() * 5;
                 for (double i = 0; i <= max; i++) {
                     try {
                         Thread.sleep(200);
@@ -270,7 +258,7 @@ public class RootLayoutController {
     private TableColumn<TableSensor, String> type;
 
     @FXML
-    private TableColumn<TableSensor, Long> state;
+    private TableColumn<TableSensor, String> state;
 
     /***
      *
@@ -278,12 +266,12 @@ public class RootLayoutController {
     public class TableSensor {
         private final int id;
         private final String type;
-        private final long state;
+        private final String state;
 
-        public TableSensor(int id, String type, long state) {
+        public TableSensor(int id, String type, String state) {
             this.id = id;
             this.type = Objects.requireNonNull(type);
-            this.state = state;
+            this.state = Objects.requireNonNull(state);
         }
 
         public int getId() {
@@ -294,19 +282,39 @@ public class RootLayoutController {
             return type;
         }
 
-        public long getState() {
+        public String getState() {
             return state;
         }
     }
 
     public void updateSensors(Map<String, Long> map) {
-        id.setCellValueFactory(new PropertyValueFactory<TableSensor, Integer>("id"));
-        type.setCellValueFactory(new PropertyValueFactory<TableSensor, String>("type"));
-        state.setCellValueFactory(new PropertyValueFactory<TableSensor, Long>("state"));
-        // TODO : handle ID
+        id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        type.setCellValueFactory(new PropertyValueFactory<>("type"));
+        state.setCellValueFactory(new PropertyValueFactory<>("state"));
         sensors.clear();
-        map.entrySet().forEach(e -> sensors.add(new TableSensor(0, e.getKey(), e.getValue())));
+
+        int i = 1;
+        for (Map.Entry<String, Long> e : map.entrySet()) {
+            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
+            i++;
+        }
         sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.setFixedCellSize(25);
+        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
+        sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
+        sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
+
+        Platform.runLater(() -> main.getParent().sizeToScene());
+
         sensorsTableView.refresh();
+    }
+
+    private String checkStateTime(long value) {
+        double diffSeconds = (System.currentTimeMillis() - value) / 1000.0;
+        if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
+            return "inactif depuis : " + diffSeconds + " secondes";
+        } else {
+            return "actif (dernière activité il y a : " + diffSeconds + " secondes";
+        }
     }
 }
