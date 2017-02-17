@@ -115,7 +115,7 @@ public class MissingPointsGenerator {
         try (Stream<String> s = Files.lines(Paths.get(csvFilePath))) {
             s.skip(1).forEach(entries::add);
         }catch (IOException ioe){
-            throw new IOException("An error occurred while adding file lines in the list");
+            throw new IOException("An error occurred while adding file lines in the list :" + ioe);
         }
     }
 
@@ -161,7 +161,7 @@ public class MissingPointsGenerator {
         try{
             Files.write(filePath, outputs, Charset.forName("UTF-8"));
         }catch(IOException ioe){
-            throw new IOException("Writing in file failed");
+            throw new IOException("Writing in file failed :",ioe);
         }
     }
 
@@ -190,7 +190,7 @@ public class MissingPointsGenerator {
         try{
             Files.write(filePath, outputs, Charset.forName("UTF-8"));
         }catch(IOException ioe){
-            throw new IOException("Writing in file failed");
+            throw new IOException("Writing in file failed :",ioe);
         }
     }
 
