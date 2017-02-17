@@ -1,8 +1,6 @@
 package fr.onema.lib.sensor.position.IMU;
 
-import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
-import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
@@ -36,7 +34,7 @@ public class IMU {
      * builder de l'imu a apartir du flux mavlink
      *
      * @param msg recuperation du flux mavlink
-     * @return
+     * @return Un IMU instancié en fonction de messages MAVLink
      */
     public static IMU build(msg_scaled_imu msg, msg_attitude msgAttitude) {
         Objects.requireNonNull(msg);
@@ -50,20 +48,17 @@ public class IMU {
     /**
      * Creation de l'imu  de simulation à parti de la classe  {@link GeoMaths}
      *
+     * @param previousVelocity vitesse précédente du drone
+     * @param velocity     vitesse actuelle du drone
      * @param prevTimestamp  timestamp de l'avant dernière mesure (ms)
-     * @param prevCoordinate coodonnée de l'avant dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}
-     * @param coordinate     coodonnée de l'avnt dernière mesure en format mavlink (degres decimaux 10^7 altitude m 10^3) {@link GPSCoordinate}
      * @param timestamp      timestamp de l'avant dernière mesure (ms)
      * @return un imu sans gyroscope et compas
      */
-    public static IMU build(CartesianVelocity refVelocity, long prevTimestamp, GPSCoordinate prevCoordinate, long timestamp, GPSCoordinate coordinate) {
-        Objects.requireNonNull(refVelocity);
-        Objects.requireNonNull(prevCoordinate);
-        Objects.requireNonNull(coordinate);
+    public static IMU build(CartesianVelocity previousVelocity, CartesianVelocity velocity, long prevTimestamp, long timestamp) {
+        Objects.requireNonNull(previousVelocity);
+        Objects.requireNonNull(velocity);
 
-        CartesianCoordinate cartCoordinate = GeoMaths.computeCartesianPosition(prevCoordinate, coordinate);
-        CartesianVelocity velocity = GeoMaths.computeVelocityFromCartesianCoordinate(cartCoordinate, timestamp - prevTimestamp);
-        Accelerometer accelerometer = GeoMaths.computeAccelerometerData(refVelocity, velocity, timestamp - prevTimestamp);
+        Accelerometer accelerometer = GeoMaths.computeAccelerometerData(previousVelocity, velocity, timestamp - prevTimestamp);
         Gyroscope gyroscope = new Gyroscope(0, 0, 0);
         Compass compass = new Compass(0, 0, 0);
         return new IMU(accelerometer, gyroscope, compass);

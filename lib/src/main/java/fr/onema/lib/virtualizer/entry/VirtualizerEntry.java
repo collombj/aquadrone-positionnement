@@ -8,7 +8,7 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 
 public class VirtualizerEntry implements CSV {
-    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
+    public static final String HEADER = "timestamp,gpsLatitude,gpsLongitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
     private final int xacc;
     private final int yacc;
@@ -308,7 +308,7 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
+        return timestamp + "," + gpsLat + "," + gpsLon + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
     }
 
     /**
@@ -363,7 +363,7 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + xmag;
         result = 31 * result + ymag;
         result = 31 * result + zmag;
-        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
         result = 31 * result + gpsLat;

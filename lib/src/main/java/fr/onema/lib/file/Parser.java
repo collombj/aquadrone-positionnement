@@ -9,6 +9,10 @@ import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
  */
 public class Parser {
 
+    private Parser() {
+        // Avoid instantiation
+    }
+
     /***
      * Parse la ligne et la transforme en entrée de référence
      * @param line La ligne CSV à parser
@@ -38,8 +42,8 @@ public class Parser {
             throw new IllegalArgumentException();
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
-                Integer.parseInt(s[2]),
                 Integer.parseInt(s[1]),
+                Integer.parseInt(s[2]),
                 Integer.parseInt(s[3]),
                 Integer.parseInt(s[4]),
                 Integer.parseInt(s[5]),

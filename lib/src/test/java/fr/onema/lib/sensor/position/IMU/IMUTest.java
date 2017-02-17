@@ -10,9 +10,6 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Created by strock on 06/02/2017.
- */
 public class IMUTest {
 
     @Test
@@ -77,7 +74,7 @@ public class IMUTest {
         GPSCoordinate prevCoordinate = new GPSCoordinate(5, 6, 7);
         GPSCoordinate coordinate = new GPSCoordinate(8, 9, 10);
 
-        IMU imu = IMU.build(refVelocity, 1, prevCoordinate, 2, coordinate);
+        IMU imu = IMU.build(refVelocity, refVelocity, 1, 2);
         assertNotNull(imu.getAccelerometer());
 
 

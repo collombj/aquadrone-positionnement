@@ -16,9 +16,10 @@ public class ServerListenerTest {
     }
 
     @Test
-    public void testStartThread() {
+    public void testStartThread() throws InterruptedException {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
+        Thread.sleep(100);
         assertNotNull(serverListener.getListener());
         serverListener.stop();
     }

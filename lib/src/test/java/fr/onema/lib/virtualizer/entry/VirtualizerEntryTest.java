@@ -8,9 +8,6 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
 
-/**
- * Created by Theo on 06/02/2017.
- */
 public class VirtualizerEntryTest {
     @Test
     public void testConstructorNotNull() {
@@ -83,7 +80,7 @@ public class VirtualizerEntryTest {
     @Test
     public void getCSVHeaderTest() {
         VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
-        assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
+        assertEquals("timestamp,gpsLatitude,gpsLongitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
     }
 
     @Test

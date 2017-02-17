@@ -139,12 +139,12 @@ public class GeoMaths {
      * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourrant - timestampPrecedent)
      * @return La vitesse en m/s sur chaque axe {@link CartesianVelocity}
      */
-    public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate coordinate, long timestamp) {
+    public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate prevCoordinate, CartesianCoordinate coordinate, long timestamp) {
         Objects.requireNonNull(coordinate);
-        double frac = 1_000. / timestamp;
-        double vx = coordinate.x * frac;
-        double vy = coordinate.y * frac;
-        double vz = coordinate.z * frac;
+        double frac = 1_000. / ((timestamp == 0) ? 1_000. : timestamp);
+        double vx = (coordinate.x - prevCoordinate.x) * frac;
+        double vy = (coordinate.y - prevCoordinate.y) * frac;
+        double vz = (coordinate.z - prevCoordinate.z) * frac;
 
         return new CartesianVelocity(vx, vy, vz);
     }
@@ -324,8 +324,9 @@ public class GeoMaths {
 
         /**
          * Le constructeur
+         *
          * @param coordinate les coordonnees calculees
-         * @param velocity la vitesse calculée
+         * @param velocity   la vitesse calculée
          */
         public MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
             this.coordinate = coordinate;
@@ -334,6 +335,7 @@ public class GeoMaths {
 
         /**
          * Permet d obtenir les coordonnées
+         *
          * @return des coordonnées cartésiennes
          */
         public CartesianCoordinate getCoordinate() {
@@ -342,6 +344,7 @@ public class GeoMaths {
 
         /**
          * Permet d'obtenir la velocité
+         *
          * @return des coordonnées gps
          */
         public CartesianVelocity getVelocity() {

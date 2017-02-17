@@ -103,8 +103,6 @@ public class Main {
     /**
      * Filtre et exécute les actions relativent au paramètres passés en paramètres
      *
-     * @param command paramètres saisie
-     * @param options liste des options à utiliser pour les paramètres saisies
      */
     public static void action(CommandLine command, Options options) {
         // Génération des CSVs pour l'utilisation du simulateur
