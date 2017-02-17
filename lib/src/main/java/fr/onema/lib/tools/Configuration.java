@@ -1,5 +1,7 @@
 package fr.onema.lib.tools;
 
+import fr.onema.lib.drone.Dive;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -25,11 +27,18 @@ public class Configuration {
     private static final String FLOW_LAT = "flow.lat";
     private static final String FLOW_LON = "flow.lon";
     private static final String FLOW_ALT = "flow.alt";
+    private static final String DIVEDATA_PRECISION = "divedata.precision";
+    private static final String DIVEDATA_DUREE_MAX = "divedata.dureemax";
+    private static final String DIVEDATA_MOUVEMENTS_MAX = "divedata.mouvementsmax";
+    private static final String DIVEDATA_DELAI_CAPTEUR_HS = "divedata.delaicapteurhs";
+    private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
+    private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
 
     private final String path;
     private final Database database;
     private final Geo geo;
     private final Flow flow;
+    private final DiveData diveData;
 
     private Configuration(String path, Properties properties) throws FileNotFoundException {
         this.path = path;
@@ -47,6 +56,13 @@ public class Configuration {
                 Integer.parseInt(properties.getProperty(FLOW_LON)),
                 Integer.parseInt(properties.getProperty(FLOW_ALT))
         );
+
+        this.diveData = new DiveData(Double.parseDouble(properties.getProperty(DIVEDATA_PRECISION)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_DUREE_MAX)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_MOUVEMENTS_MAX)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_DELAI_CAPTEUR_HS)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)));
     }
 
     /**
@@ -104,6 +120,14 @@ public class Configuration {
         properties.put(FLOW_LON, Integer.toString(flow.getLon()));
         properties.put(FLOW_ALT, Integer.toString(flow.getAlt()));
 
+        properties.put(DIVEDATA_PRECISION, Double.toString(diveData.getPrecision()));
+        properties.put(DIVEDATA_DUREE_MAX, Integer.toString(diveData.getDureemax()));
+        properties.put(DIVEDATA_MOUVEMENTS_MAX, Integer.toString(diveData.getMouvementsmax()));
+        properties.put(DIVEDATA_DELAI_CAPTEUR_HS, Integer.toString(diveData.getDelaicapteurhs()));
+        properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK, Integer.toString(diveData.getFrequencetestmavlink()));
+        properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE, Integer.toString(diveData.getFrequencetestdatabase()));
+
+
         PrintStream output = new PrintStream(path);
         properties.store(output, null);
     }
@@ -139,9 +163,18 @@ public class Configuration {
     }
 
     /**
+     * Méthode permettant de récupérer la configuration des données de plongée
+     *
+     * @return la configuration d'une plongée
+     */
+    public DiveData getDiveData() {
+        return diveData;
+    }
+
+    /**
      * Class représentant le courant d'eau
      */
-    public final class Flow {
+    public static final class Flow {
         private int lat;
         private int lon;
         private int alt;
@@ -204,7 +237,7 @@ public class Configuration {
     /**
      * Class représentant la configuration de la base de données
      */
-    public final class Database {
+    public static final class Database {
         private final String hostname;
         private final int port;
         private final String base;
@@ -293,6 +326,93 @@ public class Configuration {
          */
         public int getSrid() {
             return srid;
+        }
+    }
+
+    /**
+     * Classe représentant la configuration des données de plongée
+     */
+    public static final class DiveData {
+        private final double precision;
+        private final int dureemax;
+        private final int mouvementsmax;
+        private final int delaicapteurhs;
+        private final int frequencetestmavlink;
+        private final int frequencetestdatabase;
+
+        /**
+         * Le constructeur de la classe
+         *
+         * @param precision la précision en mètres
+         * @param dureemax la durée en secondes de la plognée
+         * @param mouvementsmax le nombre max de mouvements avant de perdre trop de précision
+         * @param delaicapteurhs la durée pour considerer un capteur HS en secondes
+         * @param frequencetestmavlink la fréquence de test du flux mavlink
+         * @param frequencetestdatabase la fréquence de test du flux mavlink
+         */
+        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase) {
+            this.precision = precision;
+            this.dureemax = dureemax;
+            this.mouvementsmax = mouvementsmax;
+            this.delaicapteurhs = delaicapteurhs;
+            this.frequencetestmavlink = frequencetestmavlink;
+            this.frequencetestdatabase = frequencetestdatabase;
+
+
+        }
+
+        /**
+         * Retourne la précision
+         *
+         * @return la précision en mètres
+         */
+        public double getPrecision() {
+            return precision;
+        }
+
+        /**
+         * Retourne la durée max conseillée d'une plongée
+         *
+         * @return la durée max conseillée d'une plongée
+         */
+        public int getDureemax() {
+            return dureemax;
+        }
+
+        /**
+         * Retourne le nombre de mouvements max conseillés avant de perdre trop de précision
+         *
+         * @return le nombre de mouvements max conseillé
+         */
+        public int getMouvementsmax() {
+            return mouvementsmax;
+        }
+
+        /**
+         * Retourne le délai avant de considerer un capteur HS
+         *
+         * @return le délai avant de considérer un capteur HS en secondes
+         */
+        public int getDelaicapteurhs() {
+            return delaicapteurhs;
+        }
+
+        /**
+         *Retourne la fréquence de test du flux mavlink
+         *
+         * @return la fréquence de test du flux mavlink
+         */
+        public int getFrequencetestmavlink() {
+            return frequencetestmavlink;
+        }
+
+        /**
+         * Retourne la fréquence de test du flux database
+         *
+         * @return la fréquence de test du flux database
+         */
+        public int getFrequencetestdatabase() {
+            return frequencetestdatabase;
         }
     }
 }
