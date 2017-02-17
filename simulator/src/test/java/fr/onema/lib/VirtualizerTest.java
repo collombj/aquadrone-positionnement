@@ -175,6 +175,7 @@ public class VirtualizerTest {
 
     @Test
     public void testCompare() throws Exception {
+
         String workingSourceDir = System.getProperty("user.dir").replace("simulator", "lib");
         Virtualizer v = new Virtualizer(fm, 100, "aaa", "localhost", 1234);
         Configuration config = Configuration.build(workingSourceDir + "/settingsTest.properties");
