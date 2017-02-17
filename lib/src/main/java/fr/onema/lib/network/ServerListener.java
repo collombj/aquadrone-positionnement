@@ -1,5 +1,6 @@
 package fr.onema.lib.network;
 
+import fr.onema.lib.worker.MessageWorker;
 import fr.onema.lib.worker.Worker;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
@@ -20,8 +21,7 @@ public class ServerListener implements Worker {
     private long lastReceivedTimestamp = 0;
     private int timeUsec = 0;
     private Thread listener;
-    private boolean gpsValid = false;
-    private boolean pressureValid = false;
+    private MessageWorker messageWorker = new MessageWorker();
 
     /**
      * Constructeur de la classe ServerListener
@@ -42,12 +42,11 @@ public class ServerListener implements Worker {
                 dgp = new DatagramPacket(buf, buf.length);
                 try {
                     sk.receive(dgp);
-                    byte[] b = dgp.getData();
                     MAVLinkReader reader = new MAVLinkReader();
                     MAVLinkMessage mesg = reader.getNextMessage(dgp.getData(), dgp.getLength());
                     if (testValidityMavlinkMessage(mesg)) {
                         while (mesg != null) {
-                            // TODO Implémenter MessageWorker
+                            this.messageWorker.newMessage(mesg);
                             if (reader.nbUnreadMessages() != 0) {
                                 mesg = reader.getNextMessageWithoutBlocking();
                             } else {
@@ -55,8 +54,10 @@ public class ServerListener implements Worker {
                             }
                         }
                     }
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    // TODO
+                    //do nothing for now TODO Add logger
                 }
             }
         });
@@ -105,6 +106,7 @@ public class ServerListener implements Worker {
     public void start() {
         openConnexion();
         startThread();
+        this.messageWorker.start();
     }
 
     /**
@@ -114,6 +116,7 @@ public class ServerListener implements Worker {
     public void stop() {
         listener.interrupt();
         sk.close();
+        this.messageWorker.stop();
     }
 
     /**
