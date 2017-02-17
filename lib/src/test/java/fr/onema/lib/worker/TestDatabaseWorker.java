@@ -17,6 +17,7 @@ import static org.junit.Assert.assertTrue;
  * Created by Acer on 10/02/2017.
  */
 public class TestDatabaseWorker {
+    /*
     private final Configuration configuration;
     private final DatabaseWorker dbWorker;
     private final MeasureRepository repository;
@@ -70,4 +71,5 @@ public class TestDatabaseWorker {
     public void afterEffect() throws Exception {
         dbWorker.stop();
     }
+    */
 }
