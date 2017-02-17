@@ -45,7 +45,7 @@ public class MissingPointsGenerator {
         }
 
         String toCSV(){
-            return timestamp + "," + coordinates.lon + "," + coordinates.lat + "," + coordinates.alt + "," + direction + "," + measure;
+            return timestamp + "," + coordinates.lat + "," + coordinates.lon + "," + coordinates.alt + "," + direction + "," + measure;
         }
 
         GPSCoordinate getCoordinates() {
@@ -125,9 +125,9 @@ public class MissingPointsGenerator {
             String[] members = entry.split(",");
             if(members.length == REQUIRED_LENGTH) {
                 long timestamp = Long.parseLong(members[0]);
-                long lon = (long) (Double.valueOf(members[1])*10_000_000);//X
-                long lat = (long) (Double.valueOf(members[2])*10_000_000);//Y
-                long alt = (long) (Double.valueOf(members[3])*1_000);//Z
+                long lat = (long) (Double.valueOf(members[1])*10_000_000);
+                long lon = (long) (Double.valueOf(members[2])*10_000_000);
+                long alt = (long) (Double.valueOf(members[3])*1_000);
                 int direction = Integer.parseInt(members[4]);
                 int measure = (int)(Float.parseFloat(members[5])*100);
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, direction, timestamp);
