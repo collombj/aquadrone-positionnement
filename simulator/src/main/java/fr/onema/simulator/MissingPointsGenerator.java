@@ -16,6 +16,8 @@ import java.util.stream.Stream;
 
 /**
  * Created by Jérôme on 14/02/2017.
+ *
+ * Classe qui crée les points de relevé manquants dans un fichier CSV
  */
 
 public class MissingPointsGenerator {
@@ -31,7 +33,7 @@ public class MissingPointsGenerator {
     /**
      * Classe interne représentant un point (des coordonnées, un timestamp et une valeur de température)
      */
-    public static class Point {
+    private class Point {
         private final GPSCoordinate coordinates;
         private final int measure;
         private final int direction;
