@@ -178,7 +178,9 @@ public class Main {
         Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", host, 14550);
 
         try {
+            LOGGER.log(Level.INFO, "Sending in progress");
             virtualizer.start();
+            LOGGER.log(Level.INFO, "Sending is over");
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error during the simulation", e);
         }

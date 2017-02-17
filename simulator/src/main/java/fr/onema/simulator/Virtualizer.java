@@ -74,7 +74,8 @@ public class Virtualizer {
                 LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
             }
         });
-
+        executor.shutdown();
+        sender.closeConnection();
         stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes
     }
 

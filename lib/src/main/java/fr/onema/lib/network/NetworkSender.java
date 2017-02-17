@@ -117,6 +117,7 @@ public class NetworkSender {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
+                    Thread.currentThread().interrupt();
                     // TODO
                 }
             }
