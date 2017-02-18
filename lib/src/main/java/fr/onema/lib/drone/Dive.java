@@ -147,12 +147,7 @@ public class Dive {
             if (!e1.diveEquals(e2)) {
                 throw new Exception("Erreur algorithme : ordre des mesures non préservé");
             }
-            e1.setLocationCorrected(e2.getLocationCorrected());
-            e1.setPrecisionCm(e2.getPrecisionCm());
-        }
-
-        for (MeasureEntity measure : measures) {
-            dbWorker.updatePosition(measure.getId(), measure.getLocationCorrected(), measure.getPrecisionCm());
+            dbWorker.updatePosition(e1.getId(), e2.getLocationCorrected(), e2.getPrecisionCm());
         }
     }
 
