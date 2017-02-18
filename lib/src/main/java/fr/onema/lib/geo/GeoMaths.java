@@ -104,7 +104,7 @@ public class GeoMaths {
     }
 
     /**
-     * Calcule la position cartésienne d'un point GPS dans le référentiel GPS demandé
+     * Calcule la position cartésienne d'un point GPS_SENSOR dans le référentiel GPS_SENSOR demandé
      *
      * @param refPoint (exprimé en deg*1e7)
      * @param point    (exprimé en deg*1e7)
@@ -174,7 +174,7 @@ public class GeoMaths {
     }
 
     /**
-     * Calcule les coordonnées GPS d'un point cartésien (qui utilise le point GPS de référence comme origine)
+     * Calcule les coordonnées GPS_SENSOR d'un point cartésien (qui utilise le point GPS_SENSOR de référence comme origine)
      *
      * @param refPoint le point GPS de référence
      * @param point    le point cartésien

@@ -24,6 +24,7 @@ public class Main extends Application {
     private ServerListener server;
     private Configuration configuration;
     private DatabaseWorker databaseWorker;
+    private MessageWorker messageWorker;
 
     // TODO : replace with customized logging system
     private Logger logger;
@@ -39,8 +40,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         this.configuration = Configuration.build("settings.properties");
-        this.server = new ServerListener(14550);
         this.databaseWorker = DatabaseWorker.getInstance();
+        this.databaseWorker.init(configuration);
+        this.databaseWorker.start();
+        this.server = new ServerListener(14550);
+        this.server.start();
+        this.messageWorker = server.getMessageWorker();
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
@@ -55,7 +60,8 @@ public class Main extends Application {
     }
 
     public void execute() {
-        server.getMessageWorker().startRecording();
+// TODO
+        messageWorker.startRecording();
 
         System.out.println("Task completed with followings parameters : \n"
                 + "Horizontal Offset = " + configuration.getFlow().getLat() + "\n"
@@ -70,7 +76,7 @@ public class Main extends Application {
     }
 
     public MessageWorker getMessageWorker() {
-        return server.getMessageWorker();
+        return messageWorker;
     }
 
     public Stage getParent() {
@@ -78,6 +84,12 @@ public class Main extends Application {
     }
 
     public void stopExecution() {
-        server.getMessageWorker().stopRecording();
+        messageWorker.stopRecording();
+        messageWorker.stop();
+        server.stop();
+        databaseWorker.stop();
+
+
+        this.server.stop();
     }
 }

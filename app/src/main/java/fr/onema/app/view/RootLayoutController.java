@@ -112,7 +112,7 @@ public class RootLayoutController {
         });
 
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 3_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 2_000);
     }
 
     /***
@@ -187,13 +187,17 @@ public class RootLayoutController {
             main.stopExecution();
             setRunning(false);
         } else {
+            setupDiveProgressThread();
+            setupDiveThread();
+            setRunning(true);
+            diveProgress.start();
+            dive.start();
+            /*
             if (CheckDependenciesAvailabilityTask.checkMavlinkAvailability(main.getMessageWorker()) && CheckDependenciesAvailabilityTask.checkPostgresAvailability(main.getConfiguration())) {
-                setupDiveProgressThread();
-                setupDiveThread();
-                setRunning(true);
-                diveProgress.start();
-                dive.start();
+
             } else {
+            */
+                /*
                 Platform.runLater(() -> {
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.setTitle("Erreur lors de l'exécution");
@@ -201,7 +205,10 @@ public class RootLayoutController {
                     alert.setContentText("Les dépendances ne sont pas toutes actives, veuillez les relancer ...");
                     alert.showAndWait();
                 });
-            }
+                */
+                // ignore
+            //}
+
         }
     }
 
@@ -309,11 +316,13 @@ public class RootLayoutController {
             i++;
         }
         sensorsTableView.getItems().setAll(sensors);
+        /*
         sensorsTableView.setFixedCellSize(25);
         sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
         sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
         Platform.runLater(() -> main.getParent().sizeToScene());
+        */
         sensorsTableView.refresh();
     }
 

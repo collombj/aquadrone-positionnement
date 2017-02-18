@@ -21,7 +21,7 @@ public class Parser {
     public static ReferenceEntry parseReference(String line) {
         String[] s = line.split(",");
         if (s.length != 6) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("6 Fields are required");
         }
         return new ReferenceEntry(Long.parseLong(s[0]),
                 Integer.parseInt(s[1]),
@@ -39,7 +39,7 @@ public class Parser {
     public static VirtualizerEntry parseVirtualizer(String line) {
         String[] s = line.split(",");
         if (s.length != 15) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("15 Fields are required");
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
                 Integer.parseInt(s[1]),

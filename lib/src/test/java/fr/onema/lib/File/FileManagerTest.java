@@ -12,6 +12,8 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.msg_scaled_pressure2;
+import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 import java.io.File;
 import java.io.IOException;
@@ -44,10 +46,11 @@ public class FileManagerTest {
         msg.lon = 3;
         msg.alt = 4;
         msg.cog = 5;
-        msg_scaled_pressure msg2 = new msg_scaled_pressure();
+        msg_scaled_pressure3 msg2 = new msg_scaled_pressure3();
         msg2.time_boot_ms = 0;
         msg2.temperature = 6;
-        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        long timestamp = 27091994;
+        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
         fm.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, 5, 6, 7, 8, 9,
                 10, 11, 12, 13, 14, 15));
     }
@@ -75,8 +78,9 @@ public class FileManagerTest {
     @Test
     public void testException3() throws IOException {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg_scaled_pressure msg2 = new msg_scaled_pressure();
-        fm_bugged.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        msg_scaled_pressure3 msg2 = new msg_scaled_pressure3();
+        long timestamp = 27091994;
+        fm_bugged.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
     }
 
     @Test
@@ -139,10 +143,11 @@ public class FileManagerTest {
         msg.lon = 2;
         msg.alt = 3;
         msg.cog = 4;
-        msg_scaled_pressure msg2 = new msg_scaled_pressure();
+        msg_scaled_pressure3 msg2 = new msg_scaled_pressure3();
         msg2.time_boot_ms = 0;
         msg2.temperature = 5;
-        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        long timestamp = 27091994;
+        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
     }
 
     @Test

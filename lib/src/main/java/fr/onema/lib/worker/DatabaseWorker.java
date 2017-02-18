@@ -34,7 +34,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.insertDive((DiveEntity) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive");
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive", e);
         }
     };
     /**
@@ -49,7 +49,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.insertMeasure((MeasureEntity) args[0], (Integer) args[1], (String) args[2]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure");
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure", e);
         }
     };
     /**
@@ -64,7 +64,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.updateMeasure((Integer) args[0], (GPSCoordinate) args[1], (Integer) args[2]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0]);
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0], e);
         }
     };
     /**
@@ -78,7 +78,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.updateStartTime((Integer) args[1], (Long) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0]);
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0], e);
         }
     };
     /**
@@ -92,7 +92,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.updateEndTime((Integer) args[1], (Long) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0]);
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0], e);
         }
     };
     /**
@@ -106,7 +106,7 @@ public class DatabaseWorker implements Worker {
         try {
             repository.sendNotification((String) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : could send notification : " + args[0]);
+            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : could send notification : " + args[0], e);
         }
     };
 

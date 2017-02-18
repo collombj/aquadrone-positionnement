@@ -28,7 +28,7 @@ public class GPSTest {
     public void getDirection() throws Exception {
         msg_gps_raw_int msg = new msg_gps_raw_int();
         msg.cog = 10;
-        GPS gps = GPS.build(msg);
+        GPS gps = GPS.build(27091994, msg);
         assertNotNull(gps.getDirection());
         assertEquals(10.0, gps.getDirection(),0);
     }

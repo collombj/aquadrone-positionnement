@@ -57,7 +57,7 @@ public class MessageWorkerTest {
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
-                    messageWorker.newMessage(mavLinkMessageList.removeFirst());
+                    messageWorker.newMessage(27091994, mavLinkMessageList.removeFirst());
                     Thread.currentThread().sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -73,22 +73,6 @@ public class MessageWorkerTest {
     public void newMessage() throws Exception {
         Thread.currentThread().sleep(2000);
         assertTrue(mavLinkMessageList.size() != 200);
-    }
-
-    @Test
-    public void clearWaitingList() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
-        messageWorker.clearWaitingList();
-        assertTrue(messageWorker.isWaitingListEmpty());
-    }
-
-    @Test
-    public void add() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
     }
 
     @AfterClass
