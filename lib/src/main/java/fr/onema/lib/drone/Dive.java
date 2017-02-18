@@ -81,7 +81,6 @@ public class Dive {
     private void updateMeasuresAndPosition(Position position) {
         for (Measure measure : position.getMeasures()) {
             // créer l'entité
-            // l'insérer en base
             IMU imu = position.getImu();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
@@ -95,7 +94,11 @@ public class Dive {
                     imu == null ? 0 : imu.getGyroscope().getRoll(),
                     -1,
                     measure.getValue());
+
+            // l'insérer en base
             dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
+
+            // l'insérer à la liste des mesures
             measures.add(entity);
         }
         positions.add(position);
@@ -125,23 +128,23 @@ public class Dive {
         updateMeasuresInBase();
     }
 
-    private void createUpdatedMeasuresList(Position pos) {
-        for (Measure measure : pos.getMeasures()) {
+    private void createUpdatedMeasuresList(Position position) {
+        for (Measure measure : position.getMeasures()) {
             // créer l'entité
-            // l'insérer en base
+            IMU imu = position.getImu();
             MeasureEntity entity = new MeasureEntity(
-                    pos.getTimestamp(),
-                    pos.getPositionBrute(),
-                    pos.getPositionRecalculated(),
-                    pos.getImu().getAccelerometer().getxAcceleration(),
-                    pos.getImu().getAccelerometer().getyAcceleration(),
-                    pos.getImu().getAccelerometer().getzAcceleration(),
-                    pos.getImu().getGyroscope().getRoll(),
-                    pos.getImu().getGyroscope().getPitch(),
-                    pos.getImu().getGyroscope().getRoll(),
+                    position.getTimestamp(),
+                    position.getPositionBrute(),
+                    position.getPositionRecalculated(),
+                    imu == null ? 0 : imu.getAccelerometer().getxAcceleration(),
+                    imu == null ? 0 : imu.getAccelerometer().getyAcceleration(),
+                    imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
+                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    imu == null ? 0 : imu.getGyroscope().getPitch(),
+                    imu == null ? 0 : imu.getGyroscope().getRoll(),
                     -1,
                     measure.getValue());
-            // dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
+            //l insérer à la liste des mesures corrigées
             measuresUpdated.add(entity);
         }
     }
