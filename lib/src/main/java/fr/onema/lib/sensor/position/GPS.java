@@ -11,7 +11,7 @@ import java.util.Objects;
  */
 
 /***
- * Classe représentant les mesures GPS
+ * Classe représentant les mesures GPS_SENSOR
  */
 public class GPS extends Sensor {
     private static final String HEADER = "timestamp,latitude,longitude,altitude,direction";
@@ -30,9 +30,9 @@ public class GPS extends Sensor {
     }
 
     /***
-     * Builder de l'objet GPS
+     * Builder de l'objet GPS_SENSOR
      * @param timestamp
-     * @param msg Message correspondant à la mesure GPS en protocole MavLink
+     * @param msg Message correspondant à la mesure GPS_SENSOR en protocole MavLink
      */
     public static GPS build(long timestamp, msg_gps_raw_int msg) {
         Objects.requireNonNull(msg);
@@ -40,7 +40,7 @@ public class GPS extends Sensor {
     }
 
     /***
-     * Builder de l'objet GPS
+     * Builder de l'objet GPS_SENSOR
      * @param timestamp Heure de la mesure
      * @param lat Latitude de la mesure
      * @param lon Longitude de la mesure

@@ -25,8 +25,8 @@ public class MeasureEntity {
      * Constructeur
      *
      * @param timestamp         La timestamp de la mesure, en millisecondes
-     * @param locationBrut      Les coordonnées GPS de la mesure calculées
-     * @param locationCorrected Les coordonnées GPS de la mesure après correction
+     * @param locationBrut      Les coordonnées GPS_SENSOR de la mesure calculées
+     * @param locationCorrected Les coordonnées GPS_SENSOR de la mesure après correction
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
      * @param accelerationZ     L'accélération selon l'axe Z du drone
@@ -60,8 +60,8 @@ public class MeasureEntity {
      *
      * @param id                L'identifiant de la mesure en base
      * @param timestamp         La timestamp de la mesure, en millisecondes
-     * @param locationBrut      Les coordonnées GPS de la mesure calculées
-     * @param locationCorrected Les coordonnées GPS de la mesure après correction
+     * @param locationBrut      Les coordonnées GPS_SENSOR de la mesure calculées
+     * @param locationCorrected Les coordonnées GPS_SENSOR de la mesure après correction
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
      * @param accelerationZ     L'accélération selon l'axe Z du drone

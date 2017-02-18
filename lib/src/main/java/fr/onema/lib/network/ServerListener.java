@@ -4,10 +4,7 @@ import fr.onema.lib.worker.MessageWorker;
 import fr.onema.lib.worker.Worker;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.ardupilotmega.msg_attitude;
-import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.*;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -78,8 +75,10 @@ public class ServerListener implements Worker {
 
         if (mesg instanceof msg_scaled_imu) {
             tmpTime = ((msg_scaled_imu) mesg).time_boot_ms;
-        } else if (mesg instanceof msg_scaled_pressure) {
-            tmpTime = ((msg_scaled_pressure) mesg).time_boot_ms;
+        } else if (mesg instanceof msg_scaled_pressure2) {
+            tmpTime = ((msg_scaled_pressure2) mesg).time_boot_ms;
+        } else if (mesg instanceof msg_scaled_pressure3) {
+            tmpTime = ((msg_scaled_pressure3) mesg).time_boot_ms;
         } else if (mesg instanceof msg_attitude) {
             tmpTime = ((msg_attitude) mesg).time_boot_ms;
         } else {
@@ -88,6 +87,7 @@ public class ServerListener implements Worker {
 
         if (lastTimeUsec <= tmpTime) {
             lastTimeUsec = (int) tmpTime;
+            lastReceivedTimestamp = tmpTime; // FIXME with the boot time and timestamp synchro
             return true;
         }
         return false;
@@ -99,9 +99,13 @@ public class ServerListener implements Worker {
      */
     @Override
     public void start() {
-        openConnexion();
-        startThread();
-        this.messageWorker.start();
+        try {
+            openConnexion();
+            startThread();
+            this.messageWorker.start();
+        } catch (SocketException e) {
+            throw new IllegalStateException(e);
+        }
     }
 
     /**
@@ -116,13 +120,11 @@ public class ServerListener implements Worker {
 
     /**
      * Initialise les variables nécessaires à la reception des données
+     *
+     * @throws SocketException en cas de problème lors de l'écoute du port spécifié
      */
-    public void openConnexion() {
-        try {
-            datagramSocket = new DatagramSocket(port);
-        } catch (SocketException e) {
-            // TODO
-        }
+    public void openConnexion() throws SocketException {
+        datagramSocket = new DatagramSocket(port);
     }
 
     public long getLastReceivedTimestamp() {

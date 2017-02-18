@@ -108,18 +108,20 @@ public class Dive {
     public void endDive(Position position) {
         Objects.requireNonNull(position);
         if (!position.hasGPS())
-            throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS");
+            throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS_SENSOR");
         position.setPositionBrute(position.getGps().getPosition());
         position.calculate(positions.get(positions.size() - 1), lastVitesse, reference);
         if (state == RECORD)
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
 
+        // Update last one
         updateMeasuresAndPosition(position);
         // Creation de la liste des mesures recalculées
         positions = GeoMaths.recalculatePosition(positions, reference, position.getPositionBrute());
         for (Position pos : positions) {
             createUpdatedMeasuresList(pos);
         }
+        System.err.println("Update all");
         updateMeasuresInBase();
     }
 
@@ -139,7 +141,7 @@ public class Dive {
                     pos.getImu().getGyroscope().getRoll(),
                     -1,
                     measure.getValue());
-            dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
+            // dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
             measuresUpdated.add(entity);
         }
     }

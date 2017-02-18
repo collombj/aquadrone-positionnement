@@ -7,13 +7,14 @@ import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.Pressure;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Représente une position. Cette position doit avoir plusieurs mesures associées dont: IMU, GPS et Pressure.
+ * Représente une position. Cette position doit avoir plusieurs mesures associées dont: IMU, GPS_SENSOR et Pressure.
  * Au sein de cette classe nous avons une liste de Measure et de MeasureEntity associées à la position courante.
  *
  * @author strock
@@ -29,6 +30,7 @@ public class Position {
     private int direction;
     private GPS gps;
     private IMU imu;
+    private Pressure pressure;
 
 
     /**
@@ -41,7 +43,7 @@ public class Position {
 
     public Position(long timestamp, GPSCoordinate positionBrute, int direction, IMU imu, GPS gps) {
         if (imu == null && gps == null)
-            throw new InvalidParameterException("Position need either an IMU or a GPS value");
+            throw new InvalidParameterException("Position need either an IMU or a GPS_SENSOR value");
         this.gps = gps;
         this.timestamp = timestamp;
         this.positionBrute = positionBrute;
@@ -106,9 +108,9 @@ public class Position {
     }
 
     /**
-     * Obtient la position GPS brute de la position.
+     * Obtient la position GPS_SENSOR brute de la position.
      *
-     * @return La position GPS brute de la position.
+     * @return La position GPS_SENSOR brute de la position.
      */
     public GPSCoordinate getPositionBrute() {
         return positionBrute;
@@ -127,7 +129,7 @@ public class Position {
     /**
      * Met a jour la coordonnées brutes
      *
-     * @param positionBrute des coordonnées GPS
+     * @param positionBrute des coordonnées GPS_SENSOR
      */
     public void setPositionBrute(GPSCoordinate positionBrute) {
         this.positionBrute = positionBrute;
@@ -135,9 +137,9 @@ public class Position {
     }
 
     /**
-     * Obtient la position GPS corrigée de la position.
+     * Obtient la position GPS_SENSOR corrigée de la position.
      *
-     * @return La position GPS corrigée de la position.
+     * @return La position GPS_SENSOR corrigée de la position.
      */
     public GPSCoordinate getPositionRecalculated() {
         return positionRecalculated;
@@ -146,7 +148,7 @@ public class Position {
     /**
      * Met à jour les coordonnées recalculées
      *
-     * @param positionRecalculated des coordonées GPS
+     * @param positionRecalculated des coordonées GPS_SENSOR
      */
     public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
         this.positionRecalculated = positionRecalculated;
@@ -185,9 +187,9 @@ public class Position {
 
 
     /**
-     * Définit le GPS de la position.
+     * Définit le GPS_SENSOR de la position.
      *
-     * @param gps Le GPS de la position.
+     * @param gps Le GPS_SENSOR de la position.
      */
     public void setGps(GPS gps) {
         this.gps = gps;
@@ -204,9 +206,9 @@ public class Position {
 
 
     /**
-     * Vérifie si un GPS est associé à la position.
+     * Vérifie si un GPS_SENSOR est associé à la position.
      *
-     * @return Vrai si un GPS est associé. Sinon faux.
+     * @return Vrai si un GPS_SENSOR est associé. Sinon faux.
      */
     public boolean hasGPS() {
         return this.gps != null;
@@ -251,5 +253,21 @@ public class Position {
         this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
         return wrapper.getVelocity();
 
+    }
+
+    /**
+     * Méthode permettant d'accèder à la pression relative à une position
+     * @return La pression courrante
+     */
+    public Pressure getPressure() {
+        return pressure;
+    }
+
+    /**
+     * Méthode permettant de mettre à jour la pression sur une position
+     * @param pressure La pression relative à la position mise à jour
+     */
+    public void setPressure(Pressure pressure) {
+        this.pressure = pressure;
     }
 }

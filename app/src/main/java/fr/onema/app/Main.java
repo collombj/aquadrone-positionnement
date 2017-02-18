@@ -85,6 +85,11 @@ public class Main extends Application {
 
     public void stopExecution() {
         messageWorker.stopRecording();
+        messageWorker.stop();
+        server.stop();
+        databaseWorker.stop();
+
+
         this.server.stop();
     }
 }

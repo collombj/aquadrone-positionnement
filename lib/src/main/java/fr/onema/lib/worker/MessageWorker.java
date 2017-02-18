@@ -1,17 +1,13 @@
 package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Dive;
-import fr.onema.lib.drone.Measure;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.ardupilotmega.msg_attitude;
-import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.*;
 
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -19,7 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
@@ -31,9 +26,11 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MessageWorker implements Worker {
 
     private static final long FIX_THRESHOLD = 5;
+    private static final String IMU_SENSOR = "IMU";
+    private static final String GPS_SENSOR = "GPS";
+    private static final String TEMPERATURE_SENSOR = "Temperature";
+    private static final String PRESSURE_SENSOR = "Pressure";
 
-    // The lists of measures fetched from the MAVLinkMessages
-    private final BlockingQueue<Measure> measuresWaiting = new ArrayBlockingQueue<>(50);
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
@@ -68,34 +65,8 @@ public class MessageWorker implements Worker {
         this.messages.put(new HashMap.SimpleEntry<>(timestamp, message));
     }
 
-    /**
-     * Vide la liste des mesures en attentes.
-     */
-    void clearWaitingList() {
-        this.measuresWaiting.clear();
-    }
-
-    /**
-     * Indique si la liste des mesures est vide.
-     *
-     * @return Vrai si la liste est vide. Sinon faux.
-     */
-    boolean isWaitingListEmpty() {
-        return this.measuresWaiting.isEmpty();
-    }
-
     public Map<String, Long> getMeasuresStates() {
         return measuresStates;
-    }
-
-    /**
-     * Ajoute une objet Temperature à la liste des mesures.
-     * Ces mesures seront associées à une position.
-     *
-     * @param measure La measure à ajouter.
-     */
-    public void add(Measure measure) {
-        this.currentPos.add(measure);
     }
 
     /**
@@ -148,7 +119,7 @@ public class MessageWorker implements Worker {
                 currentPos = new Position();
             }
 
-            // If the MAVLinkMessage is an accurate GPS message
+            // If the MAVLinkMessage is an accurate GPS_SENSOR message
             // And if the drone was previously diving
             mavLinkConnection = timestamp;
             switch (mavLinkMessage.messageType) {
@@ -161,20 +132,29 @@ public class MessageWorker implements Worker {
                 case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
                     attitudeReceived(timestamp, (msg_attitude) mavLinkMessage);
                     break; //IMU
-                case msg_scaled_pressure.MAVLINK_MSG_ID_SCALED_PRESSURE:
-                    temperatureReceived(timestamp, (msg_scaled_pressure) mavLinkMessage);
-                    break; //PRESSURE
+                case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
+                    pressureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
+                    break; // Pressure
+                case msg_scaled_pressure3.MAVLINK_MSG_ID_SCALED_PRESSURE3:
+                    temperatureReceived(timestamp, (msg_scaled_pressure3) mavLinkMessage);
+                    break; //Temperature
                 default:
                     break;
             }
         }
 
-        private void temperatureReceived(long timestamp, msg_scaled_pressure mavLinkMessage) {
-            Pressure pressure = Pressure.build(timestamp, mavLinkMessage);
+        private void pressureReceived(long timestammp, msg_scaled_pressure2 mavLinkMessage) {
+            Pressure pressure = Pressure.build(timestammp, mavLinkMessage);
+
+            currentPos.setPressure(pressure);
+            updateState(PRESSURE_SENSOR, pressure.getTimestamp());
+        }
+
+        private void temperatureReceived(long timestamp, msg_scaled_pressure3 mavLinkMessage) {
             Temperature temperature = Temperature.build(timestamp, mavLinkMessage);
 
-            add(temperature);
-            updateState(pressure.getClass().getCanonicalName(), temperature.getTimestamp());
+            currentPos.add(temperature);
+            updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
@@ -211,13 +191,6 @@ public class MessageWorker implements Worker {
             imuBuffer = imuMessage; // Update msg_scale_imu value
         }
 
-        private void gpsReceived(long timestamp, msg_gps_raw_int mavLinkMessage) {
-            if (mavLinkMessage.fix_type < FIX_THRESHOLD) {
-                return; // IGNORE the value : lack of precision.
-            }
-            processGPSData(GPS.build(timestamp, mavLinkMessage));
-        }
-
         private void processIMUData(IMU imu) {
             long timestamp = imu.getTimestamp();
             if (currentPos.hasIMU()) {
@@ -226,22 +199,20 @@ public class MessageWorker implements Worker {
 
             currentPos.setTimestamp(timestamp);
             currentPos.setImu(imu);
-            updateState(imu.getClass().getCanonicalName(), timestamp);
+            updateState(IMU_SENSOR, timestamp);
         }
 
-        private void savePosition() {
-            if(!currentPos.hasGPS() && !inDive){
-                inDive = true;
+        private void gpsReceived(long timestamp, msg_gps_raw_int mavLinkMessage) {
+            if (mavLinkMessage.fix_type < FIX_THRESHOLD) {
+                return; // IGNORE the value : lack of precision.
             }
-
-            dive.add(currentPos);
-            currentPos = new Position();
+            processGPSData(fr.onema.lib.sensor.position.GPS.build(timestamp, mavLinkMessage));
         }
 
         private void processGPSData(GPS gps) {
             long timestamp = gps.getTimestamp();
 
-            if(inDive) {
+            if (inDive) {
                 currentPos.setGps(gps);
                 inDive = false;
                 dive.endDive(currentPos);
@@ -250,13 +221,22 @@ public class MessageWorker implements Worker {
                 return;
             }
 
-            if(currentPos.hasGPS()) {
+            if (currentPos.hasGPS()) {
                 savePosition();
             }
 
             currentPos.setTimestamp(timestamp);
             currentPos.setGps(gps);
-            updateState(gps.getClass().getCanonicalName(), timestamp);
+            updateState(GPS_SENSOR, timestamp);
+        }
+
+        private void savePosition() {
+            if (!currentPos.hasGPS() && !inDive) {
+                inDive = true;
+            }
+
+            dive.add(currentPos);
+            currentPos = new Position();
         }
 
         private void updateState(String sensor, long timestamp) {
@@ -271,9 +251,6 @@ public class MessageWorker implements Worker {
                     computeMavLinkMessage(element.getKey(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (Exception e) {
-                    // FIXME
-                    e.printStackTrace();
                 }
             }
         }

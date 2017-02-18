@@ -75,22 +75,6 @@ public class MessageWorkerTest {
         assertTrue(mavLinkMessageList.size() != 200);
     }
 
-    @Test
-    public void clearWaitingList() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
-        messageWorker.clearWaitingList();
-        assertTrue(messageWorker.isWaitingListEmpty());
-    }
-
-    @Test
-    public void add() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
-    }
-
     @AfterClass
     public static void stopThread() {
         messageWorker.stop();

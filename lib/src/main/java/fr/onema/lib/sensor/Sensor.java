@@ -26,7 +26,7 @@ abstract public class Sensor implements CSV {
         this.timestamp = timestamp;
     }
 
-    /***
+    /**
      * Retourne l'heure de la mesure
      * @return Le timestamp de la mesure
      */

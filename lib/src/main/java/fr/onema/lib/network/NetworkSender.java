@@ -64,7 +64,7 @@ public class NetworkSender {
     /**
      * Envoi un message MavLink au destinataire
      */
-    public void send(MAVLinkMessage msg) throws IOException {
+    private void send(MAVLinkMessage msg) throws IOException {
         buffer = msg.encode();
         DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
         dsocket.send(out);
