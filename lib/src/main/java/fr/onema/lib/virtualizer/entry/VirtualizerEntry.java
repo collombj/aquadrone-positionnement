@@ -25,6 +25,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param gpsLat      Latitude du GPS_SENSOR
      * @param gpsLon      Longitude du GPS_SENSOR
@@ -42,18 +43,19 @@ public class VirtualizerEntry implements CSV {
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
-        this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
+        this(timestamp, xacc, yacc, zacc, roll, pitch, yaw, xmag, ymag, zmag, pressure, temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
         this.gpsAlt = gpsAlt;
 
-        if(gpsLat != 0 && gpsLon != 0) {
+        if (gpsLat != 0 && gpsLon != 0) {
             this.hasGPS = true;
         }
     }
 
     /**
      * Constructeur de Virtualizer sans le GPS_SENSOR
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param xacc        Acceleration en x
      * @param yacc        Acceleration en y
@@ -106,11 +108,12 @@ public class VirtualizerEntry implements CSV {
     /**
      * Retourne le message IMU en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return IMUMAVLinkMessage
      */
-    public msg_scaled_imu getIMUMessage() {
+    public msg_scaled_imu getIMUMessage(long bootTime) {
         msg_scaled_imu msg = new msg_scaled_imu();
-        msg.time_boot_ms = timestamp;
+        msg.time_boot_ms = bootTime;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
@@ -126,11 +129,12 @@ public class VirtualizerEntry implements CSV {
     /**
      * Retourne le message Attitude en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return AttitudeMessage
      */
-    public msg_attitude getAttitudeMessage() {
+    public msg_attitude getAttitudeMessage(long bootTime) {
         msg_attitude msg = new msg_attitude();
-        msg.time_boot_ms = timestamp;
+        msg.time_boot_ms = bootTime;
         msg.roll = (float) this.roll;
         msg.pitch = (float) this.pitch;
         msg.yaw = (float) this.yaw;
@@ -140,11 +144,12 @@ public class VirtualizerEntry implements CSV {
     /**
      * retourne le message de pression en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
-    public msg_scaled_pressure2 getPressureMessage() {
+    public msg_scaled_pressure2 getPressureMessage(long bootTime) {
         msg_scaled_pressure2 msg = new msg_scaled_pressure2();
-        msg.time_boot_ms = this.timestamp;
+        msg.time_boot_ms = bootTime;
         msg.press_abs = this.pressure;
         return msg;
     }
@@ -152,11 +157,12 @@ public class VirtualizerEntry implements CSV {
     /**
      * retourne le message de temperature en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
-    public msg_scaled_pressure3 getTemperatureMessage() {
+    public msg_scaled_pressure3 getTemperatureMessage(long bootTime) {
         msg_scaled_pressure3 msg = new msg_scaled_pressure3();
-        msg.time_boot_ms = this.timestamp;
+        msg.time_boot_ms = bootTime;
         msg.temperature = this.temperature;
         return msg;
     }

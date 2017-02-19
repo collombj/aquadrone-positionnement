@@ -56,7 +56,7 @@ public class PressureTest {
         msg.press_diff = 3;
         msg.press_abs = 2;
         Pressure p = Pressure.build(27091994, msg);
-        assertEquals(p.toCSV(),"1,2.0,3.0,4");
+        assertEquals(p.toCSV(),"27091994,2.0,3.0,4");
     }
 
     @Test

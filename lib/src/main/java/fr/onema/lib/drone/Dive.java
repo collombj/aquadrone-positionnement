@@ -12,6 +12,8 @@ import fr.onema.lib.worker.DatabaseWorker;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static fr.onema.lib.drone.Dive.State.ON;
 import static fr.onema.lib.drone.Dive.State.RECORD;
@@ -20,6 +22,7 @@ import static fr.onema.lib.drone.Dive.State.RECORD;
  * Created by strock on 09/02/2017.
  */
 public class Dive {
+    private static final Logger LOGGER = Logger.getLogger(Dive.class.getName());
     private GPSCoordinate reference;
     private List<Position> positions = new ArrayList<>();
     private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
@@ -124,7 +127,7 @@ public class Dive {
         for (Position pos : positions) {
             createUpdatedMeasuresList(pos);
         }
-        System.err.println("Update all");
+        LOGGER.log(Level.INFO, "All positions have been updated");
         updateMeasuresInBase();
     }
 

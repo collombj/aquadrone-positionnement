@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 /**
@@ -20,6 +21,7 @@ import java.util.logging.Level;
  */
 public class DatabaseWorker implements Worker {
 
+    private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
     private static DatabaseWorker INSTANCE = new DatabaseWorker();
     private Thread dbWorkerThread;
     private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
@@ -28,13 +30,13 @@ public class DatabaseWorker implements Worker {
      */
     private BiConsumer<MeasureRepository, Object[]> newDiveAux = (repository, args) -> {
         if (args.length != 1 || !(args[0] instanceof DiveEntity)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive : invalid args");
             return;
         }
         try {
             repository.insertDive((DiveEntity) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive", e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive", e);
         }
     };
     /**
@@ -43,13 +45,13 @@ public class DatabaseWorker implements Worker {
     private BiConsumer<MeasureRepository, Object[]> insertMeasureAux = (repository, args) -> {
         if (args.length != 3 || !(args[0] instanceof MeasureEntity)
                 || !(args[1] instanceof Integer) || !(args[2] instanceof String)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : invalid args");
             return;
         }
         try {
             repository.insertMeasure((MeasureEntity) args[0], (Integer) args[1], (String) args[2]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure", e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure", e);
         }
     };
     /**
@@ -58,13 +60,13 @@ public class DatabaseWorker implements Worker {
     private BiConsumer<MeasureRepository, Object[]> updatePositionAux = (repository, args) -> {
         if (args.length != 3 || !(args[0] instanceof Integer)
                 || !(args[1] instanceof GPSCoordinate) || !(args[2] instanceof Integer)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : invalid args");
             return;
         }
         try {
             repository.updateMeasure((Integer) args[0], (GPSCoordinate) args[1], (Integer) args[2]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0], e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0], e);
         }
     };
     /**
@@ -72,13 +74,13 @@ public class DatabaseWorker implements Worker {
      */
     private BiConsumer<MeasureRepository, Object[]> startRecordingAux = (repository, args) -> {
         if (args.length != 2 || !(args[0] instanceof Long) || !(args[1] instanceof Integer)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : invalid args");
             return;
         }
         try {
             repository.updateStartTime((Integer) args[1], (Long) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0], e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0], e);
         }
     };
     /**
@@ -86,13 +88,13 @@ public class DatabaseWorker implements Worker {
      */
     private BiConsumer<MeasureRepository, Object[]> stopRecordingAux = (repository, args) -> {
         if (args.length != 2 || !(args[0] instanceof Long) || !(args[1] instanceof Integer)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : invalid args");
             return;
         }
         try {
             repository.updateEndTime((Integer) args[1], (Long) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0], e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0], e);
         }
     };
     /**
@@ -100,13 +102,13 @@ public class DatabaseWorker implements Worker {
      */
     private BiConsumer<MeasureRepository, Object[]> sendNotificationAux = (repository, args) -> {
         if (args.length != 1 || !(args[0] instanceof String)) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : invalid args");
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : invalid args");
             return;
         }
         try {
             repository.sendNotification((String) args[0]);
         } catch (SQLException e) {
-            FileManager.LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : could send notification : " + args[0], e);
+            LOGGER.log(Level.SEVERE, "Error DatabaseWorker.sendNotification : could send notification : " + args[0], e);
         }
     };
 
@@ -170,7 +172,7 @@ public class DatabaseWorker implements Worker {
      */
     public void newDive(DiveEntity dive) {
         if (!actionQueue.offer(new DatabaseAction(newDiveAux, dive))){
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.newDive : Dive insertion failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.newDive : Dive insertion failed");
         }
     }
 
@@ -183,7 +185,7 @@ public class DatabaseWorker implements Worker {
      */
     public void insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) {
         if (!actionQueue.offer(new DatabaseAction(insertMeasureAux, measureEntity, diveID, measureInfoName))) {
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.insertMeasure : Measure insertion failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.insertMeasure : Measure insertion failed");
         }
     }
 
@@ -196,7 +198,7 @@ public class DatabaseWorker implements Worker {
      */
     public void updatePosition(int measureId, GPSCoordinate positionCorrected, int precisionCm) {
         if (!actionQueue.offer(new DatabaseAction(updatePositionAux, measureId, positionCorrected, precisionCm))) {
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.updatePosition : Measure update failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.updatePosition : Measure update failed");
         }
     }
 
@@ -208,7 +210,7 @@ public class DatabaseWorker implements Worker {
      */
     public void startRecording(long timestamp, int diveID) {
         if (!actionQueue.offer(new DatabaseAction(startRecordingAux, timestamp, diveID))) {
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.startRecording : Dive timestamp update failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.startRecording : Dive timestamp update failed");
         }
     }
 
@@ -220,7 +222,7 @@ public class DatabaseWorker implements Worker {
      */
     public void stopRecording(long timestamp, int diveID) {
         if (!actionQueue.offer(new DatabaseAction(stopRecordingAux, timestamp, diveID))) {
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.stopRecording : Dive timestamp update failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.stopRecording : Dive timestamp update failed");
         }
     }
 
@@ -231,7 +233,7 @@ public class DatabaseWorker implements Worker {
      */
     public void sendNotification(String message) {
         if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, message))) {
-            FileManager.LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
+            LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
         }
     }
 

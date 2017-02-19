@@ -1,17 +1,13 @@
 package fr.onema.lib.worker;
 
-import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.MAVLinkMessage;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -44,9 +40,9 @@ public class MessageWorkerTest {
                     (short) i
             );
             mavLinkMessageList.add(simulatedValue.getGPSMessage());
-            mavLinkMessageList.add(simulatedValue.getIMUMessage());
-            mavLinkMessageList.add(simulatedValue.getPressureMessage());
-            mavLinkMessageList.add(simulatedValue.getTemperatureMessage());
+            mavLinkMessageList.add(simulatedValue.getIMUMessage(i));
+            mavLinkMessageList.add(simulatedValue.getPressureMessage(i));
+            mavLinkMessageList.add(simulatedValue.getTemperatureMessage(i));
         }
     }
 

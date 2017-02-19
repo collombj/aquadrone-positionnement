@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
@@ -30,6 +32,7 @@ public class MessageWorker implements Worker {
     private static final String GPS_SENSOR = "GPS";
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
+    private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
 
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
@@ -143,21 +146,24 @@ public class MessageWorker implements Worker {
             }
         }
 
-        private void pressureReceived(long timestammp, msg_scaled_pressure2 mavLinkMessage) {
-            Pressure pressure = Pressure.build(timestammp, mavLinkMessage);
+        private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
+            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + pressureMessage.time_boot_ms + "]");
+            Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
             updateState(PRESSURE_SENSOR, pressure.getTimestamp());
         }
 
-        private void temperatureReceived(long timestamp, msg_scaled_pressure3 mavLinkMessage) {
-            Temperature temperature = Temperature.build(timestamp, mavLinkMessage);
+        private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
+            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + temperatureMessage.time_boot_ms + "]");
+            Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
+            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
@@ -175,6 +181,7 @@ public class MessageWorker implements Worker {
         }
 
         private void imuReceived(long timestamp, msg_scaled_imu imuMessage) {
+            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + imuMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -202,11 +209,12 @@ public class MessageWorker implements Worker {
             updateState(IMU_SENSOR, timestamp);
         }
 
-        private void gpsReceived(long timestamp, msg_gps_raw_int mavLinkMessage) {
-            if (mavLinkMessage.fix_type < FIX_THRESHOLD) {
+        private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
+            LOGGER.log(Level.INFO, "GPS [timestamp: " + timestamp + ", time: " + gpsMessage.time_usec + "]");
+            if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }
-            processGPSData(fr.onema.lib.sensor.position.GPS.build(timestamp, mavLinkMessage));
+            processGPSData(fr.onema.lib.sensor.position.GPS.build(timestamp, gpsMessage));
         }
 
         private void processGPSData(GPS gps) {

@@ -59,6 +59,14 @@ public class Main extends Application {
         primaryStage.show();
     }
 
+    @Override
+    public void stop() throws Exception {
+        super.stop();
+        // Stop toutes les threads lorsque l'on quitte l'application
+        server.stop();
+        databaseWorker.stop();
+    }
+
     public void execute() {
 // TODO
         messageWorker.startRecording();
@@ -85,11 +93,5 @@ public class Main extends Application {
 
     public void stopExecution() {
         messageWorker.stopRecording();
-        messageWorker.stop();
-        server.stop();
-        databaseWorker.stop();
-
-
-        this.server.stop();
     }
 }

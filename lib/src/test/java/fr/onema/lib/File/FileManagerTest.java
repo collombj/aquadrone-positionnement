@@ -108,7 +108,7 @@ public class FileManagerTest {
     public void readReferenceEntries() throws Exception {
         assertNotNull(fm.readReferenceEntries());
         ReferenceEntry r = fm.readReferenceEntries().get(0);
-        assertEquals(r.getTimestamp(), 1);
+        assertEquals(r.getTimestamp(), 27091994);
         assertEquals(r.getLat(), 2);
         assertEquals(r.getLon(), 3);
         assertEquals(r.getAlt(), 4);

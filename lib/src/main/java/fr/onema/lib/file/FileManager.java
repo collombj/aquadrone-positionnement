@@ -26,7 +26,7 @@ import static fr.onema.lib.geo.GeoMaths.deg2rad;
  * Classe utilitaire permettant la gestion des CSV brut et modifiés de données MavLink
  */
 public class FileManager {
-    public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
     private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude," +
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";

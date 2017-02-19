@@ -10,16 +10,19 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ServerListener implements Worker {
+    private static final Logger LOGGER = Logger.getLogger(ServerListener.class.getName());
     private final int port;
     private byte[] buf;
     private DatagramPacket datagramPacket;
     private DatagramSocket datagramSocket = null;
-    private long lastReceivedTimestamp = 0;
-    private int lastTimeUsec = 0;
     private Thread listener;
     private MessageWorker messageWorker = new MessageWorker();
+    private long firstTimestamp = -1;
+    private long messageTimestamp = -1;
 
     /**
      * Constructeur de la classe ServerListener
@@ -33,64 +36,82 @@ public class ServerListener implements Worker {
     /**
      * Permet de démarrer la Thread d'écoute qui réçoit et transmet les mavlink messages
      */
-    public void startThread() {
+    private void startThread() {
         listener = new Thread(() -> {
             while (!Thread.interrupted()) {
-                buf = new byte[1000];
+                buf = new byte[1000];   // FIXME reuse the allocated var
                 datagramPacket = new DatagramPacket(buf, buf.length);
                 try {
                     datagramSocket.receive(datagramPacket);
                     MAVLinkReader reader = new MAVLinkReader();
                     MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
-                    if (testValidityMavlinkMessage(mesg)) {
-                        while (mesg != null) {
-                            this.messageWorker.newMessage(lastReceivedTimestamp, mesg);
-                            if (reader.nbUnreadMessages() != 0) {
-                                mesg = reader.getNextMessageWithoutBlocking();
-                            } else {
-                                break;
-                            }
+                    if (!testValidityMavlinkMessage(mesg)) {
+                        LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
+                        continue;
+                    }
+                    while (mesg != null) {
+                        this.messageWorker.newMessage(messageTimestamp, mesg);
+                        if (reader.nbUnreadMessages() == 0) {
+                            break;
                         }
+                        mesg = reader.getNextMessageWithoutBlocking();
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (IOException e) {
-                    //do nothing for now TODO Add logger
+                } catch (IOException e){
+                    Thread.currentThread().interrupt();
+                    if(!datagramSocket.isClosed()) {
+                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    }
                 }
             }
+            datagramSocket.close();
         });
         listener.start();
     }
 
-    private boolean testValidityMavlinkMessage(MAVLinkMessage mesg) {
-        long tmpTime;
-        if (mesg instanceof msg_gps_raw_int) {
-            tmpTime = ((msg_gps_raw_int) mesg).time_usec;
-            if (lastReceivedTimestamp <= tmpTime) {
-                lastReceivedTimestamp = tmpTime;
-                return true;
-            }
-            return false;
+    private boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
+        if (firstTimestamp == -1) {
+            firstTimestamp = getFirstTimestamp(msg);
+            messageTimestamp = firstTimestamp;
+            return true;
         }
 
-        if (mesg instanceof msg_scaled_imu) {
-            tmpTime = ((msg_scaled_imu) mesg).time_boot_ms;
-        } else if (mesg instanceof msg_scaled_pressure2) {
-            tmpTime = ((msg_scaled_pressure2) mesg).time_boot_ms;
-        } else if (mesg instanceof msg_scaled_pressure3) {
-            tmpTime = ((msg_scaled_pressure3) mesg).time_boot_ms;
-        } else if (mesg instanceof msg_attitude) {
-            tmpTime = ((msg_attitude) mesg).time_boot_ms;
-        } else {
-            tmpTime = 0;
-        }
-
-        if (lastTimeUsec <= tmpTime) {
-            lastTimeUsec = (int) tmpTime;
-            lastReceivedTimestamp = tmpTime; // FIXME with the boot time and timestamp synchro
+        long timestamp = getTimestamp(msg);
+        if (timestamp >= messageTimestamp) {
+            messageTimestamp = timestamp;
             return true;
         }
         return false;
+    }
+
+    private long getFirstTimestamp(MAVLinkMessage msg) {
+        if (msg instanceof msg_gps_raw_int) {
+            return ((msg_gps_raw_int) msg).time_usec;
+        }
+
+        return System.currentTimeMillis() - getBootTime(msg);
+    }
+
+    private long getTimestamp(MAVLinkMessage msg) {
+        if (msg instanceof msg_gps_raw_int) {
+            return ((msg_gps_raw_int) msg).time_usec;
+        }
+
+        return firstTimestamp + getBootTime(msg);
+    }
+
+    private long getBootTime(MAVLinkMessage msg) {
+        if (msg instanceof msg_scaled_imu) {
+            return ((msg_scaled_imu) msg).time_boot_ms;
+        } else if (msg instanceof msg_scaled_pressure2) {
+            return ((msg_scaled_pressure2) msg).time_boot_ms;
+        } else if (msg instanceof msg_scaled_pressure3) {
+            return ((msg_scaled_pressure3) msg).time_boot_ms;
+        } else if (msg instanceof msg_attitude) {
+            return ((msg_attitude) msg).time_boot_ms;
+        }
+        return 0;
     }
 
 
@@ -125,10 +146,6 @@ public class ServerListener implements Worker {
      */
     public void openConnexion() throws SocketException {
         datagramSocket = new DatagramSocket(port);
-    }
-
-    public long getLastReceivedTimestamp() {
-        return lastReceivedTimestamp;
     }
 
     public Thread getListener() {
