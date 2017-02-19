@@ -138,8 +138,8 @@ public class DatabaseDriver {
 
                 int precisionCm = Integer.parseInt(results.getString("precision_cm"));
                 String measureValue = results.getString("measure_value");
-                mesures.add(new MeasureEntity(id, timestamp, new GPSCoordinate(brutX, brutY, brutZ),
-                        new GPSCoordinate(correctX, correctY, correctZ), accelerationX, accelerationY, accelerationZ,
+                mesures.add(new MeasureEntity(id, timestamp, new GPSCoordinate(brutY, brutX, brutZ),
+                        new GPSCoordinate(correctY, correctX, correctZ), accelerationX, accelerationY, accelerationZ,
                         roll, pitch, yaw, precisionCm, measureValue));
 
             }

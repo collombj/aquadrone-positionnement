@@ -99,6 +99,7 @@ public class Virtualizer {
             DiveEntity dive = repository.getLastDive();
             List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
             int minimum = Math.min(listMeasures.size(), listRefEntry.size());
+            fileManager.openFileForResults();
             for (int i = 0; i < minimum; i++) {
                 writeIntoFile(listRefEntry.get(i), listMeasures.get(i), errorAllowed);
             }

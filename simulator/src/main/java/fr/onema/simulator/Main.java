@@ -87,6 +87,8 @@ public class Main {
             action(command, options);
         } catch (ParseException e) {
             printHelp(options);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -149,7 +151,8 @@ public class Main {
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
             virtualizer.compare(configuration, 0.3);
-            LOGGER.log(Level.INFO, fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b));
+            String list = fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
+            LOGGER.log(Level.INFO, list);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
         } catch (ComparisonException e) {
