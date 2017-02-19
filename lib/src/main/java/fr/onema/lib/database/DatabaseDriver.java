@@ -122,12 +122,12 @@ public class DatabaseDriver {
             while (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
                 long timestamp = results.getTimestamp("timestamp").getTime();
-                long brutX = Long.parseLong(results.getString("brutX"));
-                long brutY = Long.parseLong(results.getString("brutY"));
-                long brutZ = Long.parseLong(results.getString("brutZ"));
-                long correctX = Long.parseLong(results.getString("correctX"));
-                long correctY = Long.parseLong(results.getString("correctY"));
-                long correctZ = Long.parseLong(results.getString("correctZ"));
+                long brutX = (long)( Double.parseDouble(results.getString("brutX")) * 10_000_000.);
+                long brutY = (long) (Double.parseDouble(results.getString("brutY")) * 10_000_000.);
+                long brutZ = (long) (Double.parseDouble(results.getString("brutZ")) * 1000.);
+                long correctX = (long) (Double.parseDouble(results.getString("correctX")) * 10_000_000.);
+                long correctY = (long) (Double.parseDouble(results.getString("correctY")) * 10_000_000.);
+                long correctZ = (long) (Double.parseDouble(results.getString("correctZ")) * 1000.);
 
                 int accelerationX = Integer.parseInt(results.getString("accelerationX"));
                 int accelerationY = Integer.parseInt(results.getString("accelerationY"));
@@ -309,6 +309,15 @@ public class DatabaseDriver {
     }
 
 
+    /**
+     * Méthode permettant d'insérer des mesures dans la base de données.     *
+     *
+     * @param measureEntity
+     * @param diveID
+     * @param measureInfoName
+     * @return
+     * @throws SQLException
+     */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) throws SQLException {
         PreparedStatement insertStatement = null;
         String insertString = "INSERT INTO Measure(" +
@@ -355,28 +364,29 @@ public class DatabaseDriver {
                 insertStatement.setNull(3, Types.BIGINT);
                 insertStatement.setNull(4, Types.BIGINT);
 
-            } else {
-                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
-            }
-            insertStatement.setInt(5, srid);
-            // location_brut
-            if (measureEntity.getLocationBrut() == null) {
-                insertStatement.setNull(6, Types.BIGINT);
-                insertStatement.setNull(7, Types.BIGINT);
-                insertStatement.setNull(8, Types.BIGINT);
-            } else {
-                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
-            }
-            insertStatement.setInt(9, srid);
+        } else {
+            insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
+            insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
+            insertStatement.setDouble(4, (double)measureEntity.getLocationCorrected().alt / 1000.);
+        }
+        insertStatement.setInt(5, srid);
+        // location_brut
+        if (measureEntity.getLocationBrut() == null) {
+            insertStatement.setNull(6, Types.BIGINT);
+            insertStatement.setNull(7, Types.BIGINT);
+            insertStatement.setNull(8, Types.BIGINT);
+        } else {
+            insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
+            insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
+            insertStatement.setDouble(8,(double) measureEntity.getLocationBrut().alt / 1000.);
 
-            //acceleration XYZ
-            insertStatement.setInt(10, measureEntity.getAccelerationX());
-            insertStatement.setInt(11, measureEntity.getAccelerationY());
-            insertStatement.setInt(12, measureEntity.getAccelerationZ());
+        }
+        insertStatement.setInt(9, srid);
+
+        //acceleration XYZ
+        insertStatement.setInt(10, measureEntity.getAccelerationX());
+        insertStatement.setInt(11, measureEntity.getAccelerationY());
+        insertStatement.setInt(12, measureEntity.getAccelerationZ());
 
             //precision_cm
             insertStatement.setInt(13, measureEntity.getPrecisionCm());
@@ -427,9 +437,10 @@ public class DatabaseDriver {
     public void updatePosition(int measureId, long lat, long lon, long alt, int precision) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Measure SET location_corrected = " +
                 "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?")) {
-            ps.setLong(1, lon);
-            ps.setLong(2, lat);
-            ps.setLong(3, alt);
+
+            ps.setDouble(1,(double) lat / 10_000_000.);
+            ps.setDouble(2, (double)lon / 10_000_000.);
+            ps.setDouble(3,(double) alt / 1000.);
             ps.setInt(4, srid);
             ps.setInt(5, precision);
             ps.setInt(6, measureId);
@@ -492,7 +503,7 @@ public class DatabaseDriver {
     public MeasureInformationEntity getMeasureInfo(int measureInfoId) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement(
                 "SELECT * FROM measure_information WHERE id=?")) {
-            ps.setInt(1,measureInfoId);
+            ps.setInt(1, measureInfoId);
             ResultSet results = ps.executeQuery();
             if (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
@@ -508,6 +519,7 @@ public class DatabaseDriver {
 
     /**
      * Retourne les informations relatives à un type de mesures dans la base de données
+     *
      * @param name le nom de l'entité en base
      * @return La MeasureInformationEntity representant l'entité en base
      * @throws SQLException
@@ -515,7 +527,7 @@ public class DatabaseDriver {
     public MeasureInformationEntity getMeasureInfoFromName(String name) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement(
                 "SELECT * FROM measure_information WHERE name=? LIMIT 1")) {
-            ps.setString(1,name);
+            ps.setString(1, name);
             ResultSet results = ps.executeQuery();
             if (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
