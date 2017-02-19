@@ -309,15 +309,6 @@ public class DatabaseDriver {
     }
 
 
-    /**
-     * Méthode permettant d'insérer des mesures dans la base de données.     *
-     *
-     * @param measureEntity
-     * @param diveID
-     * @param measureInfoName
-     * @return
-     * @throws SQLException
-     */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) throws SQLException {
         PreparedStatement insertStatement = null;
         String insertString = "INSERT INTO Measure(" +
@@ -365,8 +356,8 @@ public class DatabaseDriver {
                 insertStatement.setNull(4, Types.BIGINT);
 
         } else {
-            insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
-            insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
+            insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
+            insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
             insertStatement.setDouble(4, (double)measureEntity.getLocationCorrected().alt / 1000.);
         }
         insertStatement.setInt(5, srid);
@@ -376,8 +367,8 @@ public class DatabaseDriver {
             insertStatement.setNull(7, Types.BIGINT);
             insertStatement.setNull(8, Types.BIGINT);
         } else {
-            insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
-            insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
+            insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
+            insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
             insertStatement.setDouble(8,(double) measureEntity.getLocationBrut().alt / 1000.);
 
         }
@@ -438,8 +429,8 @@ public class DatabaseDriver {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Measure SET location_corrected = " +
                 "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?")) {
 
-            ps.setDouble(1,(double) lat / 10_000_000.);
-            ps.setDouble(2, (double)lon / 10_000_000.);
+            ps.setDouble(1,(double) lon / 10_000_000.);
+            ps.setDouble(2, (double)lat / 10_000_000.);
             ps.setDouble(3,(double) alt / 1000.);
             ps.setInt(4, srid);
             ps.setInt(5, precision);
