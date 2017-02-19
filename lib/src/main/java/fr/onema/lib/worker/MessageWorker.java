@@ -224,8 +224,8 @@ public class MessageWorker implements Worker {
                 currentPos.setGps(gps);
                 inDive = false;
                 dive.endDive(currentPos);
-                dive = new Dive();
-                currentPos = new Position();
+                dive = null;
+                currentPos = null;
                 return;
             }
 
