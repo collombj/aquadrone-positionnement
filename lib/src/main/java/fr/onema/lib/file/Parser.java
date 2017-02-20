@@ -9,6 +9,10 @@ import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
  */
 public class Parser {
 
+    private Parser() {
+        // Avoid instantiation
+    }
+
     /***
      * Parse la ligne et la transforme en entrée de référence
      * @param line La ligne CSV à parser
@@ -17,14 +21,14 @@ public class Parser {
     public static ReferenceEntry parseReference(String line) {
         String[] s = line.split(",");
         if (s.length != 6) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("6 Fields are required");
         }
         return new ReferenceEntry(Long.parseLong(s[0]),
                 Integer.parseInt(s[1]),
                 Integer.parseInt(s[2]),
                 Integer.parseInt(s[3]),
                 Float.parseFloat(s[4]),
-                Short.parseShort(s[5]));
+                Integer.parseInt(s[5]));
     }
 
     /***
@@ -35,7 +39,7 @@ public class Parser {
     public static VirtualizerEntry parseVirtualizer(String line) {
         String[] s = line.split(",");
         if (s.length != 15) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("15 Fields are required");
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
                 Long.parseLong(s[2]),

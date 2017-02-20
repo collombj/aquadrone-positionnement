@@ -6,9 +6,9 @@ import fr.onema.lib.sensor.position.GPS;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mavlink.messages.ardupilotmega.msg_global_position_int;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 import java.io.File;
 
@@ -32,16 +32,17 @@ public class GeneratorTest {
         msg.lon = 3;
         msg.alt = 4;
         msg.cog = 5;
-        msg_scaled_pressure msg2 = new msg_scaled_pressure();
+        msg_scaled_pressure3 msg2 = new msg_scaled_pressure3();
         msg2.time_boot_ms = msg.time_usec;
         msg2.temperature = 6;
-        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        long timestamp = 27091994;
+        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
         msg.time_usec = System.currentTimeMillis();
         msg2.time_boot_ms = msg.time_usec;
-        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
         msg.time_usec = System.currentTimeMillis();
         msg2.time_boot_ms = msg.time_usec;
-        fm.appendRaw(GPS.build(msg), Temperature.build(msg2));
+        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
     }
 
     @AfterClass

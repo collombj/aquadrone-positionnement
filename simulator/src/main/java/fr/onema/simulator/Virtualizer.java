@@ -13,7 +13,6 @@ import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
@@ -75,7 +74,8 @@ public class Virtualizer {
                 LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
             }
         });
-
+        executor.shutdown();
+        sender.closeConnection();
         stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes
     }
 
@@ -88,27 +88,25 @@ public class Virtualizer {
         return getStop() - getStart();
     }
 
-    public void compare(FileManager fm, Configuration config, int errorAllowed) throws ComparisonException {
-        Objects.requireNonNull(fm);
+    public void compare(Configuration config, double errorAllowed) throws ComparisonException {
         Objects.requireNonNull(config);
 
-        DatabaseDriver driver = DatabaseDriver.build(config);
-        driver.initAsReadable();
         try {
-            List<ReferenceEntry> listRefEntry = fm.readReferenceEntries();
+            List<ReferenceEntry> listRefEntry = fileManager.readReferenceEntries();
             MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
             DiveEntity dive = repository.getLastDive();
-            List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
+            List<MeasureEntity> listMeasures = repository.getMeasureFrom(dive);
             int minimum = Math.min(listMeasures.size(), listRefEntry.size());
+            fileManager.openFileForResults();
             for (int i = 0; i < minimum; i++) {
-                sendMessage(fm, listRefEntry.get(i), listMeasures.get(i), errorAllowed);
+                writeIntoFile(listRefEntry.get(i), listMeasures.get(i), errorAllowed);
             }
         } catch (Exception e) {
             throw new ComparisonException(e);
         }
     }
 
-    private void sendMessage(FileManager fm, ReferenceEntry ref, MeasureEntity measure, int errVal) throws IOException {
+    private void writeIntoFile(ReferenceEntry ref, MeasureEntity measure, double errVal) throws IOException {
         try {
             if (ref.getTimestamp() == measure.getTimestamp()) {
                 int realLat = ref.getLat();
@@ -119,10 +117,10 @@ public class Virtualizer {
                 double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
 
                 if (distance > errVal) {
-                    fm.appendResults(ref, measure, errVal);
+                    fileManager.appendResults(ref, measure, errVal);
                 }
             } else {
-                fm.appendResults(ref, measure, errVal);
+                fileManager.appendResults(ref, measure, errVal);
             }
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
@@ -130,15 +128,6 @@ public class Virtualizer {
         }
     }
 
-
-    /**
-     * Récupère le FileManager
-     *
-     * @return fileManager
-     */
-    public FileManager getFileManager() {
-        return fileManager;
-    }
 
     /**
      * Récupère le vitesse d'obtention de données

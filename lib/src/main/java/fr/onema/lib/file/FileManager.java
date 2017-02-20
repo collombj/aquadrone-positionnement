@@ -20,12 +20,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
 
+import static fr.onema.lib.geo.GeoMaths.deg2rad;
+
 /**
  * Classe utilitaire permettant la gestion des CSV brut et modifiés de données MavLink
  */
 public class FileManager {
-    public static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
-    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude," +
+    private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude,brut.latitude,brut.longitude,brut.altitude," +
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
@@ -50,7 +52,6 @@ public class FileManager {
      * @param virtualizedOutputFilePath Chemin d'accès vers le fichier de sorties des données virtualisées
      */
     public FileManager(String inputFilePath, String virtualizedOutputFilePath) {
-        // TODO : find a better solution
         this(inputFilePath, virtualizedOutputFilePath, "");
     }
 
@@ -62,8 +63,6 @@ public class FileManager {
         List<ReferenceEntry> refs = new ArrayList<>();
         try (Stream<String> s = Files.lines(Paths.get(rawInputFilePath))) {
             s.skip(1).forEach(e -> refs.add(Parser.parseReference(e)));
-        } catch (IOException e) {
-            throw e;
         }
         return refs;
     }
@@ -102,8 +101,6 @@ public class FileManager {
             fw.write("\n" + gps.getTimestamp() + "," + gps.getPosition().lat + "," + gps.getPosition().lon + ","
                     + gps.getPosition().alt + "," + gps.getDirection() + "," + temp.getValue());
             fw.close();
-        } catch (IOException e) {
-            throw e;
         }
     }
 
@@ -138,8 +135,6 @@ public class FileManager {
         try (FileWriter fw = new FileWriter(f, false)) {
             fw.write(RESULTS_CSV_HEADER);
             fw.close();
-        } catch (IOException e) {
-            throw e;
         }
     }
 
@@ -152,20 +147,21 @@ public class FileManager {
     public void appendResults(ReferenceEntry re, MeasureEntity m, double margin) throws IOException {
         File f = new File(resultsOutputFilePath);
         try (FileWriter fw = new FileWriter(f, true)) {
-            CartesianCoordinate ref = GeoMaths.computeXYZfromLatLonAlt(re.getLat(), re.getLon(), re.getAlt());
-            CartesianCoordinate adjusted = GeoMaths.computeXYZfromLatLonAlt(m.getLocationCorrected().lat, m.getLocationCorrected().lon, m.getLocationCorrected().alt);
+            CartesianCoordinate ref = GeoMaths.computeXYZfromLatLonAlt(deg2rad(re.getLat() / 10_000_000.), deg2rad(re.getLon() / 10_000_000.), re.getAlt() / 1_000.);
+            CartesianCoordinate adjusted = GeoMaths.computeXYZfromLatLonAlt(deg2rad(m.getLocationCorrected().lat / 10_000_000.), deg2rad(m.getLocationCorrected().lon / 10_000_000.), m.getLocationCorrected().alt / 1_000.);
             double diffX = ref.x - adjusted.x;
             double diffY = ref.y - adjusted.y;
             double diffZ = ref.z - adjusted.z;
             double diffAbsolute = GeoMaths.cartesianDistance(ref, adjusted);
             boolean error = diffAbsolute > margin;
-            fw.write("\n" + re.getTimestamp() + "," + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon
-                    + "," + m.getLocationCorrected().alt + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt()
-                    + "," + re.getDirection() + "," + re.getTemperature() + "," + diffX + "," + diffY + "," + diffZ
-                    + "," + diffAbsolute + "," + m.getPrecisionCm() + "," + margin + "," + error);
+            fw.write("\n" + re.getTimestamp() + ","
+                    + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon + "," + m.getLocationCorrected().alt
+                    + m.getLocationBrut().lat + "," + m.getLocationBrut().lon + "," + m.getLocationBrut().alt
+                    + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt() + "," + re.getDirection()
+                    + "," + re.getTemperature() + ","
+                    + diffX + "," + diffY + "," + diffZ + "," + diffAbsolute +
+                    "," + m.getPrecisionCm() + "," + margin + "," + error);
             fw.close();
-        } catch (IOException e) {
-            throw e;
         }
     }
 

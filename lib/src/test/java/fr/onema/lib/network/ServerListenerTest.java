@@ -9,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import static org.junit.Assert.*;
 
 public class ServerListenerTest {
+
+
     @Test
     public void testConstructorNotNull() {
         ServerListener serverListener = new ServerListener(1500);
@@ -16,9 +18,10 @@ public class ServerListenerTest {
     }
 
     @Test
-    public void testStartThread() {
+    public void testStartThread() throws InterruptedException {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
+        Thread.sleep(100);
         assertNotNull(serverListener.getListener());
         serverListener.stop();
     }
@@ -27,7 +30,7 @@ public class ServerListenerTest {
     public void testStartDatagramChannel() {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
-        assertFalse(serverListener.getSk().isClosed());
+        assertFalse(serverListener.getDatagramSocket().isClosed());
         serverListener.stop();
     }
 
@@ -36,14 +39,7 @@ public class ServerListenerTest {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
         serverListener.stop();
-        assertTrue(serverListener.getSk().isClosed());
-    }
-
-    @Test
-    public void bytesToNumberTest() throws UnsupportedEncodingException {
-        ServerListener serverListener = new ServerListener(1500);
-        long res = serverListener.bytesToNumber("MAVLINK =12345678 ");
-        assertEquals(12345678,res);
+        assertTrue(serverListener.getDatagramSocket().isClosed());
     }
 
     @Test
@@ -54,7 +50,6 @@ public class ServerListenerTest {
         serverListener.start();
         VirtualizerEntry virtual = new VirtualizerEntry(System.currentTimeMillis(), 2,3,4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
         sender.add(virtual);
-        Thread.sleep(1000);
         sender.closeConnection();
         serverListener.stop();
     }

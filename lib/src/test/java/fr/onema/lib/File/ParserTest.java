@@ -1,27 +1,29 @@
-package fr.onema.lib;
+package fr.onema.lib.File;
 
 import fr.onema.lib.file.Parser;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class ParserTest {
-    Parser parser = new Parser();
-/*
+
     @Test
-    public void ReferenceEntryNotNull() {
-        ReferenceEntry ref = parser.parseReference("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19");
-        assertNotNull(ref);
+    public void testReferenceEntry() {
+        ReferenceEntry ref = Parser.parseReference("1,2,3,4,5,6");
+        ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4,5f, 6);
+        assertEquals(entry, ref);
     }
 
     @Test
-    public void VirtualizerEntryNotNull() {
-        VirtualizerEntry ref = parser.parseVirtualizer("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19");
-        assertNotNull(ref);
+    public void testVirtualizer() {
+        VirtualizerEntry ref = Parser.parseVirtualizer("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
+        VirtualizerEntry entry = new VirtualizerEntry(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+        assertEquals(entry, ref);
     }
-*/
+
     @Test(expected=IllegalArgumentException.class)
     public void sizeArgument1() {
         ReferenceEntry ref = Parser.parseReference("1");
