@@ -130,7 +130,6 @@ public class NetworkSender {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-
             dsocket.close();
         });
         sender.start();

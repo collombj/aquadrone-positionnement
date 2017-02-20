@@ -39,7 +39,7 @@ public class ServerListener implements Worker {
     private void startThread() {
         listener = new Thread(() -> {
             while (!Thread.interrupted()) {
-                buf = new byte[1000];   // FIXME reuse the allocated var
+                buf = new byte[265];
                 datagramPacket = new DatagramPacket(buf, buf.length);
                 try {
                     datagramSocket.receive(datagramPacket);
@@ -49,11 +49,8 @@ public class ServerListener implements Worker {
                         LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
                         continue;
                     }
-                    while (mesg != null) {
+                    while (mesg != null && reader.nbUnreadMessages() != 0) {
                         this.messageWorker.newMessage(messageTimestamp, mesg);
-                        if (reader.nbUnreadMessages() == 0) {
-                            break;
-                        }
                         mesg = reader.getNextMessageWithoutBlocking();
                     }
                 } catch (InterruptedException e) {

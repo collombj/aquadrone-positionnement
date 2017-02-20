@@ -33,7 +33,7 @@ public class NetworkSenderTest {
         ServerSocket server = new ServerSocket(1239);
         networkSender.openConnection();
         networkSender.closeConnection();
-        assertTrue(networkSender.getDsocket().isClosed());
+        assertFalse(networkSender.getDsocket().isConnected());
         server.close();
     }
 
@@ -81,4 +81,5 @@ public class NetworkSenderTest {
         assertEquals("127.0.0.1",sender.getHost());
         sender.closeConnection();
     }
+
 }
