@@ -59,6 +59,12 @@ public class MessageWorker implements Worker {
         // default constructor
     }
 
+    /**
+     * Paramètre le FileManager qui doit êtra associé au MessageWorker. Ce FileManager servira uniquement à remplir le
+     * fichier de trace.
+     *
+     * @param fileManager Le FileManager enregistrant dans le traceur.
+     */
     public void setTracer(FileManager fileManager) {
         this.tracer = new fr.onema.lib.worker.Logger(fileManager);
     }

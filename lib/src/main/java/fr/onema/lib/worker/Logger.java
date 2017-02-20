@@ -44,6 +44,12 @@ public class Logger implements Worker {
         this.loggerThread.interrupt();
     }
 
+    /**
+     * Ajoute une position à la file des positions.
+     *
+     * @param currentPos La position à tracer.
+     * @return Vrai si la position à été ajoutée avec succès. Sinon faux.
+     */
     boolean addPosition(Position currentPos) {
         return this.positions.offer(Objects.requireNonNull(currentPos));
     }
@@ -59,7 +65,7 @@ public class Logger implements Worker {
             try {
                 fileManager.openFileForResults();
             } catch (IOException e) {
-                Logger.LOG.log(Level.SEVERE, e.getMessage());
+                Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
             }
             while(!Thread.interrupted()) {
                 try {
@@ -67,7 +73,7 @@ public class Logger implements Worker {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    Logger.LOG.log(Level.SEVERE, e.getMessage());
+                    Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }
