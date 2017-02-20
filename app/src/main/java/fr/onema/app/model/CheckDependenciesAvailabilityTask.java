@@ -5,6 +5,7 @@ import fr.onema.app.view.RootLayoutController;
 import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
+import javafx.application.Platform;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
@@ -19,11 +20,9 @@ import java.util.TimerTask;
  * Classe permettant la déclaration du scheduler chargé de requêter les dépendances
  */
 public class CheckDependenciesAvailabilityTask extends TimerTask {
-    private final RootLayoutController rlc;
     private final Main main;
 
-    public CheckDependenciesAvailabilityTask(RootLayoutController rlc, Main main) {
-        this.rlc = Objects.requireNonNull(rlc);
+    public CheckDependenciesAvailabilityTask(Main main) {
         this.main = Objects.requireNonNull(main);
     }
 
@@ -33,17 +32,18 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
     @Override
     public void run() {
         if (checkPostgresAvailability(main.getConfiguration())) {
-            rlc.updateDatabaseColor(Color.GREEN);
+            main.getRlc().updateDatabaseColor(Color.GREEN);
         } else {
-            rlc.updateDatabaseColor(Color.RED);
+            main.getRlc().updateDatabaseColor(Color.RED);
         }
 
         if (checkMavlinkAvailability(main.getMessageWorker(), main.getConfiguration())) {
-            rlc.updateMavlinkColor(Color.GREEN);
+            main.getRlc().updateMavlinkColor(Color.GREEN);
         } else {
-            rlc.updateMavlinkColor(Color.RED);
+            main.getRlc().updateMavlinkColor(Color.RED);
         }
-        rlc.updateSensors(checkSensorsAvailability(main.getMessageWorker()));
+        main.getRlc().updateSensors(checkSensorsAvailability(main.getMessageWorker()));
+        main.getRlc().updatePrecisionProgress(main.getMessageWorker(), main.getConfiguration());
     }
 
     private static Map<String, Long> checkSensorsAvailability(MessageWorker worker) {
@@ -73,6 +73,8 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
      * @return L'état du flux
      */
     public static boolean checkMavlinkAvailability(MessageWorker worker, Configuration conf) {
-        return System.currentTimeMillis() - worker.getMavLinkConnection() < conf.getDiveData().getFrequencetestmavlink();
+        int mavlinkTimeoutInMs = conf.getDiveData().getFrequencetestmavlink() * 1_000;
+        long diff = System.currentTimeMillis() - worker.getMavLinkConnection();
+        return diff < mavlinkTimeoutInMs;
     }
 }

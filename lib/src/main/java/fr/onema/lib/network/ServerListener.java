@@ -124,6 +124,7 @@ public class ServerListener implements Worker {
             openConnexion();
             startThread();
             this.messageWorker.start();
+
         } catch (SocketException e) {
             throw new IllegalStateException(e);
         }
