@@ -42,6 +42,7 @@ public class MessageWorker implements Worker {
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Utilisé pour la fusion Atitude + IMU = IMU DB
     private MAVLinkMessage imuBuffer;
+
     // Represents the dive currently associated
     private Dive dive;
     private Boolean inDive = false;
@@ -68,6 +69,10 @@ public class MessageWorker implements Worker {
         this.messages.put(new HashMap.SimpleEntry<>(timestamp, message));
     }
 
+    public Dive getDive() {
+        return dive;
+    }
+
     public Map<String, Long> getMeasuresStates() {
         return measuresStates;
     }
@@ -76,14 +81,18 @@ public class MessageWorker implements Worker {
      * Démarre un enregistrement de plongée.
      */
     public void startRecording() {
-        this.dive.startRecording(System.currentTimeMillis());
+        if (dive != null) {
+            this.dive.startRecording(System.currentTimeMillis());
+        }
     }
 
     /**
      * Arrête un enregistrement de plongée.
      */
     public void stopRecording() {
-        this.dive.stopRecording(System.currentTimeMillis());
+        if (dive != null) {
+            dive.stopRecording(System.currentTimeMillis());
+        }
     }
 
     /**
