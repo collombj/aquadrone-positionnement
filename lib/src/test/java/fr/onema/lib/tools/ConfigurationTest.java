@@ -79,6 +79,11 @@ public class ConfigurationTest {
         assertEquals(2154, config.getGeo().getSrid());
 
         assertEquals(0.5, config.getDiveData().getPrecision(), 0);
+        assertEquals(5, config.getDiveData().getDureemax());
+        assertEquals(4, config.getDiveData().getMouvementsmax());
+        assertEquals(2, config.getDiveData().getDelaicapteurhs());
+        assertEquals(1, config.getDiveData().getFrequencetestmavlink());
+        assertEquals(1, config.getDiveData().getFrequencetestdatabase());
     }
 
     @Test
