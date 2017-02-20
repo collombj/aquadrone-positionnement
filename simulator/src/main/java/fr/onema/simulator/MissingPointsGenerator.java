@@ -130,9 +130,8 @@ public class MissingPointsGenerator {
                 long lat = (long) (Double.valueOf(members[1])*10_000_000);
                 long lon = (long) (Double.valueOf(members[2])*10_000_000);
                 long alt = (long) (Double.valueOf(members[3])*1_000);
-                int direction = Integer.parseInt(members[4]);
-                int measure = (int)(Float.parseFloat(members[5])*100);
-                Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, direction, timestamp);
+                int measure = (int)(Float.parseFloat(members[4])*100);
+                Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, 0, timestamp);
                 pointsInput.add(point);
             } else {
                 LOGGER.log(Level.INFO,"The line '"+ entry + "' doesn't fit the requirements " +
@@ -141,31 +140,6 @@ public class MissingPointsGenerator {
         });
     }
 
-    /**
-     * Crée et remplit le fichier de sortie, qui contient tous les points du fichiers de départ,
-     * plus les points générés dans le builder. Le path du fichier est par défaut
-     * @throws IOException Quand il y a une erreur lors de l'écriture dans le fichier
-     */
-    public void generateOutput() throws IOException {
-        Objects.requireNonNull(csvFilePath);
-        String stringPath = "temp.csv";
-        List<String> outputs;
-        Path filePath = Paths.get(stringPath);
-
-        for(int i = 0 ; i < pointsInput.size() -1 ; i++){
-            createIntermediaryPoints(pointsInput.get(i),pointsInput.get(i+1));
-            if (i == pointsInput.size()-2){
-                pointsOutput.add(pointsInput.get(i+1));
-            }
-        }
-
-        outputs = formatToCSV();
-        try{
-            Files.write(filePath, outputs, Charset.forName("UTF-8"));
-        }catch(IOException ioe){
-            throw new IOException("Writing in file failed :",ioe);
-        }
-    }
 
     /**
      * @param stringPath chemin du fichier CSV de sortie
