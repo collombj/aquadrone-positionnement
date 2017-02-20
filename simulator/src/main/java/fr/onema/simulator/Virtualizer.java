@@ -74,7 +74,8 @@ public class Virtualizer {
                 LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
             }
         });
-
+        executor.shutdown();
+        sender.closeConnection();
         stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes
     }
 
@@ -90,14 +91,13 @@ public class Virtualizer {
     public void compare(Configuration config, double errorAllowed) throws ComparisonException {
         Objects.requireNonNull(config);
 
-        DatabaseDriver driver = DatabaseDriver.build(config);
-        driver.initAsReadable();
         try {
             List<ReferenceEntry> listRefEntry = fileManager.readReferenceEntries();
             MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
             DiveEntity dive = repository.getLastDive();
-            List<MeasureEntity> listMeasures = driver.getMeasureFrom(dive);
+            List<MeasureEntity> listMeasures = repository.getMeasureFrom(dive);
             int minimum = Math.min(listMeasures.size(), listRefEntry.size());
+            fileManager.openFileForResults();
             for (int i = 0; i < minimum; i++) {
                 writeIntoFile(listRefEntry.get(i), listMeasures.get(i), errorAllowed);
             }

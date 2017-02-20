@@ -8,9 +8,6 @@ import java.io.IOException;
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
 
-/**
- * Created by Theo on 06/02/2017.
- */
 public class VirtualizerEntryTest {
     @Test
     public void testConstructorNotNull() {
@@ -36,7 +33,7 @@ public class VirtualizerEntryTest {
         assertEquals((short)13, virtual.getZmag());
         assertEquals(14, virtual.getPressure(), 0);
         assertEquals((short)15, virtual.getTemperature());
-        msg_attitude msg = virtual.getAttitudeMessage();
+        msg_attitude msg = virtual.getAttitudeMessage(0);
         assertEquals(8.0, msg.roll, 0);
         assertEquals(9.0, msg.pitch, 0);
         assertEquals(10.0, msg.yaw, 0);
@@ -63,9 +60,9 @@ public class VirtualizerEntryTest {
     public void testMavLinkMessageNotNull() {
         VirtualizerEntry virtual = new VirtualizerEntry(1,2,3,4,(short) 5, (short)6,(short)7,(short)8,(short)9,(short)10,(short)11,(short)12,(short)13, 14,(short)15);
         assertNotNull(virtual.getGPSMessage());
-        assertNotNull(virtual.getIMUMessage());
-        assertNotNull(virtual.getPressureMessage());
-        assertNotNull(virtual.getTemperatureMessage());
+        assertNotNull(virtual.getIMUMessage(0));
+        assertNotNull(virtual.getPressureMessage(0));
+        assertNotNull(virtual.getTemperatureMessage(0));
     }
 
     @Test
@@ -83,7 +80,7 @@ public class VirtualizerEntryTest {
     @Test
     public void getCSVHeaderTest() {
         VirtualizerEntry ref = new VirtualizerEntry(1, 1,1,1, (short)1, (short)1, (short)1,(short)1,(short)1,(short)1,(short)1,(short)1,(short)1,1,(short)1);
-        assertEquals("timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
+        assertEquals("timestamp,gpsLatitude,gpsLongitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature", ref.getCSVHeader());
     }
 
     @Test

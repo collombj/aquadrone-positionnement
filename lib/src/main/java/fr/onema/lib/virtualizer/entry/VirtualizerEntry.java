@@ -1,14 +1,11 @@
 package fr.onema.lib.virtualizer.entry;
 
 import fr.onema.lib.file.CSV;
-import org.mavlink.messages.ardupilotmega.msg_attitude;
-import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.*;
 
 
 public class VirtualizerEntry implements CSV {
-    public static final String HEADER = "timestamp,gpsLongitude,gpsLatitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
+    public static final String HEADER = "timestamp,gpsLatitude,gpsLongitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
     private final int xacc;
     private final int yacc;
@@ -28,10 +25,11 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
-     * @param gpsLat      Latitude du GPS
-     * @param gpsLon      Longitude du GPS
-     * @param gpsAlt      Altitude du GPS
+     * @param gpsLat      Latitude du GPS_SENSOR
+     * @param gpsLon      Longitude du GPS_SENSOR
+     * @param gpsAlt      Altitude du GPS_SENSOR
      * @param xacc        Acceleration en x
      * @param yacc        Acceleration en y
      * @param zacc        Acceleration en z
@@ -45,15 +43,19 @@ public class VirtualizerEntry implements CSV {
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
-        this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
+        this(timestamp, xacc, yacc, zacc, roll, pitch, yaw, xmag, ymag, zmag, pressure, temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
         this.gpsAlt = gpsAlt;
-        this.hasGPS = true;
+
+        if (gpsLat != 0 && gpsLon != 0) {
+            this.hasGPS = true;
+        }
     }
 
     /**
-     * Constructeur de Virtualizer sans le GPS
+     * Constructeur de Virtualizer sans le GPS_SENSOR
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param xacc        Acceleration en x
      * @param yacc        Acceleration en y
@@ -84,7 +86,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Retourne le message GPS en format MavLink
+     * Retourne le message GPS_SENSOR en format MavLink
      *
      * @return GPSMAVLinkMessage
      */
@@ -106,11 +108,12 @@ public class VirtualizerEntry implements CSV {
     /**
      * Retourne le message IMU en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return IMUMAVLinkMessage
      */
-    public msg_scaled_imu getIMUMessage() {
+    public msg_scaled_imu getIMUMessage(long bootTime) {
         msg_scaled_imu msg = new msg_scaled_imu();
-        msg.time_boot_ms = System.currentTimeMillis();
+        msg.time_boot_ms = bootTime;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
@@ -126,38 +129,40 @@ public class VirtualizerEntry implements CSV {
     /**
      * Retourne le message Attitude en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return AttitudeMessage
      */
-    public msg_attitude getAttitudeMessage() {
-        msg_attitude msgAttitude = new msg_attitude();
-        msgAttitude.roll = (float) this.roll;
-        msgAttitude.pitch = (float) this.pitch;
-        msgAttitude.yaw = (float) this.yaw;
-        return msgAttitude;
+    public msg_attitude getAttitudeMessage(long bootTime) {
+        msg_attitude msg = new msg_attitude();
+        msg.time_boot_ms = bootTime;
+        msg.roll = (float) this.roll;
+        msg.pitch = (float) this.pitch;
+        msg.yaw = (float) this.yaw;
+        return msg;
     }
 
     /**
      * retourne le message de pression en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
-    public msg_scaled_pressure getPressureMessage() {
-        msg_scaled_pressure msg = new msg_scaled_pressure();
-        msg.time_boot_ms = System.currentTimeMillis();
+    public msg_scaled_pressure2 getPressureMessage(long bootTime) {
+        msg_scaled_pressure2 msg = new msg_scaled_pressure2();
+        msg.time_boot_ms = bootTime;
         msg.press_abs = this.pressure;
-        msg.temperature = this.temperature;
         return msg;
     }
 
     /**
      * retourne le message de temperature en format MavLink
      *
+     * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
-    public msg_scaled_pressure getTemperatureMessage() {
-        msg_scaled_pressure msg = new msg_scaled_pressure();
-        msg.time_boot_ms = System.currentTimeMillis();
-        msg.press_abs = this.pressure;
+    public msg_scaled_pressure3 getTemperatureMessage(long bootTime) {
+        msg_scaled_pressure3 msg = new msg_scaled_pressure3();
+        msg.time_boot_ms = bootTime;
         msg.temperature = this.temperature;
         return msg;
     }
@@ -167,7 +172,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Récupère la latitude du GPS
+     * Récupère la latitude du GPS_SENSOR
      *
      * @return gpsLat
      */
@@ -176,7 +181,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Récupère la longitude du GPS
+     * Récupère la longitude du GPS_SENSOR
      *
      * @return gpsLon
      */
@@ -185,7 +190,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Récupère l'altitude du GPS
+     * Récupère l'altitude du GPS_SENSOR
      *
      * @return gpsAlt
      */
@@ -293,7 +298,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Récupère le boolean de la présence du GPS
+     * Récupère le boolean de la présence du GPS_SENSOR
      *
      * @return boolean
      */
@@ -308,7 +313,7 @@ public class VirtualizerEntry implements CSV {
      */
     @Override
     public String toCSV() {
-        return timestamp + "," + gpsLon + "," + gpsLat + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
+        return timestamp + "," + gpsLat + "," + gpsLon + "," + gpsAlt + "," + xacc + "," + yacc + "," + zacc + "," + roll + "," + pitch + "," + yaw + "," + xmag + "," + ymag + "," + zmag + "," + pressure + "," + temperature;
     }
 
     /**
@@ -363,7 +368,7 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + xmag;
         result = 31 * result + ymag;
         result = 31 * result + zmag;
-        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
         result = 31 * result + gpsLat;

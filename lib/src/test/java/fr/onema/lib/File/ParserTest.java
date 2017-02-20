@@ -19,7 +19,7 @@ public class ParserTest {
 
     @Test
     public void testVirtualizer() {
-        VirtualizerEntry ref = Parser.parseVirtualizer("1,3,2,4,5,6,7,8,9,10,11,12,13,14,15");
+        VirtualizerEntry ref = Parser.parseVirtualizer("1,2,3,4,5,6,7,8,9,10,11,12,13,14,15");
         VirtualizerEntry entry = new VirtualizerEntry(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
         assertEquals(entry, ref);
     }

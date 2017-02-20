@@ -1,7 +1,7 @@
 package fr.onema.lib.sensor.position;
 
 import fr.onema.lib.sensor.Sensor;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
+import org.mavlink.messages.ardupilotmega.msg_scaled_pressure2;
 
 /**
  * Created by Theo on 06/02/2017.
@@ -28,8 +28,8 @@ public class Pressure extends Sensor {
      * @param msg Message mavlink correspondant à la pression
      * @return l'objet représentant la mesure gps
      */
-    public static Pressure build(msg_scaled_pressure msg) {
-        return new Pressure(msg.time_boot_ms, msg.press_abs, msg.press_diff, msg.temperature);
+    public static Pressure build(long timestamp, msg_scaled_pressure2 msg) {
+        return new Pressure(timestamp, msg.press_abs, msg.press_diff, msg.temperature);
     }
 
     /***

@@ -9,6 +9,7 @@ import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 
+import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -20,6 +21,7 @@ import java.util.Objects;
  */
 public class ConfigurationController {
     private RootLayoutController parent;
+    private Main main;
 
     @FXML
     private Slider verticalSlider;
@@ -50,8 +52,9 @@ public class ConfigurationController {
 
     }
 
-    public void init(RootLayoutController parent) {
+    public void init(RootLayoutController parent, Main main) {
         this.parent = Objects.requireNonNull(parent);
+        this.main = Objects.requireNonNull(main);
     }
 
     @FXML
@@ -153,6 +156,11 @@ public class ConfigurationController {
         parent.setHorizontalOffset(horizontalSpinner.getValue());
         parent.setVerticalOffset(verticalSpinner.getValue());
         parent.setDepthOffset(depthSpinner.getValue());
+        try {
+            main.getConfiguration().setCorrection(horizontalSpinner.getValue(), verticalSpinner.getValue(), depthSpinner.getValue());
+        } catch (IOException e) {
+            // TODO : complete
+        }
         Stage stage = (Stage) applyButton.getScene().getWindow();
         stage.close();
     }

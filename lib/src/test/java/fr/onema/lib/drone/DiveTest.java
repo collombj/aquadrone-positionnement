@@ -38,11 +38,11 @@ public class DiveTest {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-        dive = new Dive(System.currentTimeMillis());
+        dive = new Dive();
         Thread.sleep(200);
         Position position = new Position(System.currentTimeMillis());
-        position.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position.add(Temperature.build(System.currentTimeMillis(), 250));
         position.setGps(GPS.build(System.currentTimeMillis(),4,1,2,250));
         dive.add(position);
@@ -54,28 +54,28 @@ public class DiveTest {
         dive.startRecording(debut);
 
         Position position2 = new Position(System.currentTimeMillis());
-        position2.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position2.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position2.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position3 = new Position(System.currentTimeMillis());
-        position3.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position3.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position3.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position4 = new Position(System.currentTimeMillis());
-        position4.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position4.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position4.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position5 = new Position(System.currentTimeMillis());
-        position5.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position5.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position5.add(Temperature.build(System.currentTimeMillis(), 250));
 
         Position position6 = new Position(System.currentTimeMillis());
-        position6.setImu(IMU.build(new CartesianVelocity(0, 0, 0), System.currentTimeMillis(), previous,
-                System.currentTimeMillis() + 2000, previous2));
+        position6.setImu(IMU.build(new CartesianVelocity(0, 0, 0), new CartesianVelocity(3, 0, 0), System.currentTimeMillis(),
+                System.currentTimeMillis() + 2000));
         position6.add(Temperature.build(System.currentTimeMillis(), 250));
         position6.setGps(GPS.build(System.currentTimeMillis(),3,5,6,250));
 

@@ -112,7 +112,7 @@ public class RootLayoutController {
         });
 
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 3_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 2_000);
     }
 
     /***
@@ -167,8 +167,8 @@ public class RootLayoutController {
             stage.resizableProperty().setValue(false);
             ConfigurationController controller = loader.getController();
             controller.initialize();
-            controller.insertSpinnerValues(horizontalOffset, verticalOffset, depthOffset);
-            controller.init(this);
+            controller.insertSpinnerValues(main.getConfiguration().getFlow().getLat(), main.getConfiguration().getFlow().getLon(), main.getConfiguration().getFlow().getAlt());
+            controller.init(this, main);
             stage.showAndWait();
         } else {
             stage = root;
@@ -192,6 +192,23 @@ public class RootLayoutController {
             setRunning(true);
             diveProgress.start();
             dive.start();
+            /*
+            if (CheckDependenciesAvailabilityTask.checkMavlinkAvailability(main.getMessageWorker()) && CheckDependenciesAvailabilityTask.checkPostgresAvailability(main.getConfiguration())) {
+
+            } else {
+            */
+                /*
+                Platform.runLater(() -> {
+                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    alert.setTitle("Erreur lors de l'exécution");
+                    alert.initModality(Modality.APPLICATION_MODAL);
+                    alert.setContentText("Les dépendances ne sont pas toutes actives, veuillez les relancer ...");
+                    alert.showAndWait();
+                });
+                */
+                // ignore
+            //}
+
         }
     }
 
@@ -202,7 +219,7 @@ public class RootLayoutController {
         Task diveTask = new Task() {
             @Override
             protected Void call() throws Exception {
-                main.execute(horizontalOffset, verticalOffset, depthOffset, main.getConfiguration().getDiveData().getDureemax(), main.getConfiguration().getDiveData().getPrecision());
+                main.execute();
                 setRunning(false);
                 Thread.currentThread().interrupt();
                 return null;
@@ -299,13 +316,13 @@ public class RootLayoutController {
             i++;
         }
         sensorsTableView.getItems().setAll(sensors);
+        /*
         sensorsTableView.setFixedCellSize(25);
         sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
         sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
-
         Platform.runLater(() -> main.getParent().sizeToScene());
-
+        */
         sensorsTableView.refresh();
     }
 

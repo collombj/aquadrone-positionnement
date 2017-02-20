@@ -6,9 +6,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.ServerSocket;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class NetworkSenderTest {
 
@@ -40,9 +38,10 @@ public class NetworkSenderTest {
     }
 
     @Test
-    public void threadStarted() throws IOException {
+    public void threadStarted() throws IOException, InterruptedException {
         NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
         networkSender.openConnection();
+        Thread.sleep(100);
         assertTrue(networkSender.getSender().isAlive());
         networkSender.closeConnection();
     }
