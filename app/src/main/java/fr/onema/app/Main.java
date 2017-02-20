@@ -1,7 +1,6 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
-import fr.onema.lib.drone.Dive;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -11,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 /***
@@ -29,7 +29,7 @@ public class Main extends Application {
     // TODO : replace with customized logging system
     private Logger logger;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         launch(args);
     }
 
@@ -39,7 +39,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.configuration = Configuration.build("settings.properties");
+        this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
         this.databaseWorker.init(configuration);
         this.databaseWorker.start();

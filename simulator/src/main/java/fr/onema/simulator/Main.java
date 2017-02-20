@@ -149,7 +149,7 @@ public class Main {
         Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", LOCALHOST, 14550);
 
         try {
-            Configuration configuration = Configuration.build(propertiesFilePath);
+            Configuration configuration = Configuration.getInstance();
             virtualizer.compare(configuration, 0.3);
             String list = fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
             LOGGER.log(Level.INFO, list);

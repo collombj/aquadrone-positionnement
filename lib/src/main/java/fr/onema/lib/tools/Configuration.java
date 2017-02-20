@@ -17,6 +17,7 @@ import java.util.Properties;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
+    private static Configuration INSTANCE;
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -34,11 +35,11 @@ public class Configuration {
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
 
-    private final String path;
-    private final Database database;
-    private final Geo geo;
-    private final Flow flow;
-    private final DiveData diveData;
+    private String path;
+    private Database database;
+    private Geo geo;
+    private Flow flow;
+    private DiveData diveData;
 
     private Configuration(String path, Properties properties) throws FileNotFoundException {
         this.path = path;
@@ -72,19 +73,32 @@ public class Configuration {
      * @return La représentation du fichier de configuration
      * @throws FileNotFoundException En cas d'absence de fichier de configuration
      */
-    public static Configuration build(String path) throws FileNotFoundException {
+    private static void build(String path) throws FileNotFoundException {
         Objects.requireNonNull(path, "A non null path is required for the settings");
 
         try (FileInputStream input = new FileInputStream(path)) {
             Properties properties = new Properties();
             properties.load(input);
 
-            return new Configuration(path, properties);
+            INSTANCE = new Configuration(path, properties);
         } catch (FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+    }
+
+
+    public static Configuration getInstance() {//TODO faire crasher l appli si erreur de config
+        if (INSTANCE == null) {
+            try {
+                build("settings.properties");
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return INSTANCE;
+
     }
 
     /**
@@ -338,11 +352,11 @@ public class Configuration {
         /**
          * Le constructeur de la classe
          *
-         * @param precision la précision en mètres
-         * @param dureemax la durée en secondes de la plognée
-         * @param mouvementsmax le nombre max de mouvements avant de perdre trop de précision
-         * @param delaicapteurhs la durée pour considerer un capteur HS en secondes
-         * @param frequencetestmavlink la fréquence de test du flux mavlink
+         * @param precision             la précision en mètres
+         * @param dureemax              la durée en secondes de la plognée
+         * @param mouvementsmax         le nombre max de mouvements avant de perdre trop de précision
+         * @param delaicapteurhs        la durée pour considerer un capteur HS en secondes
+         * @param frequencetestmavlink  la fréquence de test du flux mavlink
          * @param frequencetestdatabase la fréquence de test du flux mavlink
          */
         public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase) {
@@ -391,7 +405,7 @@ public class Configuration {
         }
 
         /**
-         *Retourne la fréquence de test du flux mavlink
+         * Retourne la fréquence de test du flux mavlink
          *
          * @return la fréquence de test du flux mavlink
          */

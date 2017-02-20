@@ -2,13 +2,16 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
+import fr.onema.lib.database.repository.MeasureRepository;
 import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,9 +39,12 @@ public class Dive {
     /**
      * Crée une nouvelle Dive
      */
-    public Dive() {
+    public Dive() throws SQLException {
         diveEntity = new DiveEntity();
-        dbWorker.newDive(diveEntity);
+
+        MeasureRepository repos =
+                MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(Configuration.getInstance());
+        repos.insertDive(diveEntity);
         numberOfmovement = 0;
         state = ON;
     }

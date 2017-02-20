@@ -1,5 +1,6 @@
 package fr.onema.lib.worker;
 
+import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -9,7 +10,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class MessageWorkerTest {
 
@@ -47,14 +48,15 @@ public class MessageWorkerTest {
     }
 
     @BeforeClass
-    public static void createWorker() {
+    public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
+        DatabaseWorker.getInstance().init(Configuration.getInstance());
+        DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
                     messageWorker.newMessage(27091994, mavLinkMessageList.removeFirst());
-                    Thread.currentThread().sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -63,17 +65,20 @@ public class MessageWorkerTest {
 
         messageWorker.start();
         insertThread.start();
+        insertThread.join();
+        Thread.currentThread().sleep(1000);
     }
 
     @Test
     public void newMessage() throws Exception {
-        Thread.currentThread().sleep(2000);
+        Thread.currentThread().sleep(1000);
         assertTrue(mavLinkMessageList.size() != 200);
     }
 
     @AfterClass
     public static void stopThread() {
         messageWorker.stop();
+        DatabaseWorker.getInstance().stop();
         insertThread.interrupt();
     }
 }

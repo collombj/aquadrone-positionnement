@@ -251,9 +251,9 @@ public class DatabaseDriver {
                 insertStatement.setNull(4, Types.BIGINT);
 
             } else {
-                insertStatement.setLong(2, measureEntity.getLocationCorrected().lon);
-                insertStatement.setLong(3, measureEntity.getLocationCorrected().lat);
-                insertStatement.setLong(4, measureEntity.getLocationCorrected().alt);
+                insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
+                insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
+                insertStatement.setDouble(4, (double)measureEntity.getLocationCorrected().alt / 1000.);
             }
             insertStatement.setInt(5, srid);
             // location_brut
@@ -262,9 +262,9 @@ public class DatabaseDriver {
                 insertStatement.setNull(7, Types.BIGINT);
                 insertStatement.setNull(8, Types.BIGINT);
             } else {
-                insertStatement.setLong(6, measureEntity.getLocationBrut().lon);
-                insertStatement.setLong(7, measureEntity.getLocationBrut().lat);
-                insertStatement.setLong(8, measureEntity.getLocationBrut().alt);
+                insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
+                insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
+                insertStatement.setDouble(8,(double) measureEntity.getLocationBrut().alt / 1000.);
             }
             insertStatement.setInt(9, srid);
 
