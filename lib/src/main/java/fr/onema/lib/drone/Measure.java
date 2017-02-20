@@ -44,4 +44,10 @@ public interface Measure extends CSV {
      * @return Une chaine de caractère représentant l'affichage de la mesure associée.
      */
     String getDisplay();
+
+    /**
+     * Retourne l'heure de la mesure
+     * @return Le timestamp de la mesure
+     */
+    long getTimestamp();
 }

@@ -16,7 +16,8 @@ public class DiveEntity {
      * Constructeur par defaut
      */
     public DiveEntity() {
-
+        this.startTime = System.currentTimeMillis();
+        this.endTime = this.startTime;
     }
 
     /**

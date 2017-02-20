@@ -10,16 +10,13 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-/**
- * Created by strock on 06/02/2017.
- */
 public class IMUTest {
 
     @Test
     public void build() {
         msg_scaled_imu msg = new msg_scaled_imu();
         msg_attitude msgAttitude = new msg_attitude();
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu);
     }
 
@@ -33,7 +30,7 @@ public class IMUTest {
         msgAttitude.roll = 1;
         msgAttitude.pitch = 1;
         msgAttitude.yaw = 1;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
         assertEquals(3, imu.getAccelerometer().getxAcceleration());
         assertEquals(4, imu.getAccelerometer().getyAcceleration());
@@ -50,7 +47,7 @@ public class IMUTest {
         msgAttitude.roll = 1;
         msgAttitude.pitch = 1;
         msgAttitude.yaw = 1;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getGyroscope());
         assertEquals(1.0, imu.getGyroscope().getRoll(), 0);
         assertEquals(1.0, imu.getGyroscope().getPitch(), 0);
@@ -64,7 +61,7 @@ public class IMUTest {
         msg.xmag = 3;
         msg.ymag = 4;
         msg.zmag = 5;
-        IMU imu = IMU.build(msg, msgAttitude);
+        IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getCompass());
         assertEquals(3, imu.getCompass().getxMagnetic());
         assertEquals(4, imu.getCompass().getyMagnetic());
@@ -77,7 +74,7 @@ public class IMUTest {
         GPSCoordinate prevCoordinate = new GPSCoordinate(5, 6, 7);
         GPSCoordinate coordinate = new GPSCoordinate(8, 9, 10);
 
-        IMU imu = IMU.build(refVelocity, 1, prevCoordinate, 2, coordinate);
+        IMU imu = IMU.build(refVelocity, refVelocity, 1, 2);
         assertNotNull(imu.getAccelerometer());
 
 

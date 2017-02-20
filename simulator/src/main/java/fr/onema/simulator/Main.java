@@ -87,6 +87,8 @@ public class Main {
             action(command, options);
         } catch (ParseException e) {
             printHelp(options);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
         }
     }
 
@@ -103,8 +105,6 @@ public class Main {
     /**
      * Filtre et exécute les actions relativent au paramètres passés en paramètres
      *
-     * @param command paramètres saisie
-     * @param options liste des options à utiliser pour les paramètres saisies
      */
     public static void action(CommandLine command, Options options) {
         // Génération des CSVs pour l'utilisation du simulateur
@@ -151,7 +151,8 @@ public class Main {
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
             virtualizer.compare(configuration, 0.3);
-            LOGGER.log(Level.INFO, fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b));
+            String list = fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
+            LOGGER.log(Level.INFO, list);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
         } catch (ComparisonException e) {
@@ -180,7 +181,9 @@ public class Main {
         Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", host, 14550);
 
         try {
+            LOGGER.log(Level.INFO, "Sending in progress");
             virtualizer.start();
+            LOGGER.log(Level.INFO, "Sending is over");
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Error during the simulation", e);
         }

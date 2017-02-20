@@ -12,9 +12,6 @@ import static fr.onema.lib.geo.GeoMaths.recalculatePosition;
 import static junit.framework.TestCase.assertEquals;
 
 
-/**
- * Created by julien on 07/02/2017.
- */
 public class GeoMathsTest {
 
     @Test(expected = NullPointerException.class)
@@ -110,13 +107,21 @@ public class GeoMathsTest {
     @Test(expected = NullPointerException.class)
     public void testComputeCartesianVelocityNonNull() {
         CartesianCoordinate pos1 = null;
-        GeoMaths.computeVelocityFromCartesianCoordinate(pos1, 100);
+        GeoMaths.computeVelocityFromCartesianCoordinate(pos1, pos1, 100);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void testComputeCartesianVelocityNonNull2() {
+        CartesianCoordinate refPos = new CartesianCoordinate(0, 0, 0);
+        CartesianCoordinate pos1 = null;
+        GeoMaths.computeVelocityFromCartesianCoordinate(refPos, pos1, 100);
     }
 
     @Test
     public void testComputeCartesianVelocity() {
+        CartesianCoordinate refPos = new CartesianCoordinate(0, 0, 0);
         CartesianCoordinate pos1 = new CartesianCoordinate(2, 1, 1);
-        CartesianVelocity velocity = GeoMaths.computeVelocityFromCartesianCoordinate(pos1, 100);
+        CartesianVelocity velocity = GeoMaths.computeVelocityFromCartesianCoordinate(refPos, pos1, 100);
 
         assertEquals(20.0, velocity.vx);
         assertEquals(10.0, velocity.vy);

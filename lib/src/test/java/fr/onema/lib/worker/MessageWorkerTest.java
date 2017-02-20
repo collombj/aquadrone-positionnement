@@ -1,17 +1,13 @@
 package fr.onema.lib.worker;
 
-import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.MAVLinkMessage;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
-import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -44,9 +40,9 @@ public class MessageWorkerTest {
                     (short) i
             );
             mavLinkMessageList.add(simulatedValue.getGPSMessage());
-            mavLinkMessageList.add(simulatedValue.getIMUMessage());
-            mavLinkMessageList.add(simulatedValue.getPressureMessage());
-            mavLinkMessageList.add(simulatedValue.getTemperatureMessage());
+            mavLinkMessageList.add(simulatedValue.getIMUMessage(i));
+            mavLinkMessageList.add(simulatedValue.getPressureMessage(i));
+            mavLinkMessageList.add(simulatedValue.getTemperatureMessage(i));
         }
     }
 
@@ -57,7 +53,7 @@ public class MessageWorkerTest {
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
-                    messageWorker.newMessage(mavLinkMessageList.removeFirst());
+                    messageWorker.newMessage(27091994, mavLinkMessageList.removeFirst());
                     Thread.currentThread().sleep(200);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -73,22 +69,6 @@ public class MessageWorkerTest {
     public void newMessage() throws Exception {
         Thread.currentThread().sleep(2000);
         assertTrue(mavLinkMessageList.size() != 200);
-    }
-
-    @Test
-    public void clearWaitingList() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
-        messageWorker.clearWaitingList();
-        assertTrue(messageWorker.isWaitingListEmpty());
-    }
-
-    @Test
-    public void add() throws Exception {
-        Temperature temperature = Temperature.build(System.currentTimeMillis(), 20);
-        messageWorker.add(temperature);
-        assertFalse(messageWorker.isWaitingListEmpty());
     }
 
     @AfterClass

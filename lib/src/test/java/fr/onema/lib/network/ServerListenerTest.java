@@ -18,9 +18,10 @@ public class ServerListenerTest {
     }
 
     @Test
-    public void testStartThread() {
+    public void testStartThread() throws InterruptedException {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
+        Thread.sleep(100);
         assertNotNull(serverListener.getListener());
         serverListener.stop();
     }
@@ -29,7 +30,7 @@ public class ServerListenerTest {
     public void testStartDatagramChannel() {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
-        assertFalse(serverListener.getSk().isClosed());
+        assertFalse(serverListener.getDatagramSocket().isClosed());
         serverListener.stop();
     }
 
@@ -38,14 +39,7 @@ public class ServerListenerTest {
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
         serverListener.stop();
-        assertTrue(serverListener.getSk().isClosed());
-    }
-
-    @Test
-    public void bytesToNumberTest() throws UnsupportedEncodingException {
-        ServerListener serverListener = new ServerListener(1500);
-        long res = serverListener.bytesToNumber("MAVLINK =12345678 ");
-        assertEquals(12345678,res);
+        assertTrue(serverListener.getDatagramSocket().isClosed());
     }
 
     @Test

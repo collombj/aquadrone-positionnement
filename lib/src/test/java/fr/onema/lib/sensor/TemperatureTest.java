@@ -41,7 +41,7 @@ public class TemperatureTest {
 
     @Test
     public void getName() throws Exception {
-        assertEquals(temperature.getName(), "Temperature");
+        assertEquals(temperature.getName(), "temperature");
     }
 
     @Test

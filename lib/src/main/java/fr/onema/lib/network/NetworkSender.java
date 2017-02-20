@@ -8,16 +8,19 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class NetworkSender {
+    private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
     private final String host;
-    byte[] buffer;
-    DatagramPacket packet;
-    InetAddress hostAddress;
-    private ArrayBlockingQueue<MAVLinkMessage> queue;
+    private byte[] buffer;
+    private InetAddress hostAddress;
+    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramSocket dsocket;
     private Thread sender;
+    private long firstTimestamp = -1;
 
     /**
      * Constructeur de la classe NetworkSender
@@ -39,6 +42,10 @@ public class NetworkSender {
      * @param entry Un champ de type VirtualizerEntry
      */
     public void add(VirtualizerEntry entry) {
+        if (firstTimestamp == -1) {
+            firstTimestamp = entry.getTimestamp();
+        }
+
         if (entry.getHasGPS()) {
             MAVLinkMessage msgGPS = entry.getGPSMessage();
             try {
@@ -47,11 +54,13 @@ public class NetworkSender {
                 Thread.currentThread().interrupt();
             }
         }
-        MAVLinkMessage msgIMU = entry.getIMUMessage();
-        MAVLinkMessage msgPressure = entry.getPressureMessage();
-        MAVLinkMessage msgTemperature = entry.getTemperatureMessage();
+        MAVLinkMessage msgIMU = entry.getIMUMessage(entry.getTimestamp() - firstTimestamp);
+        MAVLinkMessage msgAttitude = entry.getAttitudeMessage(entry.getTimestamp() - firstTimestamp);
+        MAVLinkMessage msgPressure = entry.getPressureMessage(entry.getTimestamp() - firstTimestamp);
+        MAVLinkMessage msgTemperature = entry.getTemperatureMessage(entry.getTimestamp() - firstTimestamp);
         try {
             queue.put(msgIMU);
+            queue.put(msgAttitude);
             queue.put(msgPressure);
             queue.put(msgTemperature);
         } catch (InterruptedException e) {
@@ -62,7 +71,9 @@ public class NetworkSender {
     /**
      * Envoi un message MavLink au destinataire
      */
-    public void send(MAVLinkMessage msg) throws IOException {
+    private void send(MAVLinkMessage msg) throws IOException {
+        String msgFormatted = msg.toString();
+        LOGGER.log(Level.INFO, msgFormatted);
         buffer = msg.encode();
         DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
         dsocket.send(out);
@@ -74,7 +85,6 @@ public class NetworkSender {
     public void openConnection() throws IOException {
         dsocket = new DatagramSocket();
         buffer = new byte[1000];
-        packet = new DatagramPacket(buffer, buffer.length);
         hostAddress = InetAddress.getByName(host);
     }
 
@@ -82,8 +92,7 @@ public class NetworkSender {
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
-        interruptThread();
-        dsocket.close();
+        this.sender.interrupt();
     }
 
     /**
@@ -107,9 +116,9 @@ public class NetworkSender {
     /**
      * Demarre la thread d'envoi de messages
      */
-    public void startThread() {
+    private void startThread() {
         sender = new Thread(() -> {
-            while (!Thread.interrupted()) {
+            while (!Thread.interrupted() || (Thread.interrupted() && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
                     msg = queue.take();
@@ -117,9 +126,12 @@ public class NetworkSender {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    // TODO
+                    Thread.currentThread().interrupt();
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
+
+            dsocket.close();
         });
         sender.start();
     }
@@ -149,10 +161,5 @@ public class NetworkSender {
      */
     public DatagramSocket getDsocket() {
         return dsocket;
-    }
-
-
-    public void interruptThread() {
-        this.sender.interrupt();
     }
 }
