@@ -46,6 +46,7 @@ public class Main extends Application {
         this.server = new ServerListener(14550);
         this.server.start();
         this.messageWorker = server.getMessageWorker();
+        // TODO -> this.messageWorker.setTracer(FILE);
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);

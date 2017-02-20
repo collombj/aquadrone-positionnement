@@ -2,6 +2,7 @@ package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Position;
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -42,6 +43,7 @@ public class MessageWorker implements Worker {
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Utilisé pour la fusion Atitude + IMU = IMU DB
     private MAVLinkMessage imuBuffer;
+    private fr.onema.lib.worker.Logger tracer;
     // Represents the dive currently associated
     private Dive dive;
     private Boolean inDive = false;
@@ -54,7 +56,11 @@ public class MessageWorker implements Worker {
      * communication avec avec le serveur.
      */
     public MessageWorker() {
-        // Default constructor
+        // default constructor
+    }
+
+    public void setTracer(FileManager fileManager) {
+        this.tracer = new fr.onema.lib.worker.Logger(fileManager);
     }
 
     /**
@@ -214,7 +220,7 @@ public class MessageWorker implements Worker {
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }
-            processGPSData(fr.onema.lib.sensor.position.GPS.build(timestamp, gpsMessage));
+            processGPSData(GPS.build(timestamp, gpsMessage));
         }
 
         private void processGPSData(GPS gps) {
@@ -244,6 +250,10 @@ public class MessageWorker implements Worker {
             }
 
             dive.add(currentPos);
+            if(tracer != null) {
+                tracer.addPosition(currentPos);
+                LOGGER.log(Level.SEVERE, "Tracer has not been set in the MessageWorker.");
+            }
             currentPos = new Position();
         }
 

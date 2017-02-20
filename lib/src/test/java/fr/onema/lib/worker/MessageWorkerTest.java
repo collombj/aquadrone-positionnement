@@ -1,5 +1,6 @@
 package fr.onema.lib.worker;
 
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -12,6 +13,12 @@ import java.util.concurrent.LinkedBlockingDeque;
 import static org.junit.Assert.assertTrue;
 
 public class MessageWorkerTest {
+
+    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
+    private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
+    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
+
+    private final static FileManager fileManager = new FileManager(refFile, virtualizedFile, resultsFile);
 
     private static MessageWorker messageWorker = new MessageWorker();
     private static Thread insertThread;

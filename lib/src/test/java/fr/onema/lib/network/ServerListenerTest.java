@@ -1,6 +1,7 @@
 package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 
 import java.io.IOException;

@@ -1,25 +1,23 @@
 package fr.onema.lib.worker;
 
-import fr.onema.lib.File.FileManagerTest;
+import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.FileManager;
-import fr.onema.lib.sensor.Temperature;
+import fr.onema.lib.geo.CartesianVelocity;
+import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.virtualizer.entry.ReferenceEntry;
+import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mavlink.messages.MAVLinkMessage;
-import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.Deque;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class LoggerTest {
 
@@ -27,10 +25,9 @@ public class LoggerTest {
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
 
-    private static Logger logger;
     private final static FileManager fileManager = new FileManager(refFile, virtualizedFile, resultsFile);
-
-    private static BlockingDeque<MAVLinkMessage> mavLinkMessageList;
+    private static Logger logger;
+    private static BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
 
     @BeforeClass
     public static void prepare() throws Exception {
@@ -40,9 +37,20 @@ public class LoggerTest {
         v.delete();
         File res = new File(resultsFile);
         res.delete();
-        mavLinkMessageList = MessageWorkerTest.populateMavLinkMessageList();
+        populatePositions();
         logger = new Logger(fileManager);
         logger.start();
+    }
+
+    private static void populatePositions() {
+        for (int i = 0; i < 10000; i = i + 200)
+            positions.add(new Position(
+                    System.currentTimeMillis() + i,
+                    new GPSCoordinate(i + 244, i - 543, i - 10),
+                    i,
+                    IMU.build(new CartesianVelocity(i, i, i), new CartesianVelocity(i + 50, i + 50, i + 50), System.currentTimeMillis() - i, System.currentTimeMillis()),
+                    GPS.build(System.currentTimeMillis(), i, i, i, i))
+            );
     }
 
     @AfterClass
@@ -61,8 +69,8 @@ public class LoggerTest {
     public void newMAVLinkMessage() throws Exception {
 
         new Thread(() -> {
-            while(!mavLinkMessageList.isEmpty()) {
-                logger.newMAVLinkMessage(mavLinkMessageList.pop());
+            while (!positions.isEmpty()) {
+                logger.addPosition(positions.pop());
             }
         }).start();
         Thread.sleep(1000);
@@ -71,9 +79,9 @@ public class LoggerTest {
         assertTrue(virtualizerEntryList.get(2).getTimestamp() != 0);
     }
 
-    @Test (expected = NullPointerException.class)
+    @Test(expected = NullPointerException.class)
     public void newMAVLinkMessageNull() {
-        logger.newMAVLinkMessage(null);
+        logger.addPosition(null);
     }
 
 }
