@@ -11,8 +11,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure2;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 import java.io.File;
@@ -172,7 +170,7 @@ public class FileManagerTest {
         appendResults();
         FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
         List<String> results = fm.getResults("||");
-        assertEquals("timestamp||corrected.latitude||corrected.longitude||corrected.altitude||ref.latitude||ref.longitude||ref.altitude||ref.direction||ref.temperature||difference.x||difference.y||difference.z||difference.absolute||precision||margin||margin.error", results.get(0));
-        assertEquals("0||4||5||6||4||5||6||7.0||8||0.0||0.0||0.0||0.0||13||14.0||false", results.get(1));
+        assertEquals("timestamp||corrected.latitude||corrected.longitude||corrected.altitude||brut.latitude||brut.longitude||brut.altitude||ref.latitude||ref.longitude||ref.altitude||ref.direction||ref.temperature||difference.x||difference.y||difference.z||difference.absolute||precision||margin||margin.error", results.get(0));
+        assertEquals("0||4||5||64||5||6||4||5||6||7.0||8||0.0||0.0||0.0||0.0||13||14.0||false", results.get(1));
     }
 }

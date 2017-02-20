@@ -27,7 +27,7 @@ import static fr.onema.lib.geo.GeoMaths.deg2rad;
  */
 public class FileManager {
     private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
-    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude," +
+    private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude,brut.latitude,brut.longitude,brut.altitude," +
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
@@ -154,10 +154,13 @@ public class FileManager {
             double diffZ = ref.z - adjusted.z;
             double diffAbsolute = GeoMaths.cartesianDistance(ref, adjusted);
             boolean error = diffAbsolute > margin;
-            fw.write("\n" + re.getTimestamp() + "," + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon
-                    + "," + m.getLocationCorrected().alt + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt()
-                    + "," + re.getDirection() + "," + re.getTemperature() + "," + diffX + "," + diffY + "," + diffZ
-                    + "," + diffAbsolute + "," + m.getPrecisionCm() + "," + margin + "," + error);
+            fw.write("\n" + re.getTimestamp() + ","
+                    + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon + "," + m.getLocationCorrected().alt
+                    + m.getLocationBrut().lat + "," + m.getLocationBrut().lon + "," + m.getLocationBrut().alt
+                    + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt() + "," + re.getDirection()
+                    + "," + re.getTemperature() + ","
+                    + diffX + "," + diffY + "," + diffZ + "," + diffAbsolute +
+                    "," + m.getPrecisionCm() + "," + margin + "," + error);
             fw.close();
         }
     }
