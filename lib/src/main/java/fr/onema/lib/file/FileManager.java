@@ -155,7 +155,7 @@ public class FileManager {
             double diffAbsolute = GeoMaths.cartesianDistance(ref, adjusted);
             boolean error = diffAbsolute > margin;
             fw.write("\n" + re.getTimestamp() + ","
-                    + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon + "," + m.getLocationCorrected().alt
+                    + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon + "," + m.getLocationCorrected().alt + ","
                     + m.getLocationBrut().lat + "," + m.getLocationBrut().lon + "," + m.getLocationBrut().alt
                     + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt() + "," + re.getDirection()
                     + "," + re.getTemperature() + ","

@@ -295,7 +295,7 @@ public class GeoMaths {
      * @param resurface
      * @return
      */
-    public static List<Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    public static void recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
         Objects.requireNonNull(ref);
         Objects.requireNonNull(resurface);
@@ -310,10 +310,11 @@ public class GeoMaths {
         if (index < rawPositions.size()){
             correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
         }
-        return correctionMethodOne(rawPositions, ref, resurface);
+
+        rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
     }
 
-    private static List<Position> correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    private static void correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
         CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size()-1).getCartesianBrute();
 
@@ -329,8 +330,6 @@ public class GeoMaths {
                     rawPositions.get(i).getCartesianBrute().y + (deltay * ecart * i),
                     rawPositions.get(i).getCartesianBrute().z + (deltaz * ecart * i))));
         }
-
-        return rawPositions;
     }
 
 
