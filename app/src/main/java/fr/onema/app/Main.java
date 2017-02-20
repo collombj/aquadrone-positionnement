@@ -41,7 +41,6 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
-        this.databaseWorker.init(configuration);
         this.databaseWorker.start();
         this.server = new ServerListener(14550);
         this.server.start();
