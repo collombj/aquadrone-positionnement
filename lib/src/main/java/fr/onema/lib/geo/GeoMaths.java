@@ -288,15 +288,34 @@ public class GeoMaths {
     }
 
 
+    /**
+     * Recalcule les position entre deux coordonnées
+     * @param rawPositions
+     * @param ref
+     * @param resurface
+     * @return
+     */
     public static List<Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
         Objects.requireNonNull(ref);
         Objects.requireNonNull(resurface);
 
+        // detection de la premiere position sous l'eau
+        int index = 0;
+        while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
+            rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
+            index++;
+        }
+        //appel a la fonction de correction si on a trouvé une position sous l'eau
+        if (index < rawPositions.size()){
+            correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
+        }
+        return correctionMethodOne(rawPositions, ref, resurface);
+    }
 
+    private static List<Position> correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
-        CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrute();
-
+        CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size()-1).getCartesianBrute();
 
         double deltax = cartesianResurface.x - cartesianResurfaceBrut.x;
         double deltay = cartesianResurface.y - cartesianResurfaceBrut.y;
