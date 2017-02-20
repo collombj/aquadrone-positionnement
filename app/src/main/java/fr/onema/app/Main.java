@@ -25,6 +25,12 @@ public class Main extends Application {
     private DatabaseWorker databaseWorker;
     private MessageWorker messageWorker;
 
+    public RootLayoutController getRlc() {
+        return rlc;
+    }
+
+    private RootLayoutController rlc;
+
     // TODO : replace with customized logging system
     private Logger logger;
 
@@ -50,7 +56,7 @@ public class Main extends Application {
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
-        RootLayoutController rlc = new RootLayoutController(this);
+        rlc = new RootLayoutController(this);
         fxmlLoader.setController(rlc);
         fxmlLoader.load();
         primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
@@ -68,7 +74,6 @@ public class Main extends Application {
     }
 
     public void execute() {
-// TODO
         messageWorker.startRecording();
 
         System.out.println("Task completed with followings parameters : \n"
