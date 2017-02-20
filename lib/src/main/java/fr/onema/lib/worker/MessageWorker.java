@@ -257,8 +257,11 @@ public class MessageWorker implements Worker {
 
             dive.add(currentPos);
             if(tracer != null) {
-                tracer.addPosition(currentPos);
-                LOGGER.log(Level.SEVERE, "Tracer has not been set in the MessageWorker.");
+                try {
+                    tracer.addPosition(currentPos);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
             }
             currentPos = new Position();
         }

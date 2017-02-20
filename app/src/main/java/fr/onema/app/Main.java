@@ -1,7 +1,6 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
-import fr.onema.lib.drone.Dive;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -44,9 +43,9 @@ public class Main extends Application {
         this.databaseWorker.init(configuration);
         this.databaseWorker.start();
         this.server = new ServerListener(14550);
-        this.server.start();
         this.messageWorker = server.getMessageWorker();
         // TODO -> this.messageWorker.setTracer(FILE);
+        this.server.start();
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
