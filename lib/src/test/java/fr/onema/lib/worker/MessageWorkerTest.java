@@ -10,15 +10,14 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class MessageWorkerTest {
 
     private static MessageWorker messageWorker = new MessageWorker();
     private static Thread insertThread;
-
     private static Deque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList;
-
     private static long lastTimestamp;
 
     private static void populateMavLinkMessageList() {
@@ -54,7 +53,7 @@ public class MessageWorkerTest {
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
-        DatabaseWorker.getInstance().start();
+        //DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
@@ -69,19 +68,20 @@ public class MessageWorkerTest {
         messageWorker.start();
         insertThread.start();
         insertThread.join();
-        Thread.currentThread().sleep(1000);
-    }
-
-    @Test
-    public void newMessage() throws Exception {
-        Thread.currentThread().sleep(1000);
-        assertTrue(mavLinkMessageList.size() != 200);
+        Thread.sleep(1000);
     }
 
     @AfterClass
     public static void stopThread() {
         messageWorker.stop();
-        DatabaseWorker.getInstance().stop();
+        //DatabaseWorker.getInstance().stop();
         insertThread.interrupt();
+    }
+
+    @Test
+    public void newMessage() throws Exception {
+        assertNotNull(messageWorker.getDive());
+        assertEquals(messageWorker.getMeasuresStates().size(), 4);
+        assertEquals(messageWorker.getMavLinkConnection(), lastTimestamp);
     }
 }

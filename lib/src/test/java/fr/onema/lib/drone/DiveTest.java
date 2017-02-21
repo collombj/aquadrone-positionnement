@@ -93,8 +93,8 @@ public class DiveTest {
 
     @After
     public void postTraitement() throws InterruptedException {
-        Thread.sleep(1000);//s assure que le worker a eu le temps de finir ses traitements
-        DatabaseWorker.getInstance().stop();//arrete le worker
+        //Thread.sleep(1000);//s assure que le worker a eu le temps de finir ses traitements
+        //DatabaseWorker.getInstance().stop();//arrete le worker
     }
 
 }

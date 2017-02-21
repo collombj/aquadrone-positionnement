@@ -39,7 +39,7 @@ public class TestDatabaseWorker {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-        dbWorker.start();
+        //dbWorker.start();
         dbWorker.newDive(dive);
 
 
@@ -68,6 +68,6 @@ public class TestDatabaseWorker {
 
     @After
     public void afterEffect() throws Exception {
-        dbWorker.stop();
+        //dbWorker.stop();
     }
 }
