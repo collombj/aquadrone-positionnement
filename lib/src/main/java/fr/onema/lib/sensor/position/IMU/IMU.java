@@ -17,12 +17,12 @@ public class IMU extends Sensor {
     private final Compass compass;
 
     /**
-     * Constructeur privé de l'imu
+     * Constructeur
      * @param accelerometer capteur
      * @param gyroscope     capteur
      * @param compass       capteur
      */
-    private IMU(long timestamp, Accelerometer accelerometer, Gyroscope gyroscope, Compass compass) {
+    public IMU(long timestamp, Accelerometer accelerometer, Gyroscope gyroscope, Compass compass) {
         super(timestamp);
         this.accelerometer = accelerometer;
         this.gyroscope = gyroscope;
