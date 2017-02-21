@@ -49,7 +49,7 @@ public class MessageWorkerTest {
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
-        //DatabaseWorker.getInstance().start();
+        DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
@@ -64,7 +64,6 @@ public class MessageWorkerTest {
         messageWorker.start();
         insertThread.start();
         insertThread.join();
-        messageWorker.join();
         Thread.currentThread().sleep(1000);
     }
 
@@ -77,7 +76,7 @@ public class MessageWorkerTest {
     @AfterClass
     public static void stopThread() {
         messageWorker.stop();
-        //DatabaseWorker.getInstance().stop();
+        DatabaseWorker.getInstance().stop();
         insertThread.interrupt();
     }
 }
