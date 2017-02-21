@@ -67,7 +67,7 @@ public class ServerListener implements Worker {
         listener.start();
     }
 
-    private boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
+    public boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         if (firstTimestamp == -1) {
             firstTimestamp = getFirstTimestamp(msg);
             messageTimestamp = firstTimestamp;
@@ -82,7 +82,8 @@ public class ServerListener implements Worker {
         return false;
     }
 
-    private long getFirstTimestamp(MAVLinkMessage msg) {
+    // Public access to test
+    public long getFirstTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             return ((msg_gps_raw_int) msg).time_usec;
         }
@@ -90,7 +91,8 @@ public class ServerListener implements Worker {
         return System.currentTimeMillis() - getBootTime(msg);
     }
 
-    private long getTimestamp(MAVLinkMessage msg) {
+    // Public access to test
+    public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             return ((msg_gps_raw_int) msg).time_usec;
         }
@@ -98,7 +100,8 @@ public class ServerListener implements Worker {
         return firstTimestamp + getBootTime(msg);
     }
 
-    private long getBootTime(MAVLinkMessage msg) {
+    // Public access to test
+    public long getBootTime(MAVLinkMessage msg) {
         if (msg instanceof msg_scaled_imu) {
             return ((msg_scaled_imu) msg).time_boot_ms;
         } else if (msg instanceof msg_scaled_pressure2) {
