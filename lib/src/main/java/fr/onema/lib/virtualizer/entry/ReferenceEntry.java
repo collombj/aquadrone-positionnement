@@ -104,6 +104,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Renvoi une string des champs au format CSV
+     *
      * @return la chaine de caractère CSV
      */
     @Override

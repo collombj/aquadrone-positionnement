@@ -4,7 +4,6 @@ import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 

@@ -3,9 +3,7 @@ package fr.onema.lib.database.entity;
 import fr.onema.lib.geo.GPSCoordinate;
 import org.junit.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by Francois Vanderperre on 06/02/2017.

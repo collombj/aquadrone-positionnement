@@ -29,7 +29,7 @@ public class GPSCoordinate {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null) return false;
-        if(getClass() != o.getClass()) return false;
+        if (getClass() != o.getClass()) return false;
         GPSCoordinate that = (GPSCoordinate) o;
         if (lat != that.lat) return false;
         if (lon != that.lon) return false;

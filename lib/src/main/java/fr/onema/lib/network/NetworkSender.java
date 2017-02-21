@@ -15,9 +15,9 @@ public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
     private final String host;
+    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private byte[] buffer;
     private InetAddress hostAddress;
-    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramSocket dsocket;
     private Thread sender;
     private long firstTimestamp = -1;

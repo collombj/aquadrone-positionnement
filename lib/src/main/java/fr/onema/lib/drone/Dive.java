@@ -23,9 +23,9 @@ import static fr.onema.lib.drone.Dive.State.RECORD;
  */
 public class Dive {
     private static final Logger LOGGER = Logger.getLogger(Dive.class.getName());
+    private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
     private GPSCoordinate reference;
     private List<Position> positions = new ArrayList<>();
-    private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
     private DiveEntity diveEntity;
     private State state;
     private int numberOfmovement;

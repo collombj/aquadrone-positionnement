@@ -47,6 +47,7 @@ public interface Measure extends CSV {
 
     /**
      * Retourne l'heure de la mesure
+     *
      * @return Le timestamp de la mesure
      */
     long getTimestamp();

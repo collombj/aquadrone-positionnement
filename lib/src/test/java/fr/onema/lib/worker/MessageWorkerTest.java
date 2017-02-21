@@ -9,7 +9,7 @@ import org.mavlink.messages.MAVLinkMessage;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class MessageWorkerTest {
 

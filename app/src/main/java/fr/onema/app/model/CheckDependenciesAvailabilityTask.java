@@ -1,11 +1,9 @@
 package fr.onema.app.model;
 
 import fr.onema.app.Main;
-import fr.onema.app.view.RootLayoutController;
 import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
-import javafx.application.Platform;
 import javafx.scene.paint.Color;
 
 import java.util.Map;
@@ -24,26 +22,6 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
 
     public CheckDependenciesAvailabilityTask(Main main) {
         this.main = Objects.requireNonNull(main);
-    }
-
-    /***
-     * Permet de mettre à jour la couleur des dépendances en fonction de leur état
-     */
-    @Override
-    public void run() {
-        if (checkPostgresAvailability(main.getConfiguration())) {
-            main.getRlc().updateDatabaseColor(Color.GREEN);
-        } else {
-            main.getRlc().updateDatabaseColor(Color.RED);
-        }
-
-        if (checkMavlinkAvailability(main.getMessageWorker(), main.getConfiguration())) {
-            main.getRlc().updateMavlinkColor(Color.GREEN);
-        } else {
-            main.getRlc().updateMavlinkColor(Color.RED);
-        }
-        main.getRlc().updateSensors(checkSensorsAvailability(main.getMessageWorker()));
-        main.getRlc().updatePrecisionProgress(main.getMessageWorker(), main.getConfiguration());
     }
 
     private static Map<String, Long> checkSensorsAvailability(MessageWorker worker) {
@@ -76,5 +54,25 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
         int mavlinkTimeoutInMs = conf.getDiveData().getFrequencetestmavlink() * 1_000;
         long diff = System.currentTimeMillis() - worker.getMavLinkConnection();
         return diff < mavlinkTimeoutInMs;
+    }
+
+    /***
+     * Permet de mettre à jour la couleur des dépendances en fonction de leur état
+     */
+    @Override
+    public void run() {
+        if (checkPostgresAvailability(main.getConfiguration())) {
+            main.getRlc().updateDatabaseColor(Color.GREEN);
+        } else {
+            main.getRlc().updateDatabaseColor(Color.RED);
+        }
+
+        if (checkMavlinkAvailability(main.getMessageWorker(), main.getConfiguration())) {
+            main.getRlc().updateMavlinkColor(Color.GREEN);
+        } else {
+            main.getRlc().updateMavlinkColor(Color.RED);
+        }
+        main.getRlc().updateSensors(checkSensorsAvailability(main.getMessageWorker()));
+        main.getRlc().updatePrecisionProgress(main.getMessageWorker(), main.getConfiguration());
     }
 }

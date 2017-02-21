@@ -54,7 +54,6 @@ public class Position {
     /**
      * Constructeur de Position seulement avec timestamp. Les autres valeurs des capteurs peuvent être associés plus
      * tard grâce aux setters.
-     *  
      */
     public Position() {
         // Nothing instantiated
@@ -79,6 +78,14 @@ public class Position {
         return cartesianBrute;
     }
 
+    /**
+     * met a jour la position brute cartésienne
+     *
+     * @param cartesianBrute
+     */
+    public void setCartesianBrute(CartesianCoordinate cartesianBrute) {
+        this.cartesianBrute = cartesianBrute;
+    }
 
     /**
      * Récupère la liste des MeasureEntity associés à cette position.
@@ -115,16 +122,6 @@ public class Position {
     public GPSCoordinate getPositionBrute() {
         return positionBrute;
     }
-
-    /**
-     * met a jour la position brute cartésienne
-     *
-     * @param cartesianBrute
-     */
-    public void setCartesianBrute(CartesianCoordinate cartesianBrute) {
-        this.cartesianBrute = cartesianBrute;
-    }
-
 
     /**
      * Met a jour la coordonnées brutes
@@ -168,10 +165,6 @@ public class Position {
         return imu;
     }
 
-    public GPS getGps() {
-        return gps;
-    }
-
     /**
      * Définit l'IMU de la position.
      *
@@ -181,10 +174,9 @@ public class Position {
         this.imu = imu;
     }
 
-    public List<Measure> getMeasures() {
-        return measures;
+    public GPS getGps() {
+        return gps;
     }
-
 
     /**
      * Définit le GPS_SENSOR de la position.
@@ -193,6 +185,10 @@ public class Position {
      */
     public void setGps(GPS gps) {
         this.gps = gps;
+    }
+
+    public List<Measure> getMeasures() {
+        return measures;
     }
 
     /**
@@ -257,6 +253,7 @@ public class Position {
 
     /**
      * Méthode permettant d'accèder à la pression relative à une position
+     *
      * @return La pression courrante
      */
     public Pressure getPressure() {
@@ -265,6 +262,7 @@ public class Position {
 
     /**
      * Méthode permettant de mettre à jour la pression sur une position
+     *
      * @param pressure La pression relative à la position mise à jour
      */
     public void setPressure(Pressure pressure) {

@@ -9,16 +9,16 @@ import java.util.Objects;
  */
 public class MeasureEntity {
     private final long timestamp;
-    private GPSCoordinate locationBrut;
-    private GPSCoordinate locationCorrected;
     private final int accelerationX;
     private final int accelerationY;
     private final int accelerationZ;
     private final double roll;
     private final double pitch;
     private final double yaw;
-    private int precisionCm;
     private final String measureValue;
+    private GPSCoordinate locationBrut;
+    private GPSCoordinate locationCorrected;
+    private int precisionCm;
     private int id;
 
     /**
@@ -124,10 +124,28 @@ public class MeasureEntity {
     }
 
     /**
+     * MEt a jour les coordonnées relevées
+     *
+     * @param locationBrut des coordonnées GPS
+     */
+    public void setLocationBrut(GPSCoordinate locationBrut) {
+        this.locationBrut = locationBrut;
+    }
+
+    /**
      * @return Les coordonnées GPS de la mesure après correction
      */
     public GPSCoordinate getLocationCorrected() {
         return locationCorrected;
+    }
+
+    /**
+     * Met a jour les coordonnées corrigées
+     *
+     * @param locationCorrected des coordonnées GPS
+     */
+    public void setLocationCorrected(GPSCoordinate locationCorrected) {
+        this.locationCorrected = locationCorrected;
     }
 
     /**
@@ -180,38 +198,19 @@ public class MeasureEntity {
     }
 
     /**
-     * @return La valeur de la mesure.
-     */
-    public String getMeasureValue() {
-        return measureValue;
-    }
-
-
-    /**
-     * MEt a jour les coordonnées relevées
-     *
-     * @param locationBrut des coordonnées GPS
-     */
-    public void setLocationBrut(GPSCoordinate locationBrut) {
-        this.locationBrut = locationBrut;
-    }
-
-    /**
-     * Met a jour les coordonnées corrigées
-     *
-     * @param locationCorrected des coordonnées GPS
-     */
-    public void setLocationCorrected(GPSCoordinate locationCorrected) {
-        this.locationCorrected = locationCorrected;
-    }
-
-    /**
      * Met à jour la précision de la mesure
      *
      * @param precisionCm
      */
     public void setPrecisionCm(int precisionCm) {
         this.precisionCm = precisionCm;
+    }
+
+    /**
+     * @return La valeur de la mesure.
+     */
+    public String getMeasureValue() {
+        return measureValue;
     }
 
     @Override

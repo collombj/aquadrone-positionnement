@@ -55,9 +55,9 @@ public class ServerListener implements Worker {
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (IOException e){
+                } catch (IOException e) {
                     Thread.currentThread().interrupt();
-                    if(!datagramSocket.isClosed()) {
+                    if (!datagramSocket.isClosed()) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }

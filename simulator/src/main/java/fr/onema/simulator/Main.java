@@ -99,7 +99,7 @@ public class Main {
     private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv" +
             LONG_ARGUMENT_SIGN + RUN_ARGUMENT + " simulation.csv [hostname]" +
             LONG_ARGUMENT_SIGN + COMPARE_ARGUMENT + " fusion.csv resultat.csv [configuration.properties]\n\n\n";
-    
+
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     private Main() {

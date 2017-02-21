@@ -122,7 +122,7 @@ public class DatabaseDriver {
             while (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
                 long timestamp = results.getTimestamp("timestamp").getTime();
-                long brutX = (long)( Double.parseDouble(results.getString("brutX")) * 10_000_000.);
+                long brutX = (long) (Double.parseDouble(results.getString("brutX")) * 10_000_000.);
                 long brutY = (long) (Double.parseDouble(results.getString("brutY")) * 10_000_000.);
                 long brutZ = (long) (Double.parseDouble(results.getString("brutZ")) * 1000.);
                 long correctX = (long) (Double.parseDouble(results.getString("correctX")) * 10_000_000.);
@@ -355,29 +355,29 @@ public class DatabaseDriver {
                 insertStatement.setNull(3, Types.BIGINT);
                 insertStatement.setNull(4, Types.BIGINT);
 
-        } else {
-            insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
-            insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
-            insertStatement.setDouble(4, (double)measureEntity.getLocationCorrected().alt / 1000.);
-        }
-        insertStatement.setInt(5, srid);
-        // location_brut
-        if (measureEntity.getLocationBrut() == null) {
-            insertStatement.setNull(6, Types.BIGINT);
-            insertStatement.setNull(7, Types.BIGINT);
-            insertStatement.setNull(8, Types.BIGINT);
-        } else {
-            insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
-            insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
-            insertStatement.setDouble(8,(double) measureEntity.getLocationBrut().alt / 1000.);
+            } else {
+                insertStatement.setDouble(2, (double) measureEntity.getLocationCorrected().lon / 10_000_000.);
+                insertStatement.setDouble(3, (double) measureEntity.getLocationCorrected().lat / 10_000_000.);
+                insertStatement.setDouble(4, (double) measureEntity.getLocationCorrected().alt / 1000.);
+            }
+            insertStatement.setInt(5, srid);
+            // location_brut
+            if (measureEntity.getLocationBrut() == null) {
+                insertStatement.setNull(6, Types.BIGINT);
+                insertStatement.setNull(7, Types.BIGINT);
+                insertStatement.setNull(8, Types.BIGINT);
+            } else {
+                insertStatement.setDouble(6, (double) measureEntity.getLocationBrut().lon / 10_000_000.);
+                insertStatement.setDouble(7, (double) measureEntity.getLocationBrut().lat / 10_000_000.);
+                insertStatement.setDouble(8, (double) measureEntity.getLocationBrut().alt / 1000.);
 
-        }
-        insertStatement.setInt(9, srid);
+            }
+            insertStatement.setInt(9, srid);
 
-        //acceleration XYZ
-        insertStatement.setInt(10, measureEntity.getAccelerationX());
-        insertStatement.setInt(11, measureEntity.getAccelerationY());
-        insertStatement.setInt(12, measureEntity.getAccelerationZ());
+            //acceleration XYZ
+            insertStatement.setInt(10, measureEntity.getAccelerationX());
+            insertStatement.setInt(11, measureEntity.getAccelerationY());
+            insertStatement.setInt(12, measureEntity.getAccelerationZ());
 
             //precision_cm
             insertStatement.setInt(13, measureEntity.getPrecisionCm());
@@ -429,9 +429,9 @@ public class DatabaseDriver {
         try (PreparedStatement ps = connector.prepareStatement("UPDATE Measure SET location_corrected = " +
                 "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?")) {
 
-            ps.setDouble(1,(double) lon / 10_000_000.);
-            ps.setDouble(2, (double)lat / 10_000_000.);
-            ps.setDouble(3,(double) alt / 1000.);
+            ps.setDouble(1, (double) lon / 10_000_000.);
+            ps.setDouble(2, (double) lat / 10_000_000.);
+            ps.setDouble(3, (double) alt / 1000.);
             ps.setInt(4, srid);
             ps.setInt(5, precision);
             ps.setInt(6, measureId);

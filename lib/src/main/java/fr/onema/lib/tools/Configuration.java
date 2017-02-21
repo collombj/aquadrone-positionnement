@@ -305,26 +305,6 @@ public class Configuration {
     }
 
     /**
-     * Class représentant la configuration des données géographiques
-     */
-    public final class Geo {
-        private final int srid;
-
-        Geo(int srid) {
-            this.srid = srid;
-        }
-
-        /**
-         * Méthode permettant d'obtenir le SRID des données à stocker en base
-         *
-         * @return Le SRID souhaité
-         */
-        public int getSrid() {
-            return srid;
-        }
-    }
-
-    /**
      * Classe représentant la configuration des données de plongée
      */
     public static final class DiveData {
@@ -338,11 +318,11 @@ public class Configuration {
         /**
          * Le constructeur de la classe
          *
-         * @param precision la précision en mètres
-         * @param dureemax la durée en secondes de la plognée
-         * @param mouvementsmax le nombre max de mouvements avant de perdre trop de précision
-         * @param delaicapteurhs la durée pour considerer un capteur HS en secondes
-         * @param frequencetestmavlink la fréquence de test du flux mavlink
+         * @param precision             la précision en mètres
+         * @param dureemax              la durée en secondes de la plognée
+         * @param mouvementsmax         le nombre max de mouvements avant de perdre trop de précision
+         * @param delaicapteurhs        la durée pour considerer un capteur HS en secondes
+         * @param frequencetestmavlink  la fréquence de test du flux mavlink
          * @param frequencetestdatabase la fréquence de test du flux mavlink
          */
         public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase) {
@@ -391,7 +371,7 @@ public class Configuration {
         }
 
         /**
-         *Retourne la fréquence de test du flux mavlink
+         * Retourne la fréquence de test du flux mavlink
          *
          * @return la fréquence de test du flux mavlink
          */
@@ -406,6 +386,26 @@ public class Configuration {
          */
         public int getFrequencetestdatabase() {
             return frequencetestdatabase;
+        }
+    }
+
+    /**
+     * Class représentant la configuration des données géographiques
+     */
+    public final class Geo {
+        private final int srid;
+
+        Geo(int srid) {
+            this.srid = srid;
+        }
+
+        /**
+         * Méthode permettant d'obtenir le SRID des données à stocker en base
+         *
+         * @return Le SRID souhaité
+         */
+        public int getSrid() {
+            return srid;
         }
     }
 }

@@ -1,7 +1,6 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
-import fr.onema.lib.drone.Dive;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -25,18 +24,16 @@ public class Main extends Application {
     private Configuration configuration;
     private DatabaseWorker databaseWorker;
     private MessageWorker messageWorker;
-
-    public RootLayoutController getRlc() {
-        return rlc;
-    }
-
     private RootLayoutController rlc;
-
     // TODO : replace with customized logging system
     private Logger logger;
 
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public RootLayoutController getRlc() {
+        return rlc;
     }
 
     /***

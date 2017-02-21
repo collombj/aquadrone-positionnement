@@ -28,6 +28,7 @@ abstract public class Sensor implements CSV {
 
     /**
      * Retourne l'heure de la mesure
+     *
      * @return Le timestamp de la mesure
      */
     public long getTimestamp() {

@@ -53,6 +53,7 @@ public class GPS extends Sensor {
 
     /**
      * Retourne les coordonnées de la mesure
+     *
      * @return Coordonnées de la mesure
      */
     public GPSCoordinate getPosition() {

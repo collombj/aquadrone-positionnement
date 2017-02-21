@@ -1,6 +1,5 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
