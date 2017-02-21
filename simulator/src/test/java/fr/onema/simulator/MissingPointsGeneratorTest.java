@@ -13,7 +13,7 @@ import static org.junit.Assert.fail;
  * Created by Jérôme on 15/02/2017.
  */
 public class MissingPointsGeneratorTest {
-    private static final String refContent = "timestamp,longitude,latitude,altitude,direction,temperature\n" +
+    private static final String refContent = "timestamp,longitude,latitude,altitude,temperature\n" +
             "645451445,2.2834504,48.9019386,-1.02365,-0.3\n" +
             "1556484644,2.2835147,48.9019549,-1.13598,-0.7\n" +
             "2464874168,2.2835798,48.901976,-1.09863,-0.5\n" +

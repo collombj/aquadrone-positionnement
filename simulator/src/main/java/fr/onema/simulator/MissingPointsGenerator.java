@@ -24,8 +24,8 @@ import java.util.stream.Stream;
 
 public class MissingPointsGenerator {
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
-    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,direction,temperature";
-    private static final int REQUIRED_LENGTH = 6;
+    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
+    private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
     private final List<String> entries; //Don't supposed to be accessed remotely
     private final List<Point> pointsInput; //Don't supposed to be accessed remotely
@@ -101,7 +101,7 @@ public class MissingPointsGenerator {
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, 0, timestamp);
                 pointsInput.add(point);
             } else {
-                LOGGER.log(Level.INFO, "The line '" + entry + "' doesn't fit the requirements " +
+                LOGGER.log(Level.SEVERE, "The line '" + entry + "' doesn't fit the requirements " +
                         "(number of arguments = " + REQUIRED_LENGTH + ")");
             }
         });
