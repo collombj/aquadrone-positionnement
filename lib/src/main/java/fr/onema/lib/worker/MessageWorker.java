@@ -122,6 +122,10 @@ public class MessageWorker implements Worker {
         this.mavLinkMessagesThread.interrupt();
     }
 
+    public void join() throws InterruptedException {
+        this.mavLinkMessagesThread.join();
+    }
+
     private class MavLinkMessagesThreadWorker implements Runnable {
 
 
