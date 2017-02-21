@@ -1,6 +1,5 @@
 package fr.onema.lib.worker;
 
-import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -50,7 +49,6 @@ public class MessageWorkerTest {
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
-        DatabaseWorker.getInstance().init(Configuration.getInstance());
         DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {

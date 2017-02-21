@@ -28,8 +28,6 @@ public class TestDatabaseWorker {
     private MeasureEntity entity = new MeasureEntity(start, brut, brut, 0, 0, 0, 0, 0, 0, 0, "QQ");
 
     public TestDatabaseWorker() throws Exception {
-
-        DatabaseWorker.getInstance().init(configuration);
         dbWorker = DatabaseWorker.getInstance();
         repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(configuration);
 

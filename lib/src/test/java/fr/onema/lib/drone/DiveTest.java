@@ -27,7 +27,6 @@ public class DiveTest {
 
 
     public DiveTest() throws FileNotFoundException {
-        DatabaseWorker.getInstance().init(configuration);
         DatabaseWorker.getInstance().start();
     }
 

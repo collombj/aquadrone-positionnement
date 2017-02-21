@@ -107,7 +107,7 @@ public class Dive {
 
             // l'insérer en base
             dbWorker.insertMeasure(entity, diveEntity.getId(), measure.getName());
-
+            dbWorker.sendNotification();
             // l'insérer à la liste des mesures
             measures.add(entity);
         }
@@ -178,7 +178,9 @@ public class Dive {
                 throw new IllegalStateException("Erreur algorithme : ordre des mesures non préservé");
             }
             dbWorker.updatePosition(e1.getId(), e2.getLocationCorrected(), e2.getPrecisionCm());
+
         }
+        dbWorker.sendNotification();
     }
 
 
