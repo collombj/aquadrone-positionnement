@@ -101,7 +101,7 @@ public class Dive {
                     imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
                     imu == null ? 0 : imu.getGyroscope().getRoll(),
                     imu == null ? 0 : imu.getGyroscope().getPitch(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    imu == null ? 0 : imu.getGyroscope().getYaw(),
                     -1,
                     measure.getValue());
 
@@ -120,16 +120,20 @@ public class Dive {
      */
     public void endDive(Position position) {
         Objects.requireNonNull(position);
-        if (!position.hasGPS())
+        if (!position.hasGPS()) {
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS_SENSOR");
+        }
+        position.setImu(IMU.build(lastVitesse, new CartesianVelocity(0, 0, 0), positions.get(positions.size() - 1).getTimestamp(), position.getTimestamp()));
         position.setPositionBrute(position.getGps().getPosition());
         position.calculate(positions.get(positions.size() - 1), lastVitesse, reference); //Calcul de la position cartésienne
-        if (state == RECORD)
+        if (state == RECORD) {
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
+        }
 
         // Update last one
         updateMeasuresAndPosition(position);
         // Creation de la liste des mesures recalculées
+        System.out.println(positions.size());
         GeoMaths.recalculatePosition(positions, reference, position.getPositionBrute());
         for (Position pos : positions) {
             createUpdatedMeasuresList(pos);
@@ -151,7 +155,7 @@ public class Dive {
                     imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
                     imu == null ? 0 : imu.getGyroscope().getRoll(),
                     imu == null ? 0 : imu.getGyroscope().getPitch(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    imu == null ? 0 : imu.getGyroscope().getYaw(),
                     -1,
                     measure.getValue());
             //l insérer à la liste des mesures corrigées

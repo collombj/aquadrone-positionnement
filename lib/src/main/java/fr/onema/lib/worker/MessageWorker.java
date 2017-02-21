@@ -222,8 +222,11 @@ public class MessageWorker implements Worker {
             long timestamp = gps.getTimestamp();
 
             if (inDive) {
+                savePosition();
+                currentPos = new Position();
                 currentPos.setGps(gps);
                 inDive = false;
+                currentPos.setTimestamp(timestamp);
                 dive.endDive(currentPos);
                 dive = null;
                 currentPos = null;

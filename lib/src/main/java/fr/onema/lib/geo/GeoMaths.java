@@ -7,6 +7,7 @@ import fr.onema.lib.sensor.position.IMU.Accelerometer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -301,17 +302,19 @@ public class GeoMaths {
         Objects.requireNonNull(resurface);
 
         // detection de la premiere position sous l'eau
-        int index = 0;
-        while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
-            rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
-            index++;
-        }
+        //int index = 0;
+        //while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
+          //  rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
+           // index++;
+        //}
+        correctionMethodOne(rawPositions.stream().filter(p -> !p.hasGPS()).collect(Collectors.toList()), ref, resurface);
+        rawPositions.stream().filter(Position::hasGPS).forEach(p -> p.setPositionRecalculated(p.getPositionBrute()));
         //appel a la fonction de correction si on a trouvé une position sous l'eau
-        if (index < rawPositions.size()){
-            correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
-        }
+        //if (index < rawPositions.size()){
+        //    correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
+        //}
 
-        rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
+        //rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
     }
 
     private static void correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {

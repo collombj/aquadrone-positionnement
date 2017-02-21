@@ -8,6 +8,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,6 +22,7 @@ public class NetworkSender {
     private DatagramSocket dsocket;
     private Thread sender;
     private long firstTimestamp = -1;
+    private volatile boolean isKilled = false;
 
     /**
      * Constructeur de la classe NetworkSender
@@ -92,7 +94,7 @@ public class NetworkSender {
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
-        this.sender.interrupt();
+        this.isKilled = true;
     }
 
     /**
@@ -118,10 +120,10 @@ public class NetworkSender {
      */
     private void startThread() {
         sender = new Thread(() -> {
-            while (!Thread.interrupted() || (Thread.interrupted() && !queue.isEmpty())) {
+            while (!isKilled || (isKilled && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
-                    msg = queue.take();
+                    msg = queue.poll(2000, TimeUnit.MILLISECONDS);
                     send(msg);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -130,7 +132,7 @@ public class NetworkSender {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-
+            System.out.println("toto:" + queue.size());
             dsocket.close();
         });
         sender.start();

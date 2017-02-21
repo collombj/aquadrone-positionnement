@@ -178,7 +178,7 @@ public class Main {
 
         FileManager fileManager = new FileManager("", virtualizedFilePath,
                 "");
-        Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", host, 14550);
+        Virtualizer virtualizer = new Virtualizer(fileManager, 12, "", host, 14550);
 
         try {
             LOGGER.log(Level.INFO, "Sending in progress");
