@@ -14,4 +14,9 @@ public class CartesianVelocity {
         this.vy = vy;
         this.vz = vz;
     }
+
+    @Override
+    public String toString() {
+        return "[vx: " + vx + ", vy: " + vy + ", vz: " + vz +"]";
+    }
 }

@@ -33,4 +33,9 @@ public class Accelerometer {
     public int getzAcceleration() {
         return zAcceleration;
     }
+
+    @Override
+    public String toString() {
+        return "[accX: " + xAcceleration +", accY: " + yAcceleration + ", accZ: " + zAcceleration + "]";
+    }
 }

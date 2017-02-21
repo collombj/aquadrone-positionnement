@@ -21,10 +21,10 @@ import java.util.logging.Logger;
 public class DatabaseWorker implements Worker {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE = new DatabaseWorker();
-    private Thread dbWorkerThread;
-    private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
-    private String notificationKey;
+    private static DatabaseWorker INSTANCE ;
+    private static Thread dbWorkerThread;
+    private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private static String notificationKey;
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -124,16 +124,19 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
+        if (INSTANCE == null){
+            init();
+        }
         return INSTANCE;
     }
 
     /**
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
-     *
-     * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
-    public void init(Configuration configuration) {
+    private static void init() {
+        INSTANCE = new DatabaseWorker();
+        Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
             try {

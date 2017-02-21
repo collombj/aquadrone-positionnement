@@ -28,12 +28,14 @@ public class NetworkSenderTest {
     }
 
     @Test
-    public void closeConnectionNotNull() throws IOException {
+    public void closeConnectionNotNull() throws Exception {
         NetworkSender networkSender = new NetworkSender(1239, "127.0.0.1");
         ServerSocket server = new ServerSocket(1239);
         networkSender.openConnection();
+        Thread.sleep(100);
         networkSender.closeConnection();
-        assertFalse(networkSender.getDsocket().isConnected());
+        Thread.sleep(100);
+        assertTrue(networkSender.getDsocket().isClosed());
         server.close();
     }
 
@@ -62,7 +64,7 @@ public class NetworkSenderTest {
         sender.openConnection();
         ServerListener serverListener = new ServerListener(1239);
         serverListener.start();
-        VirtualizerEntry virtual = new VirtualizerEntry(1, 2,3,4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        VirtualizerEntry virtual = new VirtualizerEntry(1, 2, 3, 4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
         sender.add(virtual);
         sender.closeConnection();
         serverListener.stop();
@@ -71,15 +73,14 @@ public class NetworkSenderTest {
     @Test
     public void getPortTest() throws IOException {
         NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
-        assertEquals(1239,sender.getPort());
+        assertEquals(1239, sender.getPort());
         sender.closeConnection();
     }
 
     @Test
     public void getHostTest() throws IOException {
         NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
-        assertEquals("127.0.0.1",sender.getHost());
+        assertEquals("127.0.0.1", sender.getHost());
         sender.closeConnection();
     }
-
 }

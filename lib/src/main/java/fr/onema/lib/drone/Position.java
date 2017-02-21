@@ -231,9 +231,6 @@ public class Position {
      */
     public CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
 
-        if (this.hasGPS()) {
-            this.positionRecalculated = this.positionBrute;
-        }
         //CartesianCoordinate last,CartesianVelocity previousVelocity,long time, double yaw, double pitch, double roll, Accelerometer accelerometer)
         GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),
@@ -246,9 +243,7 @@ public class Position {
 
         this.setCartesianBrute(wrapper.getCoordinate());
 
-        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
         return wrapper.getVelocity();
-
     }
 
     /**
