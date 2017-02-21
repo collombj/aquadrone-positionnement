@@ -68,6 +68,7 @@ public class Dive {
             reference = position.getPositionBrute();
         } else {//si ce n'est pas le premier point on calcule
             if (!position.hasIMU() && !position.hasGPS()) { // on ignore les paquets sans imu
+                LOGGER.log(Level.WARNING, "A packet has been throwed away");
                 return;
             }
 
@@ -129,6 +130,8 @@ public class Dive {
         if (state == RECORD) {
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
         }
+
+        positions.get(positions.size()-1).getMeasures().forEach(m -> position.add(m));
 
         // Update last one
         updateMeasuresAndPosition(position);
