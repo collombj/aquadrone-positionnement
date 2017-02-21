@@ -15,7 +15,7 @@ public class GPS extends Sensor {
     private float direction;
 
     // TODO : maybe a single constructor is better
-    private GPS(long timestamp, long lat, long lon, long alt) {
+    public GPS(long timestamp, long lat, long lon, long alt) {
         super(timestamp);
         this.position = new GPSCoordinate(lat, lon, alt);
     }

@@ -160,7 +160,7 @@ public class Dive {
             e1 = measures.get(i);
             e2 = measuresUpdated.get(i);
 
-            if (!e1.diveEquals(e2)) {
+            if (!e1.equals(e2)) {
                 throw new IllegalStateException("Erreur algorithme : ordre des mesures non préservé");
             }
             dbWorker.updatePosition(e1.getId(), e2.getLocationCorrected(), e2.getPrecisionCm());

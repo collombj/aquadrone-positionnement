@@ -85,15 +85,6 @@ public class Position {
     }
 
     /**
-     * Récupère la liste des MeasureEntity associés à cette position.
-     *
-     * @return La liste des MeasureEntity associés à cette position.
-     */
-    public List<MeasureEntity> getEntities() {
-        return entities;
-    }
-
-    /**
      * Retourne le timestamp de la position.
      *
      * @return Le timestamp de la position.
