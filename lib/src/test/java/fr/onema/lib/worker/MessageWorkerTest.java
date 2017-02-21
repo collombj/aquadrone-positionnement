@@ -49,6 +49,7 @@ public class MessageWorkerTest {
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
+        DatabaseWorker.getInstance().stop();
         DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {
