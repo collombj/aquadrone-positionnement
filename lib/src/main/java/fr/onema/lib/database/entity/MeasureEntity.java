@@ -39,9 +39,9 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        //Objects.requireNonNull(locationBrut);
-        //Objects.requireNonNull(locationCorrected);
-        //Objects.requireNonNull(measureValue);
+        Objects.requireNonNull(locationBrut);
+        Objects.requireNonNull(locationCorrected);
+        Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrut = locationBrut;
         this.locationCorrected = locationCorrected;
