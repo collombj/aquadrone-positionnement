@@ -12,19 +12,16 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
- * Created by Francois Vanderperre on 08/02/2017.
- * <p>
  * Cette classe permet de créer un thread qui va gérer les accès à la base de données
  */
 public class DatabaseWorker implements Worker {
-
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
     private static DatabaseWorker INSTANCE = new DatabaseWorker();
     private Thread dbWorkerThread;
     private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private String notificationKey;
+
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -39,6 +36,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive", e);
         }
     };
+
     /**
      * La methode d'insertion des mesures
      */
@@ -54,6 +52,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure", e);
         }
     };
+
     /**
      * La methode utilisée par le thread pour mettre à jour la base
      */
@@ -69,6 +68,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utlisée par le thread pour mettre à jour la base
      */
@@ -83,6 +83,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utlisée par le thread pour mettre à jour la base
      */
@@ -97,6 +98,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utilisée par le thread pour notifier la base
      */
@@ -120,7 +122,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'obtenir la seule instance de databaseworker
-     *
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
@@ -130,7 +131,6 @@ public class DatabaseWorker implements Worker {
     /**
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
-     *
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
     public void init(Configuration configuration) {
@@ -169,7 +169,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une nouvelle Dive en base de données
-     *
      * @param dive une DiveEntity
      */
     public void newDive(DiveEntity dive) {
@@ -180,7 +179,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une MeasureEntity
-     *
      * @param measureEntity   la MeasureEntity à insérer en base
      * @param diveID          l'identifiant de la plongée de la mesure
      * @param measureInfoName l'identifiant du type de mesure
@@ -193,7 +191,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet de mettre à jour une MeasureEntity dans la base de données
-     *
      * @param measureId         L'identifiant de la MeasureId à modifier
      * @param positionCorrected Les nouvelles coordonnées
      * @param precisionCm       La precision estimée de la mesure en cm
@@ -231,7 +228,7 @@ public class DatabaseWorker implements Worker {
     /**
      * Cette méthode permet d'envoyer des notifications à la base de données
      */
-    public void sendNotification() {
+    void sendNotification() {
         if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, notificationKey))) {
             LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
         }

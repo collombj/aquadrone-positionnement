@@ -13,19 +13,17 @@ import static java.lang.Math.sin;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
- * <p>
- * <p>
- * Created by julien on 06/02/2017.
  */
 public class GeoMaths {
     private static final double DEG_2_RAD = Math.PI / 180;
     private static final double RAD_2_DEG = 180 / Math.PI;
-    private static final int R = 6_378_137; //Rayon terrestre à l'équateur en mètres
+    private static final int R = 6_378_137; // Rayon terrestre à l'équateur en mètres
     private static final double F = 1.0 / 298.257223563;
     private static final double MS2_TO_G = 0.101972;
     private static final double G_TO_MS2 = 9.80665;
 
     private GeoMaths() {
+        // Avoid instantiation
     }
 
     /**
@@ -328,7 +326,7 @@ public class GeoMaths {
          * @param coordinate les coordonnees calculees
          * @param velocity   la vitesse calculée
          */
-        public MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
+        MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
             this.coordinate = coordinate;
             this.velocity = velocity;
         }

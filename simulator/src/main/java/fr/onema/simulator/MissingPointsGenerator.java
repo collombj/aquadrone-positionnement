@@ -17,15 +17,13 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- * Created by Jérôme on 14/02/2017.
- * <p>
  * Classe qui crée les points de relevé manquants dans un fichier CSV
  */
 
-public class MissingPointsGenerator {
+class MissingPointsGenerator {
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
-    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,direction,temperature";
-    private static final int REQUIRED_LENGTH = 6;
+    private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
+    private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
     private final List<String> entries; //Don't supposed to be accessed remotely
     private final List<Point> pointsInput; //Don't supposed to be accessed remotely
@@ -48,7 +46,7 @@ public class MissingPointsGenerator {
      * @return un objet MissingPointsGenerator
      * @throws IOException Quand une erreur se produit
      */
-    public static MissingPointsGenerator build(String filePath) throws IOException {
+    static MissingPointsGenerator build(String filePath) throws IOException {
         Objects.requireNonNull(filePath);
         if ("".equals(filePath)) {
             throw new IllegalArgumentException("Path was empty");
@@ -101,7 +99,7 @@ public class MissingPointsGenerator {
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, 0, timestamp);
                 pointsInput.add(point);
             } else {
-                LOGGER.log(Level.INFO, "The line '" + entry + "' doesn't fit the requirements " +
+                LOGGER.log(Level.SEVERE, "The line '" + entry + "' doesn't fit the requirements " +
                         "(number of arguments = " + REQUIRED_LENGTH + ")");
             }
         });
@@ -113,7 +111,7 @@ public class MissingPointsGenerator {
      *                   plus les points générés dans le builder. On donne le path du fichier en argument
      * @throws IOException Quand il y a une erreur lors de l'écriture dans le fichier
      */
-    public void generateOutput(String stringPath) throws IOException {
+    void generateOutput(String stringPath) throws IOException {
         Objects.requireNonNull(stringPath);
         Objects.requireNonNull(csvFilePath);
         if ("".equals(stringPath)) {

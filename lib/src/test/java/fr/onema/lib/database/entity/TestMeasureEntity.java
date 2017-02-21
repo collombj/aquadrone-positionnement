@@ -20,7 +20,7 @@ public class TestMeasureEntity {
         MeasureEntity e2 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
         assertNotNull(e);
         assertTrue(e.getId() == 1);
-        assertTrue(e.getLocationBrut().equals(brut));
+        assertTrue(e.getLocationBrute().equals(brut));
         assertTrue(e.getLocationCorrected().equals(correct));
         assertTrue(e.getAccelerationX() == 1);
         assertTrue(e.getAccelerationY() == 2);

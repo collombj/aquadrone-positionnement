@@ -9,8 +9,6 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 import java.util.Objects;
 
 /**
- * Created by strock on 06/02/2017.
- * <p>
  * Classe qui représente la centrale inertielle embarquée
  */
 public class IMU extends Sensor {
@@ -19,8 +17,7 @@ public class IMU extends Sensor {
     private final Compass compass;
 
     /**
-     * constructeur privé de l'imu
-     *
+     * Constructeur privé de l'imu
      * @param accelerometer capteur
      * @param gyroscope     capteur
      * @param compass       capteur
@@ -33,8 +30,7 @@ public class IMU extends Sensor {
     }
 
     /**
-     * builder de l'imu a apartir du flux mavlink
-     *
+     * Builder de l'imu a apartir du flux mavlink
      * @param msg recuperation du flux mavlink
      * @return Un IMU instancié en fonction de messages MAVLink
      */
@@ -48,8 +44,7 @@ public class IMU extends Sensor {
     }
 
     /**
-     * Creation de l'imu  de simulation à parti de la classe  {@link GeoMaths}
-     *
+     * Creation de l'imu de simulation à partir de la classe  {@link GeoMaths}
      * @param previousVelocity vitesse précédente du drone
      * @param velocity         vitesse actuelle du drone
      * @param prevTimestamp    timestamp de l'avant dernière mesure (ms)
@@ -66,15 +61,26 @@ public class IMU extends Sensor {
         return new IMU(timestamp, accelerometer, gyroscope, compass);
     }
 
-
+    /***
+     * Getter de l'accéléromètre attaché à l'IMU
+     * @return La représentation de l'accéléromètre associée
+     */
     public Accelerometer getAccelerometer() {
         return accelerometer;
     }
 
+    /***
+     * Getter du gyroscope attaché à l'IMU
+     * @return La représentation du gyroscope associé
+     */
     public Gyroscope getGyroscope() {
         return gyroscope;
     }
 
+    /***
+     * Getter du compas attaché à l'IMU
+     * @return La représentation du compas associé
+     */
     public Compass getCompass() {
         return compass;
     }

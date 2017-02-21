@@ -1,7 +1,7 @@
 package fr.onema.lib.sensor.position.IMU;
 
-/**
- * created by strock on 06/02/2017.
+/***
+ * Classe permettant la description de l'accélération sur les axes x, y, z
  */
 public class Accelerometer {
     private final int xAcceleration;
@@ -19,17 +19,26 @@ public class Accelerometer {
         this.zAcceleration = zAcceleration;
     }
 
-    // TODO : complete
+    /**
+     * Getter de la valeur de l'accélération sur l'axe x
+     * @return L'accélération sur l'axe x
+     */
     public int getxAcceleration() {
         return xAcceleration;
     }
 
-    // TODO : complete
+    /**
+     * Getter de la valeur de l'accélération sur l'axe y
+     * @return L'accélération sur l'axe y
+     */
     public int getyAcceleration() {
         return yAcceleration;
     }
 
-    // TODO : complete
+    /**
+     * Getter de la valeur de l'accélération sur l'axe z
+     * @return L'accélération sur l'axe z
+     */
     public int getzAcceleration() {
         return zAcceleration;
     }

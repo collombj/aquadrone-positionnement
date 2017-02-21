@@ -18,9 +18,6 @@ import java.util.logging.Logger;
 import static fr.onema.lib.drone.Dive.State.ON;
 import static fr.onema.lib.drone.Dive.State.RECORD;
 
-/**
- * Created by strock on 09/02/2017.
- */
 public class Dive {
     private static final Logger LOGGER = Logger.getLogger(Dive.class.getName());
     private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();

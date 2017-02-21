@@ -3,6 +3,9 @@ package fr.onema.lib.virtualizer.entry;
 
 import fr.onema.lib.file.CSV;
 
+/**
+ * Classe représentant les entrées du fichier de référence
+ */
 public class ReferenceEntry implements CSV {
     public static final String HEADER = "timestamp,latitude,longitude,altitude,direction,temperature";
     private final long timestamp;
@@ -14,7 +17,6 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Le constructeur de classe, pour attribuer une valeur aux attributs
-     *
      * @param timestamp   timestamp de la mesure
      * @param lat         la latitude de notre point
      * @param lon         la longitude de notre point
@@ -37,7 +39,6 @@ public class ReferenceEntry implements CSV {
 
     /**
      * récupère le timestamp
-     *
      * @return timestamp
      */
     public long getTimestamp() {
@@ -45,55 +46,50 @@ public class ReferenceEntry implements CSV {
     }
 
     /**
-     * récupère la latidude
-     *
-     * @return Lat
+     * Getter de la latidude
+     * @return Valeur de la latitude
      */
     public int getLat() {
         return lat;
     }
 
     /**
-     * Récupère la longitude
-     *
-     * @return Lon
+     * Getter de la longitude
+     * @return Valeur de la longitude
      */
     public int getLon() {
         return lon;
     }
 
     /**
-     * Récupère l'altitude
-     *
-     * @return Alt
+     * Getter de l'altitude
+     * @return Valeur de l'altitude
      */
     public int getAlt() {
         return alt;
     }
 
     /**
-     * Récupère la direction
-     *
-     * @return direction
+     * Getter de la direction
+     * @return Valeur de la direction
      */
     public float getDirection() {
         return direction;
     }
 
     /**
-     * Récupère la température
-     *
-     * @return temperature
+     * Getter de la température
+     * @return Valeur de la température
      */
     public int getTemperature() {
         return temperature;
     }
 
-    /***
+    /**
      * Format CSV modifié pour correspondance avec fichier de sortie computed
      * @return La représentation CSV pour fichier computed
      */
-    public String toCSVforComputedFormat() {
+    String toCSVforComputedFormat() {
         return lat + "," + lon + "," + alt + "," + direction;
     }
 
@@ -102,11 +98,6 @@ public class ReferenceEntry implements CSV {
         return timestamp + "," + lat + "," + lon + "," + alt + "," + direction + "," + temperature;
     }
 
-    /**
-     * Renvoi une string des champs au format CSV
-     *
-     * @return la chaine de caractère CSV
-     */
     @Override
     public String getCSVHeader() {
         return HEADER;
@@ -114,16 +105,23 @@ public class ReferenceEntry implements CSV {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         ReferenceEntry that = (ReferenceEntry) o;
 
-        if (timestamp != that.timestamp) return false;
-        if (lat != that.lat) return false;
-        if (lon != that.lon) return false;
-        if (alt != that.alt) return false;
-        if (Float.compare(that.direction, direction) != 0) return false;
+        if (timestamp != that.timestamp)
+            return false;
+        if (lat != that.lat)
+            return false;
+        if (lon != that.lon)
+            return false;
+        if (alt != that.alt)
+            return false;
+        if (Float.compare(that.direction, direction) != 0)
+            return false;
         return temperature == that.temperature;
     }
 
@@ -133,7 +131,7 @@ public class ReferenceEntry implements CSV {
         result = 31 * result + lat;
         result = 31 * result + lon;
         result = 31 * result + alt;
-        result = 31 * result + (direction != +0.0f ? Float.floatToIntBits(direction) : 0);
+        result = 31 * result + (Float.compare(direction, +0.0f) != 0 ? Float.floatToIntBits(direction) : 0);
         result = 31 * result + temperature;
         return result;
     }

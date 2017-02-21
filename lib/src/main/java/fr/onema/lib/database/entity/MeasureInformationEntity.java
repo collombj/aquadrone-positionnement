@@ -4,7 +4,6 @@ import java.util.Objects;
 
 /**
  * Cette classe représente les informations mesurées, dans la base de données
- * Created by Francois Vanderperre on 06/02/2017.
  */
 public class MeasureInformationEntity {
     private int id;
@@ -54,7 +53,7 @@ public class MeasureInformationEntity {
     /**
      * @return L'unité de la mesure
      */
-    public String getUnit() {
+    String getUnit() {
         return unit;
     }
 
@@ -69,7 +68,7 @@ public class MeasureInformationEntity {
     /**
      * @return L affichage de la mesure
      */
-    public String getDisplay() {
+    String getDisplay() {
         return display;
     }
 
