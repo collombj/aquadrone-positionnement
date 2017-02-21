@@ -39,7 +39,7 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
+        Objects.requireNonNull(locationBrute);
         Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
@@ -74,10 +74,7 @@ public class MeasureEntity {
     public MeasureEntity(int id, long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrute);
-        Objects.requireNonNull(locationCorrected);
-        Objects.requireNonNull(measureValue);
-        this(timestamp, locationBrut, locationCorrected,
+        this(timestamp, locationBrute, locationCorrected,
                 accelerationX, accelerationY, accelerationZ, roll, pitch, yaw, precisionCm, measureValue);
         if (id <= 0)
             throw new IllegalArgumentException("id must be positive but has value " + id);
