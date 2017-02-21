@@ -142,15 +142,15 @@ public class ServerListener implements Worker {
      *
      * @throws SocketException en cas de problème lors de l'écoute du port spécifié
      */
-    public void openConnexion() throws SocketException {
+    private void openConnexion() throws SocketException {
         datagramSocket = new DatagramSocket(port);
     }
 
-    public Thread getListener() {
+    Thread getListener() {
         return listener;
     }
 
-    public DatagramSocket getDatagramSocket() {
+    DatagramSocket getDatagramSocket() {
         return datagramSocket;
     }
 

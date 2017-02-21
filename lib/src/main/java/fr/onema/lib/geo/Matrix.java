@@ -2,9 +2,7 @@ package fr.onema.lib.geo;
 
 import java.util.Objects;
 
-/**
- * Created by julien on 13/02/2017.
- */
+// TODO : complete
 public class Matrix {
 
     private final double[][] tab;

@@ -10,10 +10,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimerTask;
 
-/**
- * Created by you on 14/02/2017.
- */
-
 /***
  * Classe permettant la déclaration du scheduler chargé de requêter les dépendances
  */
@@ -50,7 +46,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
      * Permet de vérifier l'état du flux Mavlink
      * @return L'état du flux
      */
-    public static boolean checkMavlinkAvailability(MessageWorker worker, Configuration conf) {
+    private static boolean checkMavlinkAvailability(MessageWorker worker, Configuration conf) {
         int mavlinkTimeoutInMs = conf.getDiveData().getFrequencetestmavlink() * 1_000;
         long diff = System.currentTimeMillis() - worker.getMavLinkConnection();
         return diff < mavlinkTimeoutInMs;

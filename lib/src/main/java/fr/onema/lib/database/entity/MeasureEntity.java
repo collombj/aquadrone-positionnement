@@ -16,7 +16,7 @@ public class MeasureEntity {
     private final double pitch;
     private final double yaw;
     private final String measureValue;
-    private GPSCoordinate locationBrut;
+    private GPSCoordinate locationBrute;
     private GPSCoordinate locationCorrected;
     private int precisionCm;
     private int id;
@@ -25,7 +25,7 @@ public class MeasureEntity {
      * Constructeur
      *
      * @param timestamp         La timestamp de la mesure, en millisecondes
-     * @param locationBrut      Les coordonnées GPS_SENSOR de la mesure calculées
+     * @param locationBrute      Les coordonnées GPS_SENSOR de la mesure calculées
      * @param locationCorrected Les coordonnées GPS_SENSOR de la mesure après correction
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
@@ -36,14 +36,11 @@ public class MeasureEntity {
      * @param precisionCm       La precision estimée de la mesure
      * @param measureValue      La valeur de la mesure.
      */
-    public MeasureEntity(long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
+    public MeasureEntity(long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        //Objects.requireNonNull(locationBrut);
-        //Objects.requireNonNull(locationCorrected);
-        //Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
-        this.locationBrut = locationBrut;
+        this.locationBrute = locationBrute;
         this.locationCorrected = locationCorrected;
         this.accelerationX = accelerationX;
         this.accelerationY = accelerationY;
@@ -60,7 +57,7 @@ public class MeasureEntity {
      *
      * @param id                L'identifiant de la mesure en base
      * @param timestamp         La timestamp de la mesure, en millisecondes
-     * @param locationBrut      Les coordonnées GPS_SENSOR de la mesure calculées
+     * @param locationBrute     Les coordonnées GPS_SENSOR de la mesure calculées
      * @param locationCorrected Les coordonnées GPS_SENSOR de la mesure après correction
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
@@ -71,17 +68,17 @@ public class MeasureEntity {
      * @param precisionCm       La precision estimée de la mesure
      * @param measureValue      La valeur de la mesure.
      */
-    public MeasureEntity(int id, long timestamp, GPSCoordinate locationBrut, GPSCoordinate locationCorrected,
+    public MeasureEntity(int id, long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrut);
+        Objects.requireNonNull(locationBrute);
         Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         if (id <= 0)
             throw new IllegalArgumentException("id must be positive but has value " + id);
         this.id = id;
         this.timestamp = timestamp;
-        this.locationBrut = locationBrut;
+        this.locationBrute = locationBrute;
         this.locationCorrected = locationCorrected;
         this.accelerationX = accelerationX;
         this.accelerationY = accelerationY;
@@ -119,17 +116,17 @@ public class MeasureEntity {
     /**
      * @return Les coordonnées GPS de la mesure calculées
      */
-    public GPSCoordinate getLocationBrut() {
-        return locationBrut;
+    public GPSCoordinate getLocationBrute() {
+        return locationBrute;
     }
 
     /**
      * MEt a jour les coordonnées relevées
      *
-     * @param locationBrut des coordonnées GPS
+     * @param locationBrute des coordonnées GPS
      */
-    public void setLocationBrut(GPSCoordinate locationBrut) {
-        this.locationBrut = locationBrut;
+    public void setLocationBrute(GPSCoordinate locationBrute) {
+        this.locationBrute = locationBrute;
     }
 
     /**
@@ -200,7 +197,7 @@ public class MeasureEntity {
     /**
      * Met à jour la précision de la mesure
      *
-     * @param precisionCm
+     * @param precisionCm La précision en cm
      */
     public void setPrecisionCm(int precisionCm) {
         this.precisionCm = precisionCm;
@@ -215,21 +212,33 @@ public class MeasureEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         MeasureEntity that = (MeasureEntity) o;
 
-        if (timestamp != that.timestamp) return false;
-        if (accelerationX != that.accelerationX) return false;
-        if (accelerationY != that.accelerationY) return false;
-        if (accelerationZ != that.accelerationZ) return false;
-        if (Double.compare(that.roll, roll) != 0) return false;
-        if (Double.compare(that.pitch, pitch) != 0) return false;
-        if (Double.compare(that.yaw, yaw) != 0) return false;
-        if (precisionCm != that.precisionCm) return false;
-        if (id != that.id) return false;
-        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
+        if (timestamp != that.timestamp)
+            return false;
+        if (accelerationX != that.accelerationX)
+            return false;
+        if (accelerationY != that.accelerationY)
+            return false;
+        if (accelerationZ != that.accelerationZ)
+            return false;
+        if (Double.compare(that.roll, roll) != 0)
+            return false;
+        if (Double.compare(that.pitch, pitch) != 0)
+            return false;
+        if (Double.compare(that.yaw, yaw) != 0)
+            return false;
+        if (precisionCm != that.precisionCm)
+            return false;
+        if (id != that.id)
+            return false;
+        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
+            return false;
         if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
             return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
@@ -241,33 +250,43 @@ public class MeasureEntity {
      * Permet de determiner si deux entités correspondent à la même mesure sans tenir compte de l'identifiant en base
      * et de la position recalculée
      *
-     * @param o
-     * @return
+     * @param o La MeasureEntity à comparer
+     * @return le résultat du test d'égalité
      */
     public boolean diveEquals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         MeasureEntity that = (MeasureEntity) o;
 
-        if (timestamp != that.timestamp) return false;
-        if (accelerationX != that.accelerationX) return false;
-        if (accelerationY != that.accelerationY) return false;
-        if (accelerationZ != that.accelerationZ) return false;
-        if (Double.compare(that.roll, roll) != 0) return false;
-        if (Double.compare(that.pitch, pitch) != 0) return false;
-        if (Double.compare(that.yaw, yaw) != 0) return false;
-        if (precisionCm != that.precisionCm) return false;
-        if (locationBrut != null ? !locationBrut.equals(that.locationBrut) : that.locationBrut != null) return false;
+        if (timestamp != that.timestamp)
+            return false;
+        if (accelerationX != that.accelerationX)
+            return false;
+        if (accelerationY != that.accelerationY)
+            return false;
+        if (accelerationZ != that.accelerationZ)
+            return false;
+        if (Double.compare(that.roll, roll) != 0)
+            return false;
+        if (Double.compare(that.pitch, pitch) != 0)
+            return false;
+        if (Double.compare(that.yaw, yaw) != 0)
+            return false;
+        if (precisionCm != that.precisionCm)
+            return false;
+        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
+            return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
-
     }
 
     @Override
     public int hashCode() {
         int result = id;
         result = 31 * result + (int) (timestamp ^ (timestamp >>> 32));
-        result = 31 * result + (locationBrut != null ? locationBrut.hashCode() : 0);
+        result = 31 * result + (locationBrute != null ? locationBrute.hashCode() : 0);
         result = 31 * result + (locationCorrected != null ? locationCorrected.hashCode() : 0);
         result = 31 * result + accelerationX;
         result = 31 * result + accelerationY;

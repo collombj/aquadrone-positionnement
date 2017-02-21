@@ -11,12 +11,8 @@ import java.util.logging.Logger;
 
 /**
  * Point d'entrée du Simulateur
- * <p>
  * Le main prend en charge le parsing de l'entrée en ligne de commande. Les explications relatifs à l'utilisation sont
  * disponibles via la commande "--help"
- *
- * @author Jeremie COLLOMB <contact@collombj.com>
- * @since 1.0
  */
 public class Main {
 
@@ -24,10 +20,12 @@ public class Main {
      * Nombre d'argument pour la génération
      */
     private static final int NUMBER_OF_ARGS_GENERATION = 2;
+
     /**
      * Argument long pour la génération
      */
     private static final String GENERATION_ARGUMENT = "gener";
+
     /**
      * Argument court pour la génération
      */
@@ -37,10 +35,12 @@ public class Main {
      * Nombre d'argument pour l'exécution
      */
     private static final int NUMBER_OF_ARGS_RUN = 1;
+
     /**
      * Argument long pour l'exécution du simulateur
      */
     private static final String RUN_ARGUMENT = "run";
+
     /**
      * Argument court pour l'exécution du simulateur
      */
@@ -50,10 +50,12 @@ public class Main {
      * Nombre d'argument pour la comparaison
      */
     private static final int NUMBER_OF_ARGS_COMPARE = 2;
+
     /**
      * Argument long pour la comparaison
      */
     private static final String COMPARE_ARGUMENT = "compare";
+
     /**
      * Argument court pour la comparaison
      */
@@ -63,10 +65,12 @@ public class Main {
      * Nombre d'argument pour la préparation des fichiers
      */
     private static final int NUMBER_OF_ARGS_PREPARE = 2;
+
     /**
      * Argument long pour la préparation
      */
     private static final String PREPARE_ARGUMENT = "prepare";
+
     /**
      * Argument court pour la préparation
      */
@@ -81,15 +85,16 @@ public class Main {
      * Nom d'hôte par défaut de la cible de la simulation
      */
     private static final String HOST = "localhost";
+
     /**
      * port par défaut de la cible de la simulation
      */
     private static final int PORT = 14550;
+
     /**
      * Nombre d'envoie par seconde pour la simulation
      */
     private static final int SPEED = 4;
-
 
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
 

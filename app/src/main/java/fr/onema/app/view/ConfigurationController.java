@@ -12,10 +12,6 @@ import javafx.util.StringConverter;
 import java.io.IOException;
 import java.util.Objects;
 
-/**
- * Created by you on 13/02/2017.
- */
-
 /***
  * Controlleur associé à la vue ConfigurationLayout.fxml
  */
@@ -48,17 +44,17 @@ public class ConfigurationController {
      * Méthode permettant l'initialisation des valeurs dans les spinners
      */
     @FXML
-    public void initialize() {
-
+    void initialize() {
+        // doit rester vide
     }
 
-    public void init(RootLayoutController parent, Main main) {
+    void init(RootLayoutController parent, Main main) {
         this.parent = Objects.requireNonNull(parent);
         this.main = Objects.requireNonNull(main);
     }
 
     @FXML
-    public void insertSpinnerValues(double h, double v, double d) {
+    void insertSpinnerValues(double h, double v, double d) {
         horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), h, horizontalSlider.getMinorTickCount()));
         verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), v, verticalSlider.getMinorTickCount()));
         depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), d, depthSlider.getMinorTickCount()));
