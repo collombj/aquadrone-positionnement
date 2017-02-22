@@ -132,7 +132,7 @@ public class Dive {
         }
 
         positions.get(positions.size()-1).getMeasures().forEach(m -> position.add(m));
-
+        position.setPositionRecalculated(position.getPositionBrute());
         // Update last one
         updateMeasuresAndPosition(position);
         // Creation de la liste des mesures recalculées
@@ -152,7 +152,7 @@ public class Dive {
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
-                    position.getPositionRecalculated(),
+                    (position.getPositionRecalculated() == null ? position.getPositionBrute() : position.getPositionRecalculated()),
                     imu == null ? 0 : imu.getAccelerometer().getxAcceleration(),
                     imu == null ? 0 : imu.getAccelerometer().getyAcceleration(),
                     imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
