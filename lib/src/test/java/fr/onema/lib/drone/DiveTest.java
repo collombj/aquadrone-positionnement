@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import java.io.FileNotFoundException;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -83,7 +84,6 @@ public class DiveTest {
         dive.stopRecording(fin);
         dive.endDive(position6);
     }
-
 
     @Test
     public void simulTraitement() throws InterruptedException {

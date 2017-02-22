@@ -2,15 +2,12 @@ package fr.onema.lib.database.entity;
 
 
 /**
- * Created by Francois Vanderperre on 06/02/2017.
- * <p>
  * Cette classe représente une plongée telle qu'elle est modélisée dans la base de données
  */
 public class DiveEntity {
     private int id;
     private long startTime;
     private long endTime;
-
 
     /**
      * Constructeur par defaut
@@ -56,7 +53,7 @@ public class DiveEntity {
     }
 
     /**
-     * @param id
+     * @param id l'identifiant de la plongée
      */
     public void setId(int id) {
         this.id = id;

@@ -3,7 +3,7 @@ package fr.onema.lib.geo;
 import java.util.Objects;
 
 /**
- * Created by julien on 13/02/2017.
+ * Classe qui crée une matrice
  */
 public class Matrix {
 

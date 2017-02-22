@@ -1,11 +1,15 @@
 package fr.onema.simulator;
 
-/**
- * Created by julien on 10/02/2017.
+/***
+ * Classe représentant des exceptions de comparaison
  */
-public class ComparisonException extends Exception {
+class ComparisonException extends Exception {
 
-    public ComparisonException(Throwable cause) {
+    /***
+     * Méthode de création de l'exception
+     * @param cause La cause de l'exception
+     */
+    ComparisonException(Throwable cause) {
         super(cause);
     }
 }

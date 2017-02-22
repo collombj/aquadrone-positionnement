@@ -6,10 +6,6 @@ import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 
 import java.util.Objects;
 
-/**
- * Created by you on 06/02/2017.
- */
-
 /***
  * Classe représentant les mesures GPS_SENSOR
  */
@@ -19,7 +15,7 @@ public class GPS extends Sensor {
     private float direction;
 
     // TODO : maybe a single constructor is better
-    private GPS(long timestamp, long lat, long lon, long alt) {
+    public GPS(long timestamp, long lat, long lon, long alt) {
         super(timestamp);
         this.position = new GPSCoordinate(lat, lon, alt);
     }
@@ -53,7 +49,6 @@ public class GPS extends Sensor {
 
     /**
      * Retourne les coordonnées de la mesure
-     *
      * @return Coordonnées de la mesure
      */
     public GPSCoordinate getPosition() {

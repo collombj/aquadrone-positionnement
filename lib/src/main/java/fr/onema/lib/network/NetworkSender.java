@@ -11,6 +11,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe qui permet de se connecter et de communiquer avec un hôte distant (le drone, par exemple)
+ */
 public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
@@ -87,7 +90,7 @@ public class NetworkSender {
     /**
      * Permet d'ouvrir la connexion avec le destinataire
      */
-    public void openConnection() throws IOException {
+    void openConnection() throws IOException {
         dsocket = new DatagramSocket();
         buffer = new byte[1000];
         hostAddress = InetAddress.getByName(host);
@@ -146,7 +149,7 @@ public class NetworkSender {
      *
      * @return la thread
      */
-    public Thread getSender() {
+    Thread getSender() {
         return sender;
     }
 
@@ -155,7 +158,7 @@ public class NetworkSender {
      *
      * @return la blocking queue
      */
-    public ArrayBlockingQueue getQueue() {
+    ArrayBlockingQueue getQueue() {
         return queue;
     }
 
@@ -164,7 +167,7 @@ public class NetworkSender {
      *
      * @return la datagram socket
      */
-    public DatagramSocket getDsocket() {
+    DatagramSocket getDsocket() {
         return dsocket;
     }
 }

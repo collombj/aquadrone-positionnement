@@ -22,9 +22,6 @@ import java.util.logging.Logger;
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
  * Un fois les messages récupérés, ils sont traités et envoyés aux positions des plongées.
- *
- * @author loics
- * @since 09-02-2017
  */
 public class MessageWorker implements Worker {
 

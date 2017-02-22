@@ -4,9 +4,6 @@ import fr.onema.lib.file.CSV;
 
 /**
  * Interface utilisé pour récupérer les données mesurées par les capteurs pour exploitation
- *
- * @author loics
- * @since 06-02-2017
  */
 public interface Measure extends CSV {
     /**

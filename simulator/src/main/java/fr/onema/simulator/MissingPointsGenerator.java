@@ -3,7 +3,6 @@ package fr.onema.simulator;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -17,12 +16,10 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
- * Created by Jérôme on 14/02/2017.
- * <p>
  * Classe qui crée les points de relevé manquants dans un fichier CSV
  */
 
-public class MissingPointsGenerator {
+class MissingPointsGenerator {
     private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
     private static final int REQUIRED_LENGTH = 5;
@@ -48,33 +45,12 @@ public class MissingPointsGenerator {
      * @return un objet MissingPointsGenerator
      * @throws IOException Quand une erreur se produit
      */
-    public static MissingPointsGenerator build(String filePath) throws IOException {
+    static MissingPointsGenerator build(String filePath) throws IOException {
         Objects.requireNonNull(filePath);
         if ("".equals(filePath)) {
             throw new IllegalArgumentException("Path was empty");
         }
         MissingPointsGenerator generator = new MissingPointsGenerator(filePath);
-        generator.retrieveLines();
-        generator.retrieveInformationsFromLines();
-        return generator;
-    }
-
-    /**
-     * Builder de la classe. Il s'occupe d'instancier un générateur de points manquants, de récupérer les lignes
-     * du fichier passé en argument dans une liste et d'en extraire les informations présentes pour faire une
-     * liste de points
-     *
-     * @param file fichier CSV d'entrée
-     * @return un objet MissingPointsGenerator
-     * @throws IOException Problème lors de la lecture du fichier (Pas de fichier, problème lors de la lecture
-     *                     d'une ligne...)
-     */
-    public static MissingPointsGenerator build(File file) throws IOException {
-        Objects.requireNonNull(file);
-        if ("".equals(file.getPath())) {
-            throw new IllegalArgumentException("File path was empty");
-        }
-        MissingPointsGenerator generator = new MissingPointsGenerator(file.getPath());
         generator.retrieveLines();
         generator.retrieveInformationsFromLines();
         return generator;
@@ -113,7 +89,7 @@ public class MissingPointsGenerator {
      *                   plus les points générés dans le builder. On donne le path du fichier en argument
      * @throws IOException Quand il y a une erreur lors de l'écriture dans le fichier
      */
-    public void generateOutput(String stringPath) throws IOException {
+    void generateOutput(String stringPath) throws IOException {
         Objects.requireNonNull(stringPath);
         Objects.requireNonNull(csvFilePath);
         if ("".equals(stringPath)) {

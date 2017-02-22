@@ -16,9 +16,6 @@ import java.util.List;
 /**
  * Représente une position. Cette position doit avoir plusieurs mesures associées dont: IMU, GPS_SENSOR et Pressure.
  * Au sein de cette classe nous avons une liste de Measure et de MeasureEntity associées à la position courante.
- *
- * @author strock
- * @since 10-02-2017
  */
 public class Position {
     private List<MeasureEntity> entities = new ArrayList<>();
@@ -70,30 +67,21 @@ public class Position {
     }
 
     /**
-     * recupère a position brute cartésienne. Utile pour le calcul de la position recalculé
+     * Recupère la position brute cartésienne. Utile pour le calcul de la position recalculé
      *
-     * @return
+     * @return La position cartésienne brute
      */
     public CartesianCoordinate getCartesianBrute() {
         return cartesianBrute;
     }
 
     /**
-     * met a jour la position brute cartésienne
+     * Met a jour la position brute cartésienne
      *
-     * @param cartesianBrute
+     * @param cartesianBrute La position cartésienne brute
      */
     public void setCartesianBrute(CartesianCoordinate cartesianBrute) {
         this.cartesianBrute = cartesianBrute;
-    }
-
-    /**
-     * Récupère la liste des MeasureEntity associés à cette position.
-     *
-     * @return La liste des MeasureEntity associés à cette position.
-     */
-    public List<MeasureEntity> getEntities() {
-        return entities;
     }
 
     /**
@@ -108,7 +96,7 @@ public class Position {
     /**
      * met à jour le timestamp
      *
-     * @param timestamp
+     * @param timestamp l'heure de la mesure
      */
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
@@ -119,7 +107,7 @@ public class Position {
      *
      * @return La position GPS_SENSOR brute de la position.
      */
-    public GPSCoordinate getPositionBrute() {
+    GPSCoordinate getPositionBrute() {
         return positionBrute;
     }
 
@@ -128,9 +116,9 @@ public class Position {
      *
      * @param positionBrute des coordonnées GPS_SENSOR
      */
-    public void setPositionBrute(GPSCoordinate positionBrute) {
+    void setPositionBrute(GPSCoordinate positionBrute) {
         this.positionBrute = positionBrute;
-        this.entities.forEach(a -> a.setLocationBrut(positionBrute));
+        this.entities.forEach(a -> a.setLocationBrute(positionBrute));
     }
 
     /**
@@ -187,7 +175,7 @@ public class Position {
         this.gps = gps;
     }
 
-    public List<Measure> getMeasures() {
+    List<Measure> getMeasures() {
         return measures;
     }
 
@@ -226,12 +214,13 @@ public class Position {
      *
      * @param previousPosition La position précédente.
      * @param previousVelocity La vitesse de la position précédente.
-     * @param refPoint
+     * @param refPoint Les coordonnées GPS de référence
      * @return la vitesse au cours du deplacement
      */
-    public CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
-
-        //CartesianCoordinate last,CartesianVelocity previousVelocity,long time, double yaw, double pitch, double roll, Accelerometer accelerometer)
+    CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
+        if (this.hasGPS()) {
+            this.positionRecalculated = this.positionBrute;
+        }
         GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),
                 imu.getGyroscope().getYaw(),
@@ -243,6 +232,7 @@ public class Position {
 
         this.setCartesianBrute(wrapper.getCoordinate());
 
+        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
         return wrapper.getVelocity();
     }
 

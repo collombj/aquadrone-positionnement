@@ -19,6 +19,79 @@ import java.util.Properties;
  * @since 08-02-2017
  */
 public class DatabaseDriver {
+    private static final String INSERT_MEASURE = "INSERT INTO Measure(" +
+            "timestamp," +
+            "location_corrected," +
+            "location_brut," +
+            "accelerationx," +
+            "accelerationy," +
+            "accelerationz," +
+            "precision_cm," +
+            "measure_value," +
+            "roll," +
+            "pitch," +
+            "yaw," +
+            "dive_id," +
+            "measureinformation_id" +
+            ") VALUES (" +
+            "?" +
+            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?)" +
+            "RETURNING ID";
+    private static final String INSERT_DIVE = "INSERT INTO Dive(start_time, end_time) VALUES (?,?) RETURNING ID";
+    private static final String SELECT_DIVE = "SELECT * FROM Dive ORDER BY id DESC LIMIT 1";
+    private static final String SELECT_MEASURES_FROM_DIVE = "SELECT id, timestamp, ST_X(location_brut) AS brutX," +
+            "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
+            "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
+            " accelerationY, accelerationZ, roll, pitch, yaw, precision_cm, measure_value" +
+            "  FROM Measure WHERE dive_id=? ORDER BY id";
+    private static final String UPDATE_MEASURE = "UPDATE Measure SET location_corrected = " +
+            "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?";
+    private static final String UPDATE_DIVE_START = "UPDATE Dive SET start_time = ? WHERE id = ?";
+    private static final String INSERT_MEASURE_WITH_INFOS = "INSERT INTO Measure(" +
+            "timestamp," +
+            "location_corrected," +
+            "location_brut," +
+            "accelerationx," +
+            "accelerationy," +
+            "accelerationz," +
+            "precision_cm," +
+            "measure_value," +
+            "roll," +
+            "pitch," +
+            "yaw," +
+            "dive_id," +
+            "measureinformation_id" +
+            ") VALUES (" +
+            "?" +
+            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            ",?" +
+            "," +
+            "(SELECT id FROM measure_information WHERE name=? ORDER BY id DESC LIMIT 1)" +
+            ")" +
+            "RETURNING ID";
+    private static final String UPDATE_DIVE_STOP = "UPDATE Dive SET end_time = ? WHERE id = ?";
+    private static final String SELECT_MEASURE_INFOS_FROM_ID = "SELECT * FROM measure_information WHERE id=?";
+    private static final String SELECT_MEASURE_INFOS_FROM_NAME = "SELECT * FROM measure_information WHERE name=? LIMIT 1";
     private final String host;
     private final int port;
     private final String base;
@@ -98,7 +171,7 @@ public class DatabaseDriver {
     /**
      * Ferme une connexion à la base de données.
      *
-     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détectée.
      */
     public void closeConnection() throws SQLException {
         connector.close();
@@ -112,11 +185,7 @@ public class DatabaseDriver {
      */
     public List<MeasureEntity> getMeasureFrom(DiveEntity dive) throws SQLException {
         List<MeasureEntity> mesures = new LinkedList<>();
-        try (PreparedStatement ps = connector.prepareStatement("SELECT id, timestamp, ST_X(location_brut) AS brutX," +
-                "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
-                "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
-                " accelerationY, accelerationZ, roll, pitch, yaw, precision_cm, measure_value" +
-                "  FROM Measure WHERE dive_id=? ORDER BY id")) {
+        try (PreparedStatement ps = connector.prepareStatement(SELECT_MEASURES_FROM_DIVE)) {
             ps.setInt(1, dive.getId());
             ResultSet results = ps.executeQuery();
             while (results.next()) {
@@ -151,10 +220,10 @@ public class DatabaseDriver {
      * Récupère la dernière plongée en base.
      *
      * @return La dernière plongée en base.
-     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détectée.
      */
     public DiveEntity getLastDive() throws SQLException {
-        try (PreparedStatement ps = connector.prepareStatement("SELECT * FROM Dive ORDER BY id DESC LIMIT 1")) {
+        try (PreparedStatement ps = connector.prepareStatement(SELECT_DIVE)) {
             ResultSet results = ps.executeQuery();
             if (results.next()) {
                 int id = Integer.parseInt(results.getString("id"));
@@ -175,7 +244,7 @@ public class DatabaseDriver {
      */
     public int insertDive(DiveEntity diveEntity) throws SQLException {
         PreparedStatement insertStatement = null;
-        String insertString = "INSERT INTO Dive(start_time, end_time) VALUES (?,?) RETURNING ID";
+        String insertString = INSERT_DIVE;
 
         try {
             insertStatement = connector.prepareStatement(insertString);
@@ -208,35 +277,7 @@ public class DatabaseDriver {
      */
     public int insertMeasure(MeasureEntity measureEntity, int diveID, int measureInfoID) throws SQLException {
         PreparedStatement insertStatement = null;
-        String insertString = "INSERT INTO Measure(" +
-                "timestamp," +
-                "location_corrected," +
-                "location_brut," +
-                "accelerationx," +
-                "accelerationy," +
-                "accelerationz," +
-                "precision_cm," +
-                "measure_value," +
-                "roll," +
-                "pitch," +
-                "yaw," +
-                "dive_id," +
-                "measureinformation_id" +
-                ") VALUES (" +
-                "?" +
-                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?)" +
-                "RETURNING ID";
+        String insertString = INSERT_MEASURE;
 
         try {
             insertStatement = connector.prepareStatement(insertString);
@@ -257,7 +298,7 @@ public class DatabaseDriver {
             }
             insertStatement.setInt(5, srid);
             // location_brut
-            if (measureEntity.getLocationBrut() == null) {
+            if (measureEntity.getLocationBrute() == null) {
                 insertStatement.setNull(6, Types.BIGINT);
                 insertStatement.setNull(7, Types.BIGINT);
                 insertStatement.setNull(8, Types.BIGINT);
@@ -308,40 +349,9 @@ public class DatabaseDriver {
         return -1;
     }
 
-
     public int insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) throws SQLException {
         PreparedStatement insertStatement = null;
-        String insertString = "INSERT INTO Measure(" +
-                "timestamp," +
-                "location_corrected," +
-                "location_brut," +
-                "accelerationx," +
-                "accelerationy," +
-                "accelerationz," +
-                "precision_cm," +
-                "measure_value," +
-                "roll," +
-                "pitch," +
-                "yaw," +
-                "dive_id," +
-                "measureinformation_id" +
-                ") VALUES (" +
-                "?" +
-                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-                ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                ",?" +
-                "," +
-                "(SELECT id FROM measure_information WHERE name=? ORDER BY id DESC LIMIT 1)" +
-                ")" +
-                "RETURNING ID";
+        String insertString = INSERT_MEASURE_WITH_INFOS;
 
         try {
             insertStatement = connector.prepareStatement(insertString);
@@ -362,14 +372,14 @@ public class DatabaseDriver {
             }
             insertStatement.setInt(5, srid);
             // location_brut
-            if (measureEntity.getLocationBrut() == null) {
+            if (measureEntity.getLocationBrute() == null) {
                 insertStatement.setNull(6, Types.BIGINT);
                 insertStatement.setNull(7, Types.BIGINT);
                 insertStatement.setNull(8, Types.BIGINT);
             } else {
-                insertStatement.setDouble(6, (double) measureEntity.getLocationBrut().lon / 10_000_000.);
-                insertStatement.setDouble(7, (double) measureEntity.getLocationBrut().lat / 10_000_000.);
-                insertStatement.setDouble(8, (double) measureEntity.getLocationBrut().alt / 1000.);
+                insertStatement.setDouble(6, (double) measureEntity.getLocationBrute().lon / 10_000_000.);
+                insertStatement.setDouble(7, (double) measureEntity.getLocationBrute().lat / 10_000_000.);
+                insertStatement.setDouble(8, (double) measureEntity.getLocationBrute().alt / 1000.);
 
             }
             insertStatement.setInt(9, srid);
@@ -426,8 +436,7 @@ public class DatabaseDriver {
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
      */
     public void updatePosition(int measureId, long lat, long lon, long alt, int precision) throws SQLException {
-        try (PreparedStatement ps = connector.prepareStatement("UPDATE Measure SET location_corrected = " +
-                "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?")) {
+        try (PreparedStatement ps = connector.prepareStatement(UPDATE_MEASURE)) {
 
             ps.setDouble(1, (double) lon / 10_000_000.);
             ps.setDouble(2, (double) lat / 10_000_000.);
@@ -448,7 +457,7 @@ public class DatabaseDriver {
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
      */
     public void startRecording(long timestamp, int diveId) throws SQLException {
-        try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET start_time = ? WHERE id = ?")) {
+        try (PreparedStatement ps = connector.prepareStatement(UPDATE_DIVE_START)) {
             ps.setTimestamp(1, new Timestamp(timestamp));
             ps.setInt(2, diveId);
             ps.execute();
@@ -476,7 +485,7 @@ public class DatabaseDriver {
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
      */
     public void stopRecording(long timestamp, int diveId) throws SQLException {
-        try (PreparedStatement ps = connector.prepareStatement("UPDATE Dive SET end_time = ? WHERE id = ?")) {
+        try (PreparedStatement ps = connector.prepareStatement(UPDATE_DIVE_STOP)) {
             ps.setTimestamp(1, new Timestamp(timestamp));
             ps.setInt(2, diveId);
             ps.execute();
@@ -493,7 +502,7 @@ public class DatabaseDriver {
      */
     public MeasureInformationEntity getMeasureInfo(int measureInfoId) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement(
-                "SELECT * FROM measure_information WHERE id=?")) {
+                SELECT_MEASURE_INFOS_FROM_ID)) {
             ps.setInt(1, measureInfoId);
             ResultSet results = ps.executeQuery();
             if (results.next()) {
@@ -517,7 +526,7 @@ public class DatabaseDriver {
      */
     public MeasureInformationEntity getMeasureInfoFromName(String name) throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement(
-                "SELECT * FROM measure_information WHERE name=? LIMIT 1")) {
+                SELECT_MEASURE_INFOS_FROM_NAME)) {
             ps.setString(1, name);
             ResultSet results = ps.executeQuery();
             if (results.next()) {

@@ -65,20 +65,12 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        // Stop toutes les threads lorsque l'on quitte l'application
         server.stop();
         databaseWorker.stop();
     }
 
     public void execute() {
         messageWorker.startRecording();
-
-        System.out.println("Task completed with followings parameters : \n"
-                + "Horizontal Offset = " + configuration.getFlow().getLat() + "\n"
-                + "Vertical Offset = " + configuration.getFlow().getLon() + "\n"
-                + "Depth Offset = " + configuration.getFlow().getAlt() + "\n"
-                + "Duration Tolerance = " + configuration.getDiveData().getDureemax() + "\n"
-                + "Precision = " + configuration.getDiveData().getPrecision());
     }
 
     public Configuration getConfiguration() {
