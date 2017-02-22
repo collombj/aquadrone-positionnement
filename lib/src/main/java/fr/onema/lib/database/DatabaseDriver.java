@@ -307,26 +307,8 @@ public class DatabaseDriver {
                 insertStatement.setLong(7, measureEntity.getLocationBrute().lat);
                 insertStatement.setLong(8, measureEntity.getLocationBrute().alt);
             }
-            insertStatement.setInt(9, srid);
 
-            //acceleration XYZ
-            insertStatement.setInt(10, measureEntity.getAccelerationX());
-            insertStatement.setInt(11, measureEntity.getAccelerationY());
-            insertStatement.setInt(12, measureEntity.getAccelerationZ());
-
-            //precision_cm
-            insertStatement.setInt(13, measureEntity.getPrecisionCm());
-
-            // measure_value
-            insertStatement.setString(14, measureEntity.getMeasureValue());
-
-            // rotationXYZ
-            insertStatement.setDouble(15, measureEntity.getRoll());
-            insertStatement.setDouble(16, measureEntity.getPitch());
-            insertStatement.setDouble(17, measureEntity.getYaw());
-
-            // dive_id
-            insertStatement.setInt(18, diveID);
+            insertIdenticalMeasure(insertStatement, measureEntity, diveID);
 
             // measure_information_id
             insertStatement.setInt(19, measureInfoID);
@@ -382,26 +364,8 @@ public class DatabaseDriver {
                 insertStatement.setDouble(8, (double) measureEntity.getLocationBrute().alt / 1000.);
 
             }
-            insertStatement.setInt(9, srid);
 
-            //acceleration XYZ
-            insertStatement.setInt(10, measureEntity.getAccelerationX());
-            insertStatement.setInt(11, measureEntity.getAccelerationY());
-            insertStatement.setInt(12, measureEntity.getAccelerationZ());
-
-            //precision_cm
-            insertStatement.setInt(13, measureEntity.getPrecisionCm());
-
-            // measure_value
-            insertStatement.setString(14, measureEntity.getMeasureValue());
-
-            // rotationXYZ
-            insertStatement.setDouble(15, measureEntity.getRoll());
-            insertStatement.setDouble(16, measureEntity.getPitch());
-            insertStatement.setDouble(17, measureEntity.getYaw());
-
-            // dive_id
-            insertStatement.setInt(18, diveID);
+            insertIdenticalMeasure(insertStatement, measureEntity, diveID);
 
             //measureInfoName
             insertStatement.setString(19, measureInfoName
@@ -422,6 +386,29 @@ public class DatabaseDriver {
             }
         }
         return -1;
+    }
+
+    private void insertIdenticalMeasure(PreparedStatement insertStatement, MeasureEntity measureEntity, int diveID) throws SQLException {
+        insertStatement.setInt(9, srid);
+
+        //acceleration XYZ
+        insertStatement.setInt(10, measureEntity.getAccelerationX());
+        insertStatement.setInt(11, measureEntity.getAccelerationY());
+        insertStatement.setInt(12, measureEntity.getAccelerationZ());
+
+        //precision_cm
+        insertStatement.setInt(13, measureEntity.getPrecisionCm());
+
+        // measure_value
+        insertStatement.setString(14, measureEntity.getMeasureValue());
+
+        // rotationXYZ
+        insertStatement.setDouble(15, measureEntity.getRoll());
+        insertStatement.setDouble(16, measureEntity.getPitch());
+        insertStatement.setDouble(17, measureEntity.getYaw());
+
+        // dive_id
+        insertStatement.setInt(18, diveID);
     }
 
 
