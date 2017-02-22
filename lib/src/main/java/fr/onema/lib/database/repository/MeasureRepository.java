@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by Francois Vanderperre on 08/02/2017.
- * <p>
  * Cette classe pour but de permettre à l'application d'envoyer des objets vers la base de données et d'en recevoir
  */
 public class MeasureRepository {
@@ -27,7 +25,7 @@ public class MeasureRepository {
      * Cette methode rend possible l'utilisation de la base pour des opérations de lecture et d'écriture.
      * A n'utiliser que si la connexion a été fermée préalablement
      */
-    public void setWritable() {
+    void setWritable() {
         dbDriver.initAsWritable();
     }
 
@@ -35,7 +33,7 @@ public class MeasureRepository {
      * Cette methode rend possible l'utilisation de la base pour des opérations de lecture  uniquement
      * A n'utiliser que si la connexion a été fermée préalablement
      */
-    public void setReadable() {
+    void setReadable() {
         dbDriver.initAsReadable();
     }
 
@@ -56,6 +54,7 @@ public class MeasureRepository {
      * @return La dernière Dive qui a été insérée dans la base de données
      */
     public DiveEntity getLastDive() throws SQLException {
+
         return dbDriver.getLastDive();
     }
 
@@ -86,6 +85,7 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, String measureInfoName) throws SQLException {
+
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoName));
         return mesure;
     }
@@ -97,6 +97,7 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, int measureInfoId) throws SQLException {
+
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoId));
         return mesure;
     }
@@ -109,6 +110,7 @@ public class MeasureRepository {
      * @param precisionCm       La précision de la nouvelle mesure
      */
     public void updateMeasure(int measureId, GPSCoordinate positionCorrected, int precisionCm) throws SQLException {
+
         Objects.requireNonNull(positionCorrected);
         dbDriver.updatePosition(
                 measureId, positionCorrected.lat, positionCorrected.lon, positionCorrected.alt, precisionCm);
@@ -139,7 +141,7 @@ public class MeasureRepository {
      * Permet de fermer la connection avec la base de données.
      * Utiliser setReadable ou setWrittable pour la réouvrir.
      */
-    public void closeConnection() throws SQLException {
+    void closeConnection() throws SQLException {
         dbDriver.closeConnection();
     }
 
@@ -149,7 +151,7 @@ public class MeasureRepository {
      *
      * @param measureInfosId l'identifiant de la mesure en base de données
      * @return La MeasureInformationEntity representant l'entité en base
-     * @throws SQLException
+     * @throws SQLException En cas d'erreur d'accès à la base.
      */
     public MeasureInformationEntity getMeasureInfo(int measureInfosId) throws SQLException {
         return dbDriver.getMeasureInfo(measureInfosId);
@@ -160,7 +162,7 @@ public class MeasureRepository {
      *
      * @param name le nom de l'entité en base
      * @return La MeasureInformationEntity representant l'entité en base
-     * @throws SQLException
+     * @throws SQLException En cas d'erreur d'accès à la base.
      */
     public MeasureInformationEntity getMeasureInfoFromName(String name) throws SQLException {
         return dbDriver.getMeasureInfoFromName(name);

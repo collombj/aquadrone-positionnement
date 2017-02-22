@@ -5,13 +5,8 @@ import fr.onema.lib.file.CSV;
 /**
  * Objet représentant l'état d'un capteur. En fonction de la nature de ce-dernier il pourra posséder des champs qui
  * lui sont propre.
- * <p>
- * Created by loics on 06/02/2017.
- *
- * @author loics
- * @since 06-02-2017
  */
-abstract public class Sensor implements CSV {
+public abstract class Sensor implements CSV {
     /**
      * Champ représentant le timestamp d'une mesure issue d'un capteur.
      */
@@ -28,6 +23,7 @@ abstract public class Sensor implements CSV {
 
     /**
      * Retourne l'heure de la mesure
+     *
      * @return Le timestamp de la mesure
      */
     public long getTimestamp() {

@@ -11,16 +11,20 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe qui permet de se connecter et de communiquer avec un hôte distant (le drone, par exemple)
+ */
 public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
     private final String host;
+    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private byte[] buffer;
     private InetAddress hostAddress;
-    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramSocket dsocket;
     private Thread sender;
     private long firstTimestamp = -1;
+    private volatile boolean isKilled = false;
 
     /**
      * Constructeur de la classe NetworkSender
@@ -72,17 +76,21 @@ public class NetworkSender {
      * Envoi un message MavLink au destinataire
      */
     private void send(MAVLinkMessage msg) throws IOException {
-        String msgFormatted = msg.toString();
-        LOGGER.log(Level.INFO, msgFormatted);
-        buffer = msg.encode();
-        DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
-        dsocket.send(out);
+        if (msg != null) {
+            String msgFormatted = msg.toString();
+            LOGGER.log(Level.INFO, msgFormatted);
+            buffer = msg.encode();
+            DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
+            dsocket.send(out);
+        } else {
+            LOGGER.log(Level.SEVERE, "Tentative to send a null MAVLinkMessage.");
+        }
     }
 
     /**
      * Permet d'ouvrir la connexion avec le destinataire
      */
-    public void openConnection() throws IOException {
+    void openConnection() throws IOException {
         dsocket = new DatagramSocket();
         buffer = new byte[1000];
         hostAddress = InetAddress.getByName(host);
@@ -92,7 +100,7 @@ public class NetworkSender {
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
-        this.sender.interrupt();
+        this.isKilled = true;
     }
 
     /**
@@ -118,7 +126,7 @@ public class NetworkSender {
      */
     private void startThread() {
         sender = new Thread(() -> {
-            while (!Thread.interrupted() || (Thread.interrupted() && !queue.isEmpty())) {
+            while (!isKilled || (isKilled && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
                     msg = queue.take();
@@ -141,7 +149,7 @@ public class NetworkSender {
      *
      * @return la thread
      */
-    public Thread getSender() {
+    Thread getSender() {
         return sender;
     }
 
@@ -150,7 +158,7 @@ public class NetworkSender {
      *
      * @return la blocking queue
      */
-    public ArrayBlockingQueue getQueue() {
+    ArrayBlockingQueue getQueue() {
         return queue;
     }
 
@@ -159,7 +167,7 @@ public class NetworkSender {
      *
      * @return la datagram socket
      */
-    public DatagramSocket getDsocket() {
+    DatagramSocket getDsocket() {
         return dsocket;
     }
 }

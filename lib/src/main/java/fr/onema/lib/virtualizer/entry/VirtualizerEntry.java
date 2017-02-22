@@ -6,7 +6,9 @@ import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.*;
 
-
+/**
+ * Classe représentant les entrées du fichier virtualisées
+ */
 public class VirtualizerEntry implements CSV {
     public static final String HEADER = "timestamp,gpsLatitude,gpsLongitude,gpsAltitude,accelerationX,accelerationY,accelerationZ,roll,pitch,yaw,capX,capY,capZ,pression,temperature";
     private final long timestamp;
@@ -199,8 +201,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * retourne le message de pression en format MavLink
-     *
+     * Retourne le message de pression en format MavLink
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -212,8 +213,7 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * retourne le message de temperature en format MavLink
-     *
+     * Retourne le message de temperature en format MavLink
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -230,8 +230,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS_SENSOR
-     *
-     * @return gpsLat
+     * @return Valeur de la latitude du gps
      */
     public long getGpsLat() {
         return gpsLat;
@@ -239,8 +238,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la longitude du GPS_SENSOR
-     *
-     * @return gpsLon
+     * @return Valeur de la longitude du gps
      */
     public long getGpsLon() {
         return gpsLon;
@@ -248,8 +246,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'altitude du GPS_SENSOR
-     *
-     * @return gpsAlt
+     * @return Valeur de l'altitude du gps
      */
     public long getGpsAlt() {
         return gpsAlt;
@@ -266,8 +263,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Y
-     *
-     * @return yacc
+     * @return Valeur de l'acceleration en Y
      */
     public int getYacc() {
         return yacc;
@@ -275,8 +271,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Z
-     *
-     * @return zacc
+     * @return Valeur de l'acceleration en Z
      */
     public int getZacc() {
         return zacc;
@@ -284,8 +279,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en X
-     *
-     * @return xgyro
+     * @return
      */
     public double getRoll() {
         return roll;
@@ -293,8 +287,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Y
-     *
-     * @return ygyro
+     * @return
      */
     public double getPitch() {
         return pitch;
@@ -302,8 +295,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Z
-     *
-     * @return zgyro
+     * @return
      */
     public double getYaw() {
         return yaw;
@@ -338,8 +330,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la pression
-     *
-     * @return pressure
+     * @return Valeur de la pression
      */
     public float getPressure() {
         return pressure;
@@ -347,8 +338,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la temperature
-     *
-     * @return temperature
+     * @return Valeur de la température
      */
     public int getTemperature() {
         return temperature;
@@ -385,26 +375,43 @@ public class VirtualizerEntry implements CSV {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         VirtualizerEntry that = (VirtualizerEntry) o;
 
-        if (timestamp != that.timestamp) return false;
-        if (xacc != that.xacc) return false;
-        if (yacc != that.yacc) return false;
-        if (zacc != that.zacc) return false;
-        if (Double.compare(that.roll, roll) != 0) return false;
-        if (Double.compare(that.pitch, pitch) != 0) return false;
-        if (Double.compare(that.yaw, yaw) != 0) return false;
-        if (xmag != that.xmag) return false;
-        if (ymag != that.ymag) return false;
-        if (zmag != that.zmag) return false;
-        if (Float.compare(that.pressure, pressure) != 0) return false;
-        if (temperature != that.temperature) return false;
-        if (hasGPS != that.hasGPS) return false;
-        if (gpsLat != that.gpsLat) return false;
-        if (gpsLon != that.gpsLon) return false;
+        if (timestamp != that.timestamp)
+            return false;
+        if (xacc != that.xacc)
+            return false;
+        if (yacc != that.yacc)
+            return false;
+        if (zacc != that.zacc)
+            return false;
+        if (Double.compare(that.roll, roll) != 0)
+            return false;
+        if (Double.compare(that.pitch, pitch) != 0)
+            return false;
+        if (Double.compare(that.yaw, yaw) != 0)
+            return false;
+        if (xmag != that.xmag)
+            return false;
+        if (ymag != that.ymag)
+            return false;
+        if (zmag != that.zmag)
+            return false;
+        if (Float.compare(that.pressure, pressure) != 0)
+            return false;
+        if (temperature != that.temperature)
+            return false;
+        if (hasGPS != that.hasGPS)
+            return false;
+        if (gpsLat != that.gpsLat)
+            return false;
+        if (gpsLon != that.gpsLon)
+            return false;
         return gpsAlt == that.gpsAlt;
     }
 
@@ -425,12 +432,12 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + xmag;
         result = 31 * result + ymag;
         result = 31 * result + zmag;
-        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
-        result = 31 * result + (int) (gpsLat ^ (gpsLat >>> 32));
-        result = 31 * result + (int) (gpsLon ^ (gpsLon >>> 32));
-        result = 31 * result + (int) (gpsAlt ^ (gpsAlt >>> 32));
+        result = 31 * result + gpsLat;
+        result = 31 * result + gpsLon;
+        result = 31 * result + gpsAlt;
         return result;
     }
 }

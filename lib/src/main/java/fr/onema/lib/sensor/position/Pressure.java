@@ -3,9 +3,6 @@ package fr.onema.lib.sensor.position;
 import fr.onema.lib.sensor.Sensor;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure2;
 
-/**
- * Created by Theo on 06/02/2017.
- */
 
 /***
  * Classe permettant la représentation d'une mesure de pression

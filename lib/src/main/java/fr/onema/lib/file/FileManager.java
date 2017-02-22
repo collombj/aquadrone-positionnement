@@ -156,7 +156,7 @@ public class FileManager {
             boolean error = diffAbsolute > margin;
             fw.write("\n" + re.getTimestamp() + ","
                     + m.getLocationCorrected().lat + "," + m.getLocationCorrected().lon + "," + m.getLocationCorrected().alt
-                    + m.getLocationBrut().lat + "," + m.getLocationBrut().lon + "," + m.getLocationBrut().alt
+                    + m.getLocationBrute().lat + "," + m.getLocationBrute().lon + "," + m.getLocationBrute().alt
                     + "," + re.getLat() + "," + re.getLon() + "," + re.getAlt() + "," + re.getDirection()
                     + "," + re.getTemperature() + ","
                     + diffX + "," + diffY + "," + diffZ + "," + diffAbsolute +

@@ -10,8 +10,12 @@ import org.mavlink.messages.MAVLinkMessage;
 import java.util.HashMap;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.HashMap;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class MessageWorkerTest {
 
@@ -21,7 +25,7 @@ public class MessageWorkerTest {
     private static BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList;
     private static long lastTime;
 
-    static BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> populateMavLinkMessageList() {
+    private static BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> populateMavLinkMessageList() {
         BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList = new LinkedBlockingDeque<>(250);
         VirtualizerEntry simulatedValue;
         for (int i = 0; i < 10000; i = i+200) {
@@ -53,15 +57,13 @@ public class MessageWorkerTest {
     }
 
     @BeforeClass
-    public static void createWorker() {
-        mavLinkMessageList = populateMavLinkMessageList();
+    public static void createWorker() throws InterruptedException {
+        populateMavLinkMessageList();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
-                    messageWorker.newMessage(
-                            mavLinkMessageList.take().getKey(),
-                            mavLinkMessageList.take().getValue());
+                    messageWorker.newMessage(mavLinkMessageList.getFirst().getKey(), mavLinkMessageList.removeFirst().getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -70,6 +72,14 @@ public class MessageWorkerTest {
 
         messageWorker.start();
         insertThread.start();
+        insertThread.join();
+        Thread.sleep(1000);
+    }
+
+    @AfterClass
+    public static void stopThread() {
+        messageWorker.stop();
+        insertThread.interrupt();
     }
 
     @Test
@@ -79,16 +89,5 @@ public class MessageWorkerTest {
         assertNotNull(messageWorker.getDive());
         assertEquals(messageWorker.getMeasuresStates().size(), 4);
         assertEquals(messageWorker.getMavLinkConnection(), lastTime);
-    }
-
-    @Test
-    public void getMavLinkConnection() throws Exception {
-
-    }
-
-    @AfterClass
-    public static void stopThread() {
-        messageWorker.stop();
-        insertThread.interrupt();
     }
 }

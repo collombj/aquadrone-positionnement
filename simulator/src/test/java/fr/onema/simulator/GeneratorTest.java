@@ -7,7 +7,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 import java.io.File;

@@ -7,25 +7,24 @@ import fr.onema.lib.sensor.position.IMU.Accelerometer;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 /**
  * Classe Helper pour toutes les opérations géographiques/mathématiques
- * <p>
- * <p>
- * Created by julien on 06/02/2017.
  */
 public class GeoMaths {
     private static final double DEG_2_RAD = Math.PI / 180;
     private static final double RAD_2_DEG = 180 / Math.PI;
-    private static final int R = 6_378_137; //Rayon terrestre à l'équateur en mètres
+    private static final int R = 6_378_137; // Rayon terrestre à l'équateur en mètres
     private static final double F = 1.0 / 298.257223563;
     private static final double MS2_TO_G = 0.101972;
     private static final double G_TO_MS2 = 9.80665;
 
     private GeoMaths() {
+        // Avoid instantiation
     }
 
     /**
@@ -249,7 +248,7 @@ public class GeoMaths {
 
         Matrix result = rotation.mult(previousPoint);
 
-        return new CartesianCoordinate(result.get(0, 0), result.get(1, 0), result.get(2, 0));
+        return new CartesianCoordinate(result.get(0, 0), -result.get(1, 0), result.get(2, 0));
 
 
     }
@@ -271,15 +270,22 @@ public class GeoMaths {
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
 
+        System.out.println(accelerometer.toString());
+
         CartesianVelocity velocity = new CartesianVelocity(
-                (((accelerometer.getxAcceleration() / 1000) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
-                (((accelerometer.getyAcceleration() / 1000) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
-                (((accelerometer.getzAcceleration() / 1000) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
+                (((accelerometer.getxAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
+                (((accelerometer.getyAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
+                (((accelerometer.getzAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
 
 
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
 
+        System.out.println("initial velocity: " + velocity.toString());
+
         CartesianCoordinate velocityRotated = doRotation(velocityVector, -yaw, -pitch, -roll);
+
+        System.out.println("rotated velocity: " + velocityRotated.toString());
+
         CartesianCoordinate computedCoords = new CartesianCoordinate(
                 last.x + (velocityRotated.x * (time / 1000.)),
                 last.y + (velocityRotated.y * (time / 1000.)),
@@ -288,15 +294,38 @@ public class GeoMaths {
     }
 
 
-    public static List<Position> recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    /**
+     * Recalcule les position entre deux coordonnées
+     *
+     * @param rawPositions
+     * @param ref
+     * @param resurface
+     * @return
+     */
+    public static void recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
         Objects.requireNonNull(ref);
         Objects.requireNonNull(resurface);
 
+        // detection de la premiere position sous l'eau
+        //int index = 0;
+        //while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
+        //  rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
+        // index++;
+        //}
+        correctionMethodOne(rawPositions.stream().filter(p -> !p.hasGPS()).collect(Collectors.toList()), ref, resurface);
+        rawPositions.stream().filter(Position::hasGPS).forEach(p -> p.setPositionRecalculated(p.getPositionBrute()));
+        //appel a la fonction de correction si on a trouvé une position sous l'eau
+        //if (index < rawPositions.size()){
+        //    correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
+        //}
 
+        //rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
+    }
+
+    private static void correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
         CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrute();
-
 
         double deltax = cartesianResurface.x - cartesianResurfaceBrut.x;
         double deltay = cartesianResurface.y - cartesianResurfaceBrut.y;
@@ -310,8 +339,6 @@ public class GeoMaths {
                     rawPositions.get(i).getCartesianBrute().y + (deltay * ecart * i),
                     rawPositions.get(i).getCartesianBrute().z + (deltaz * ecart * i))));
         }
-
-        return rawPositions;
     }
 
 
@@ -328,7 +355,7 @@ public class GeoMaths {
          * @param coordinate les coordonnees calculees
          * @param velocity   la vitesse calculée
          */
-        public MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
+        MovementWrapper(CartesianCoordinate coordinate, CartesianVelocity velocity) {
             this.coordinate = coordinate;
             this.velocity = velocity;
         }

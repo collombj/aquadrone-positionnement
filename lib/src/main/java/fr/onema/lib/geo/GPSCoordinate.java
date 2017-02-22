@@ -1,9 +1,5 @@
 package fr.onema.lib.geo;
 
-/**
- * Created by julien on 06/02/2017.
- */
-
 /***
  * Classe permettant de modéliser des coordonnées gps (latitude, longitude, altitude)
  */
@@ -27,12 +23,17 @@ public class GPSCoordinate {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        if(getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null)
+            return false;
+        if (getClass() != o.getClass())
+            return false;
         GPSCoordinate that = (GPSCoordinate) o;
-        if (lat != that.lat) return false;
-        if (lon != that.lon) return false;
+        if (lat != that.lat)
+            return false;
+        if (lon != that.lon)
+            return false;
         return alt == that.alt;
 
     }

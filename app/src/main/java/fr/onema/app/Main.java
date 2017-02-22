@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 /***
@@ -24,18 +25,16 @@ public class Main extends Application {
     private Configuration configuration;
     private DatabaseWorker databaseWorker;
     private MessageWorker messageWorker;
-
-    public RootLayoutController getRlc() {
-        return rlc;
-    }
-
     private RootLayoutController rlc;
-
     // TODO : replace with customized logging system
     private Logger logger;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         launch(args);
+    }
+
+    public RootLayoutController getRlc() {
+        return rlc;
     }
 
     /***
@@ -44,9 +43,8 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.configuration = Configuration.build("settings.properties");
+        this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
-        this.databaseWorker.init(configuration);
         this.databaseWorker.start();
         this.server = new ServerListener(14550);
         this.messageWorker = server.getMessageWorker();
@@ -68,20 +66,12 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        // Stop toutes les threads lorsque l'on quitte l'application
         server.stop();
         databaseWorker.stop();
     }
 
     public void execute() {
         messageWorker.startRecording();
-
-        System.out.println("Task completed with followings parameters : \n"
-                + "Horizontal Offset = " + configuration.getFlow().getLat() + "\n"
-                + "Vertical Offset = " + configuration.getFlow().getLon() + "\n"
-                + "Depth Offset = " + configuration.getFlow().getAlt() + "\n"
-                + "Duration Tolerance = " + configuration.getDiveData().getDureemax() + "\n"
-                + "Precision = " + configuration.getDiveData().getPrecision());
     }
 
     public Configuration getConfiguration() {

@@ -21,10 +21,11 @@ import java.util.logging.Logger;
 public class DatabaseWorker implements Worker {
 
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE = new DatabaseWorker();
-    private Thread dbWorkerThread;
-    private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
-    private String notificationKey;
+    private static DatabaseWorker INSTANCE ;
+    private static Thread dbWorkerThread;
+    private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private static String notificationKey;
+
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -39,6 +40,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.newDive: couldn't insert dive", e);
         }
     };
+
     /**
      * La methode d'insertion des mesures
      */
@@ -54,6 +56,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.insertMeasure : could not insert measure", e);
         }
     };
+
     /**
      * La methode utilisée par le thread pour mettre à jour la base
      */
@@ -69,6 +72,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.updatePosition : could not update position " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utlisée par le thread pour mettre à jour la base
      */
@@ -83,6 +87,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.startRecording : could not update dive " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utlisée par le thread pour mettre à jour la base
      */
@@ -97,6 +102,7 @@ public class DatabaseWorker implements Worker {
             LOGGER.log(Level.SEVERE, "Error DatabaseWorker.stopRecording : could not update dive " + args[0], e);
         }
     };
+
     /**
      * Cette méthode est utilisée par le thread pour notifier la base
      */
@@ -120,20 +126,23 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'obtenir la seule instance de databaseworker
-     *
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
+        if (INSTANCE == null){
+            init();
+        }
         return INSTANCE;
     }
 
     /**
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
-     *
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
-    public void init(Configuration configuration) {
+    private static void init() {
+        INSTANCE = new DatabaseWorker();
+        Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
             try {

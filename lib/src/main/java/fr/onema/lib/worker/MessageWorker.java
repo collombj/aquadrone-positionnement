@@ -10,6 +10,7 @@ import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 
+import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,9 +23,6 @@ import java.util.logging.Logger;
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
  * Un fois les messages récupérés, ils sont traités et envoyés aux positions des plongées.
- *
- * @author loics
- * @since 09-02-2017
  */
 public class MessageWorker implements Worker {
 
@@ -135,7 +133,7 @@ public class MessageWorker implements Worker {
     private class MavLinkMessagesThreadWorker implements Runnable {
 
 
-        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) {
+        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException {
             // If Dive doesn't exist
             if (dive == null) {
                 dive = new Dive();
@@ -245,8 +243,11 @@ public class MessageWorker implements Worker {
             long timestamp = gps.getTimestamp();
 
             if (inDive) {
+                savePosition();
+                currentPos = new Position();
                 currentPos.setGps(gps);
                 inDive = false;
+                currentPos.setTimestamp(timestamp);
                 dive.endDive(currentPos);
                 dive = null;
                 currentPos = null;
@@ -290,6 +291,8 @@ public class MessageWorker implements Worker {
                     computeMavLinkMessage(element.getKey(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }

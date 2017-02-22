@@ -1,9 +1,8 @@
 package fr.onema.lib.geo;
 
-/**
- * Created by julien on 06/02/2017.
+/***
+ * Classe représentant des coordonnées d'un plan cartésien sur les axes x, y, z
  */
-// TODO : complete
 public class CartesianCoordinate {
     public final double x;
     public final double y;
@@ -20,5 +19,10 @@ public class CartesianCoordinate {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    @Override
+    public String toString() {
+        return "[x: " + x + ", y: " + y + ", v: " + z +"]";
     }
 }

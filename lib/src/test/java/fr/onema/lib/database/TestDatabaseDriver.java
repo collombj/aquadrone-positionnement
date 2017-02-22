@@ -17,14 +17,13 @@ import static org.junit.Assert.assertTrue;
 
 
 public class TestDatabaseDriver {
-    private final Configuration configuration;
+    private final Configuration configuration = Configuration.getInstance();
     private final DatabaseDriver driver;
 
-    private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
-    private GPSCoordinate correct = new GPSCoordinate(2, 2, 2);
+    private GPSCoordinate brut = new GPSCoordinate(1000000, 1000000, 1000000);
+    private GPSCoordinate correct = new GPSCoordinate(2000000, 2000000, 2000);
 
     public TestDatabaseDriver() throws FileNotFoundException {
-        this.configuration = Configuration.build("settingsTest.properties");
         driver = DatabaseDriver.build(configuration);
     }
 
@@ -93,14 +92,14 @@ public class TestDatabaseDriver {
         driver.insertMeasure(mesure, diveID, 1);
 
 
-        driver.updatePosition(mesure.getId(), 350, 350, 350, 2);
+        driver.updatePosition(mesure.getId(), 350000000, 350000000, 350000, 2);
         List<MeasureEntity> mesures = driver.getMeasureFrom(dive);
         if (mesures != null && mesures.size() > 0) {
             MeasureEntity mes2 = mesures.get(0);
             if (mes2 != null) {
-                assertTrue(mes2.getLocationCorrected().lon == 350);
-                assertTrue(mes2.getLocationCorrected().lat == 350);
-                assertTrue(mes2.getLocationCorrected().alt == 350);
+                assertTrue(mes2.getLocationCorrected().lon == 350000000);
+                assertTrue(mes2.getLocationCorrected().lat == 350000000);
+                assertTrue(mes2.getLocationCorrected().alt == 350000);
             } else {
                 throw new Exception("Aucune valeur trouvée en base");
             }

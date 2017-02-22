@@ -39,7 +39,7 @@ public class ServerListener implements Worker {
     private void startThread() {
         listener = new Thread(() -> {
             while (!Thread.interrupted()) {
-                buf = new byte[1000];   // FIXME reuse the allocated var
+                buf = new byte[265];
                 datagramPacket = new DatagramPacket(buf, buf.length);
                 try {
                     datagramSocket.receive(datagramPacket);
@@ -49,18 +49,15 @@ public class ServerListener implements Worker {
                         LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
                         continue;
                     }
-                    while (mesg != null) {
+                    while (mesg != null && reader.nbUnreadMessages() != 0) {
                         this.messageWorker.newMessage(messageTimestamp, mesg);
-                        if (reader.nbUnreadMessages() == 0) {
-                            break;
-                        }
                         mesg = reader.getNextMessageWithoutBlocking();
                     }
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (IOException e){
+                } catch (IOException e) {
                     Thread.currentThread().interrupt();
-                    if(!datagramSocket.isClosed()) {
+                    if (!datagramSocket.isClosed()) {
                         LOGGER.log(Level.SEVERE, e.getMessage(), e);
                     }
                 }
@@ -70,7 +67,7 @@ public class ServerListener implements Worker {
         listener.start();
     }
 
-    private boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
+    public boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         if (firstTimestamp == -1) {
             firstTimestamp = getFirstTimestamp(msg);
             messageTimestamp = firstTimestamp;
@@ -85,7 +82,8 @@ public class ServerListener implements Worker {
         return false;
     }
 
-    private long getFirstTimestamp(MAVLinkMessage msg) {
+    // Public access to test
+    public long getFirstTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             return ((msg_gps_raw_int) msg).time_usec;
         }
@@ -93,7 +91,8 @@ public class ServerListener implements Worker {
         return System.currentTimeMillis() - getBootTime(msg);
     }
 
-    private long getTimestamp(MAVLinkMessage msg) {
+    // Public access to test
+    public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             return ((msg_gps_raw_int) msg).time_usec;
         }
@@ -101,7 +100,8 @@ public class ServerListener implements Worker {
         return firstTimestamp + getBootTime(msg);
     }
 
-    private long getBootTime(MAVLinkMessage msg) {
+    // Public access to test
+    public long getBootTime(MAVLinkMessage msg) {
         if (msg instanceof msg_scaled_imu) {
             return ((msg_scaled_imu) msg).time_boot_ms;
         } else if (msg instanceof msg_scaled_pressure2) {
@@ -145,15 +145,15 @@ public class ServerListener implements Worker {
      *
      * @throws SocketException en cas de problème lors de l'écoute du port spécifié
      */
-    public void openConnexion() throws SocketException {
+    private void openConnexion() throws SocketException {
         datagramSocket = new DatagramSocket(port);
     }
 
-    public Thread getListener() {
+    Thread getListener() {
         return listener;
     }
 
-    public DatagramSocket getDatagramSocket() {
+    DatagramSocket getDatagramSocket() {
         return datagramSocket;
     }
 

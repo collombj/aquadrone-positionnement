@@ -1,7 +1,7 @@
 package fr.onema.lib.sensor.position.IMU;
 
-/**
- * Created by strock on 06/02/2017.
+/***
+ * Classe représentant le compas magnétique sur les axes x, y, z
  */
 public class Compass {
     private final int xMagnetic;
@@ -9,9 +9,9 @@ public class Compass {
     private final int zMagnetic;
 
     /**
-     * @param xMagnetic coordonnée magnétisme x
-     * @param yMagnetic coordonnée magnétisme y
-     * @param zMagnetic coordonnée magnétisme z
+     * @param xMagnetic coordonnée magnétique x
+     * @param yMagnetic coordonnée magnétique y
+     * @param zMagnetic coordonnée magnétique z
      */
     public Compass(int xMagnetic, int yMagnetic, int zMagnetic) {
         this.xMagnetic = xMagnetic;
@@ -19,17 +19,26 @@ public class Compass {
         this.zMagnetic = zMagnetic;
     }
 
-    // TODO : complete
+    /***
+     * Getter de la valeur magnétique de l'axe x
+     * @return La valeur magnétique de l'axe x
+     */
     public int getxMagnetic() {
         return xMagnetic;
     }
 
-    // TODO : complete
+    /***
+     * Getter de la valeur magnétique de l'axe y
+     * @return La valeur magnétique de l'axe y
+     */
     public int getyMagnetic() {
         return yMagnetic;
     }
 
-    // TODO : complete
+    /***
+     * Getter de la valeur magnétique de l'axe z
+     * @return La valeur magnétique de l'axe z
+     */
     public int getzMagnetic() {
         return zMagnetic;
     }

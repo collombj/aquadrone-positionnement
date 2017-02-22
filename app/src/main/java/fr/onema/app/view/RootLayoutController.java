@@ -6,7 +6,10 @@ import fr.onema.lib.drone.Dive;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -62,6 +65,14 @@ public class RootLayoutController {
 
     @FXML
     private ProgressBar precisionProgressBar;
+    @FXML
+    private TableView<TableSensor> sensorsTableView;
+    @FXML
+    private TableColumn<TableSensor, Integer> id;
+    @FXML
+    private TableColumn<TableSensor, String> type;
+    @FXML
+    private TableColumn<TableSensor, String> state;
 
     /***
      * Constructeur du controlleur du RootLayout
@@ -223,7 +234,8 @@ public class RootLayoutController {
      */
     private void setupDiveProgressThread() {
         Task diveProgressTask = new Task() {
-            @Override public Void call() {
+            @Override
+            public Void call() {
                 final double max = main.getConfiguration().getDiveData().getDureemax() * 5;
                 for (double i = 0; i <= max; i++) {
                     try {
@@ -256,18 +268,6 @@ public class RootLayoutController {
         }
     }
 
-    @FXML
-    private TableView<TableSensor> sensorsTableView;
-
-    @FXML
-    private TableColumn<TableSensor, Integer> id;
-
-    @FXML
-    private TableColumn<TableSensor, String> type;
-
-    @FXML
-    private TableColumn<TableSensor, String> state;
-
     public void updatePrecisionProgress(MessageWorker worker, Configuration configuration) {
         Dive currentDive = worker.getDive();
         if (currentDive != null) {
@@ -276,6 +276,31 @@ public class RootLayoutController {
             Platform.runLater(() -> precisionProgressBar.setProgress(numberOfMovements / maxMovements));
         } else {
             Platform.runLater(() -> precisionProgressBar.setProgress(1.0));
+        }
+    }
+
+    public void updateSensors(Map<String, Long> map) {
+        id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        type.setCellValueFactory(new PropertyValueFactory<>("type"));
+        state.setCellValueFactory(new PropertyValueFactory<>("state"));
+        sensors.clear();
+
+        int i = 1;
+        for (Map.Entry<String, Long> e : map.entrySet()) {
+            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
+            i++;
+        }
+        sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.refresh();
+    }
+
+    private String checkStateTime(long value) {
+        long current = System.currentTimeMillis();
+        double diffSeconds = (current - value) / 1000.0;
+        if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
+            return "inactif depuis : " + df.format(diffSeconds) + " secs.";
+        } else {
+            return "actif (dernière activité il y a : " + df.format(diffSeconds) + " secs.";
         }
     }
 
@@ -303,31 +328,6 @@ public class RootLayoutController {
 
         public String getState() {
             return state;
-        }
-    }
-
-    public void updateSensors(Map<String, Long> map) {
-        id.setCellValueFactory(new PropertyValueFactory<>("id"));
-        type.setCellValueFactory(new PropertyValueFactory<>("type"));
-        state.setCellValueFactory(new PropertyValueFactory<>("state"));
-        sensors.clear();
-
-        int i = 1;
-        for (Map.Entry<String, Long> e : map.entrySet()) {
-            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
-            i++;
-        }
-        sensorsTableView.getItems().setAll(sensors);
-        sensorsTableView.refresh();
-    }
-
-    private String checkStateTime(long value) {
-        long current = System.currentTimeMillis();
-        double diffSeconds = (current - value) / 1000.0;
-        if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
-            return "inactif depuis : " + df.format(diffSeconds) + " secs.";
-        } else {
-            return "actif (dernière activité il y a : " + df.format(diffSeconds) + " secs.";
         }
     }
 }

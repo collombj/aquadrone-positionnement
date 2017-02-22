@@ -1,18 +1,19 @@
 package fr.onema.lib.sensor;
 
 import fr.onema.lib.drone.Measure;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 /**
  * Classe représentant l'état d'un capteur à un instant T.
- *
- * @author loicszym
- * @since 06-02-2017
  */
 public class Temperature extends Sensor implements Measure {
     private int valueTemperature;
 
+    /**
+     * Constructeur
+     * @param timestamp Heure de la mesure
+     * @param temperature Valeur de la température
+     */
     public Temperature(long timestamp, int temperature) {
         super(timestamp);
         this.valueTemperature = temperature;
@@ -20,7 +21,6 @@ public class Temperature extends Sensor implements Measure {
 
     /**
      * Factory methode pour créer une Temperature
-     *
      * @param timestamp   Timestamp de la Temperature.
      * @param temperature Valeur de la température à l'instant donné.
      * @return Un objet Temperature représentant une température à l'instant donné.
@@ -32,8 +32,7 @@ public class Temperature extends Sensor implements Measure {
     /**
      * Méthode permettant de créer une Temperature à partir d'un message PressureMAVLink
      *
-     *
-     * @param timestamp
+     * @param timestamp Heure de la mesure
      * @param pressureMAVLinkMessage Message MAVLink provenant d'une pression.
      * @return Un objet Temperature représentant une température à l'instant donné.
      */
@@ -42,9 +41,8 @@ public class Temperature extends Sensor implements Measure {
     }
 
     /**
-     * Getter de Temperature
-     *
-     * @return La valeur de la Temperature.
+     * Getter de la temperature
+     * @return La valeur de la temperature.
      */
     public int getValueTemperature() {
         return valueTemperature;

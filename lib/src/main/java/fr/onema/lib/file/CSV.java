@@ -2,9 +2,6 @@ package fr.onema.lib.file;
 
 /**
  * Interface qui permet de générer des données au format CSV.
- *
- * @author loics
- * @since 06-02-2017
  */
 public interface CSV {
     /**
