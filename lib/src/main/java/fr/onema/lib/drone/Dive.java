@@ -49,7 +49,6 @@ public class Dive {
 
     /**
      * Ajoute une position à la plongée
-     *
      * @param position une position
      */
     public void add(Position position) {

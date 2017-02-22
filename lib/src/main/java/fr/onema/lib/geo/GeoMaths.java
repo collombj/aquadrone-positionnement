@@ -318,8 +318,6 @@ public class GeoMaths {
          index++;
         }
 
-        //correctionMethodOne(rawPositions.stream().filter(p -> !p.hasGPS()).collect(Collectors.toList()), ref, resurface);
-        //rawPositions.stream().filter(Position::hasGPS).forEach(p -> p.setPositionRecalculated(p.getPositionBrute()));
         //appel a la fonction de correction si on a trouvé une position sous l'eau
         if (index < rawPositions.size()){
             correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface, rawPositions.get(index-1), rawPositions.get(rawPositions.size()-1));
