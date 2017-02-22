@@ -2,7 +2,6 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
-import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
 import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 

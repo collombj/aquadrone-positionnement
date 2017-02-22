@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  */
 public class DatabaseWorker implements Worker {
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE = new DatabaseWorker();
+    private static DatabaseWorker INSTANCE;
     private Thread dbWorkerThread;
     private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private String notificationKey;
@@ -125,6 +125,9 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
+        if (INSTANCE == null) {
+            INSTANCE = new DatabaseWorker();
+        }
         return INSTANCE;
     }
 

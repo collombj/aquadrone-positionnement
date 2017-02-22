@@ -13,6 +13,10 @@ import java.net.SocketException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe permettant de lancer la thread d'écoute
+ * Appeler la méthode start pour lancer la connexion et la thread
+ */
 public class ServerListener implements Worker {
     private static final Logger LOGGER = Logger.getLogger(ServerListener.class.getName());
     private final int port;
@@ -124,7 +128,6 @@ public class ServerListener implements Worker {
             openConnexion();
             startThread();
             this.messageWorker.start();
-
         } catch (SocketException e) {
             throw new IllegalStateException(e);
         }
