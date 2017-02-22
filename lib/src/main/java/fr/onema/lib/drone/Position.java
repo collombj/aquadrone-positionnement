@@ -107,7 +107,7 @@ public class Position {
      *
      * @return La position GPS_SENSOR brute de la position.
      */
-    GPSCoordinate getPositionBrute() {
+    public GPSCoordinate getPositionBrute() {
         return positionBrute;
     }
 

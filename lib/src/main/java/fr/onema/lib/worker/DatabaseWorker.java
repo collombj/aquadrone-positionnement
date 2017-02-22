@@ -240,7 +240,7 @@ public class DatabaseWorker implements Worker {
     /**
      * Cette méthode permet d'envoyer des notifications à la base de données
      */
-    void sendNotification() {
+    public void sendNotification() {
         if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, notificationKey))) {
             LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
         }

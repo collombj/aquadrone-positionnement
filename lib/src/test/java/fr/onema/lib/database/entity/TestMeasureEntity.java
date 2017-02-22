@@ -66,16 +66,6 @@ public class TestMeasureEntity {
     }
 
     @Test(expected = NullPointerException.class)
-    public void testCreateNullGPSBrut() {
-        new MeasureEntity(1, 230, null, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void testCreateNullGPSCorrected() {
-        new MeasureEntity(1, 230, brut, null, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
-    }
-
-    @Test(expected = NullPointerException.class)
     public void testCreateNullMeasure() {
         new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, null);
     }

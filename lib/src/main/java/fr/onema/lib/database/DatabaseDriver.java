@@ -281,52 +281,8 @@ public class DatabaseDriver {
 
         try {
             insertStatement = connector.prepareStatement(insertString);
+            prepareQuery(measureEntity, diveID, insertStatement);
 
-            // Timestamp
-            insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
-
-            // location_corrected
-            if (measureEntity.getLocationCorrected() == null) {
-                insertStatement.setNull(2, Types.BIGINT);
-                insertStatement.setNull(3, Types.BIGINT);
-                insertStatement.setNull(4, Types.BIGINT);
-
-            } else {
-                insertStatement.setDouble(2, (double)measureEntity.getLocationCorrected().lon / 10_000_000.);
-                insertStatement.setDouble(3, (double)measureEntity.getLocationCorrected().lat / 10_000_000.);
-                insertStatement.setDouble(4, (double)measureEntity.getLocationCorrected().alt / 1000.);
-            }
-            insertStatement.setInt(5, srid);
-            // location_brut
-            if (measureEntity.getLocationBrute() == null) {
-                insertStatement.setNull(6, Types.BIGINT);
-                insertStatement.setNull(7, Types.BIGINT);
-                insertStatement.setNull(8, Types.BIGINT);
-            } else {
-                insertStatement.setDouble(6,(double) measureEntity.getLocationBrut().lon / 10_000_000.);
-                insertStatement.setDouble(7,(double) measureEntity.getLocationBrut().lat / 10_000_000.);
-                insertStatement.setDouble(8,(double) measureEntity.getLocationBrut().alt / 1000.);
-            }
-            insertStatement.setInt(9, srid);
-
-            //acceleration XYZ
-            insertStatement.setInt(10, measureEntity.getAccelerationX());
-            insertStatement.setInt(11, measureEntity.getAccelerationY());
-            insertStatement.setInt(12, measureEntity.getAccelerationZ());
-
-            //precision_cm
-            insertStatement.setInt(13, measureEntity.getPrecisionCm());
-
-            // measure_value
-            insertStatement.setString(14, measureEntity.getMeasureValue());
-
-            // rotationXYZ
-            insertStatement.setDouble(15, measureEntity.getRoll());
-            insertStatement.setDouble(16, measureEntity.getPitch());
-            insertStatement.setDouble(17, measureEntity.getYaw());
-
-            // dive_id
-            insertStatement.setInt(18, diveID);
 
             // measure_information_id
             insertStatement.setInt(19, measureInfoID);
@@ -349,6 +305,54 @@ public class DatabaseDriver {
         return -1;
     }
 
+    private void prepareQuery(MeasureEntity measureEntity, int diveID, PreparedStatement insertStatement) throws SQLException {
+        // Timestamp
+        insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
+
+        // location_corrected
+        if (measureEntity.getLocationCorrected() == null) {
+            insertStatement.setNull(2, Types.BIGINT);
+            insertStatement.setNull(3, Types.BIGINT);
+            insertStatement.setNull(4, Types.BIGINT);
+
+        } else {
+            insertStatement.setDouble(2, (double) measureEntity.getLocationCorrected().lon / 10_000_000.);
+            insertStatement.setDouble(3, (double) measureEntity.getLocationCorrected().lat / 10_000_000.);
+            insertStatement.setDouble(4, (double) measureEntity.getLocationCorrected().alt / 1000.);
+        }
+        insertStatement.setInt(5, srid);
+        // location_brut
+        if (measureEntity.getLocationBrute() == null) {
+            insertStatement.setNull(6, Types.BIGINT);
+            insertStatement.setNull(7, Types.BIGINT);
+            insertStatement.setNull(8, Types.BIGINT);
+        } else {
+            insertStatement.setDouble(6, (double) measureEntity.getLocationBrute().lon / 10_000_000.);
+            insertStatement.setDouble(7, (double) measureEntity.getLocationBrute().lat / 10_000_000.);
+            insertStatement.setDouble(8, (double) measureEntity.getLocationBrute().alt / 1000.);
+        }
+        insertStatement.setInt(9, srid);
+
+        //acceleration XYZ
+        insertStatement.setInt(10, measureEntity.getAccelerationX());
+        insertStatement.setInt(11, measureEntity.getAccelerationY());
+        insertStatement.setInt(12, measureEntity.getAccelerationZ());
+
+        //precision_cm
+        insertStatement.setInt(13, measureEntity.getPrecisionCm());
+
+        // measure_value
+        insertStatement.setString(14, measureEntity.getMeasureValue());
+
+        // rotationXYZ
+        insertStatement.setDouble(15, measureEntity.getRoll());
+        insertStatement.setDouble(16, measureEntity.getPitch());
+        insertStatement.setDouble(17, measureEntity.getYaw());
+
+        // dive_id
+        insertStatement.setInt(18, diveID);
+    }
+
     public int insertMeasure(MeasureEntity measureEntity, int diveID, String measureInfoName) throws SQLException {
         PreparedStatement insertStatement = null;
         String insertString = INSERT_MEASURE_WITH_INFOS;
@@ -357,51 +361,7 @@ public class DatabaseDriver {
             insertStatement = connector.prepareStatement(insertString);
 
             // Timestamp
-            insertStatement.setTimestamp(1, new Timestamp(measureEntity.getTimestamp()));
-
-            // location_corrected
-            if (measureEntity.getLocationCorrected() == null) {
-                insertStatement.setNull(2, Types.BIGINT);
-                insertStatement.setNull(3, Types.BIGINT);
-                insertStatement.setNull(4, Types.BIGINT);
-
-            } else {
-                insertStatement.setDouble(2, (double) measureEntity.getLocationCorrected().lon / 10_000_000.);
-                insertStatement.setDouble(3, (double) measureEntity.getLocationCorrected().lat / 10_000_000.);
-                insertStatement.setDouble(4, (double) measureEntity.getLocationCorrected().alt / 1000.);
-            }
-            insertStatement.setInt(5, srid);
-            // location_brut
-            if (measureEntity.getLocationBrute() == null) {
-                insertStatement.setNull(6, Types.BIGINT);
-                insertStatement.setNull(7, Types.BIGINT);
-                insertStatement.setNull(8, Types.BIGINT);
-            } else {
-                insertStatement.setDouble(6, (double) measureEntity.getLocationBrute().lon / 10_000_000.);
-                insertStatement.setDouble(7, (double) measureEntity.getLocationBrute().lat / 10_000_000.);
-                insertStatement.setDouble(8, (double) measureEntity.getLocationBrute().alt / 1000.);
-
-            }
-            insertStatement.setInt(9, srid);
-
-            //acceleration XYZ
-            insertStatement.setInt(10, measureEntity.getAccelerationX());
-            insertStatement.setInt(11, measureEntity.getAccelerationY());
-            insertStatement.setInt(12, measureEntity.getAccelerationZ());
-
-            //precision_cm
-            insertStatement.setInt(13, measureEntity.getPrecisionCm());
-
-            // measure_value
-            insertStatement.setString(14, measureEntity.getMeasureValue());
-
-            // rotationXYZ
-            insertStatement.setDouble(15, measureEntity.getRoll());
-            insertStatement.setDouble(16, measureEntity.getPitch());
-            insertStatement.setDouble(17, measureEntity.getYaw());
-
-            // dive_id
-            insertStatement.setInt(18, diveID);
+            prepareQuery(measureEntity, diveID, insertStatement);
 
             //measureInfoName
             insertStatement.setString(19, measureInfoName
