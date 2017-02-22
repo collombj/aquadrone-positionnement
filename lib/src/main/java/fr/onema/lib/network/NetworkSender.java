@@ -11,7 +11,11 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// TODO : complete
+/**
+ * Classe permettant d'envoyer les messages MavLink par UDP
+ * Les paquets sont ajoutés à une queue via la méthode add
+ * puis sont directement envoyés en UDP au destinataire
+ */
 public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
