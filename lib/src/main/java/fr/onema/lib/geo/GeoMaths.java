@@ -5,9 +5,9 @@ import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -233,7 +233,7 @@ public class GeoMaths {
         rotation.set(0, 2, (cos(a) * sin(b) * cos(g)) + (sin(a) * sin(g)));
 
         rotation.set(1, 0, sin(a) * cos(b));
-        rotation.set(1, 1, (sin(a) * sin(b) * sin(g)) - (cos(a) * cos(g)));
+        rotation.set(1, 1, (sin(a) * sin(b) * sin(g)) + (cos(a) * cos(g)));
         rotation.set(1, 2, (sin(a) * sin(b) * cos(g)) - (cos(a) * sin(g)));
 
         rotation.set(2, 0, -(sin(b)));
@@ -248,7 +248,7 @@ public class GeoMaths {
 
         Matrix result = rotation.mult(previousPoint);
 
-        return new CartesianCoordinate(result.get(0, 0), -result.get(1, 0), result.get(2, 0));
+        return new CartesianCoordinate(result.get(0, 0), result.get(1, 0), result.get(2, 0));
 
 
     }
@@ -308,36 +308,100 @@ public class GeoMaths {
         Objects.requireNonNull(resurface);
 
         // detection de la premiere position sous l'eau
-        //int index = 0;
-        //while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
-        //  rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
-        // index++;
-        //}
-        correctionMethodOne(rawPositions.stream().filter(p -> !p.hasGPS()).collect(Collectors.toList()), ref, resurface);
-        rawPositions.stream().filter(Position::hasGPS).forEach(p -> p.setPositionRecalculated(p.getPositionBrute()));
-        //appel a la fonction de correction si on a trouvé une position sous l'eau
-        //if (index < rawPositions.size()){
-        //    correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface);
-        //}
+        int index = 0;
+        while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
+          rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
+            index++;
+        }
 
-        //rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
+        //appel a la fonction de correction si on a trouvé une position sous l'eau
+        if (index < rawPositions.size()){
+            correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface, rawPositions.get(index-1), rawPositions.get(rawPositions.size()-1));
+        }
+
+        rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
+
     }
 
-    private static void correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
+    private static void correctionMethodOne(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface, Position refPosition, Position resurfacePosition) {
         CartesianCoordinate cartesianResurface = computeCartesianPosition(ref, resurface);
         CartesianCoordinate cartesianResurfaceBrut = rawPositions.get(rawPositions.size() - 1).getCartesianBrute();
 
-        double deltax = cartesianResurface.x - cartesianResurfaceBrut.x;
-        double deltay = cartesianResurface.y - cartesianResurfaceBrut.y;
-        double deltaz = cartesianResurface.z - cartesianResurfaceBrut.z;
-        double ecart = (double) 1 / (rawPositions.size() - 1);
+        //On calcule le delta entre la position de resurface calculée & réelle
+        double deltax1 = cartesianResurface.x - cartesianResurfaceBrut.x;
+        double deltay1 = cartesianResurface.y - cartesianResurfaceBrut.y;
+        double deltaz1 = cartesianResurface.z - cartesianResurfaceBrut.z;
+        double ecart1 = 1. / (rawPositions.size() - 1);
+
+        ArrayList<CartesianCoordinate> passOne = new ArrayList<>();
+
+        //On applique proportionnellement ce delta au fur et a mesure qu'on progresse dans notre liste de positions (0% de correction a la
+        //premiere mesure, 100% d'application du delta a la derniere)
+        for (int i = 0; i < rawPositions.size(); i++) {
+
+            passOne.add(new CartesianCoordinate(
+                    rawPositions.get(i).getCartesianBrute().x + (deltax1 * ecart1 * i),
+                    rawPositions.get(i).getCartesianBrute().y + (deltay1 * ecart1 * i),
+                    rawPositions.get(i).getCartesianBrute().z + (deltaz1 * ecart1 * i)));
+        }
+
+        //Ici on calcule a partir du point de resurface des coordonnées brutes en inversant l'orientation du drone jusqu'au point de départ de la plongée
+        ArrayList<CartesianCoordinate> passTwo = new ArrayList<>();
+        MovementWrapper previousWrapper = new MovementWrapper(passOne.get(passOne.size()-2), new CartesianVelocity(0, 0, 0));
+        Position previousPos = resurfacePosition;
+
+        passTwo.add(passOne.get(passOne.size()-2));
+
+        for(int i = rawPositions.size()-1; i > 0; i--) {
+
+            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
+                    -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(), previousWrapper.velocity,
+                    previousPos.getTimestamp() - rawPositions.get(i).getTimestamp(), previousPos.getImu().getAccelerometer());
+
+            passTwo.add(wrapper.coordinate);
+            previousWrapper = wrapper;
+            previousPos = rawPositions.get(i);
+        }
+
+        //On calcule le delta entre la position de plongée de départ calculée et la position de départ réelle
+        double deltax2 = refPosition.getCartesianBrute().x - passTwo.get(passTwo.size()-1).x;
+        double deltay2 = refPosition.getCartesianBrute().y - passTwo.get(passTwo.size()-1).y;
+        double deltaz2 = refPosition.getCartesianBrute().z - passTwo.get(passTwo.size()-1).z;
+        double ecart2 = 1. / (passTwo.size() - 1);
+
+        ArrayList<CartesianCoordinate> passTwoRecalculated = new ArrayList<>();
+
+        for (int i = 0; i < passTwo.size(); i++) {
+
+            CartesianCoordinate coordinate = new CartesianCoordinate(
+                    passTwo.get(i).x + (deltax2 * ecart2 * i),
+                    passTwo.get(i).y + (deltay2 * ecart2 * i),
+                    passTwo.get(i).z + (deltaz2 * ecart2 * i));
+            passTwoRecalculated.add(coordinate);
+        }
+
+
+        //On va appliquer ici les deux "vecteurs" de correction pour obtenir une position finale la plus proche possible de la réalité
+        //On applique de moins en moins le 1er et de plus en plus le 2eme qui sont censés être respectivement plus proche de la réalité au
+        //début et à la fin
+        double coefficientPassOne = 1.;
+        double coefficientPassTwo = 0.;
+
+        double stepCoefficient = 1./(rawPositions.size()-1);
 
         for (int i = 0; i < rawPositions.size(); i++) {
 
             rawPositions.get(i).setPositionRecalculated(computeGPSCoordinateFromCartesian(ref, new CartesianCoordinate(
-                    rawPositions.get(i).getCartesianBrute().x + (deltax * ecart * i),
-                    rawPositions.get(i).getCartesianBrute().y + (deltay * ecart * i),
-                    rawPositions.get(i).getCartesianBrute().z + (deltaz * ecart * i))));
+                    (rawPositions.get(i).getCartesianBrute().x * coefficientPassOne) +
+                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).x * coefficientPassTwo),
+                    (rawPositions.get(i).getCartesianBrute().y * coefficientPassOne) +
+                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).y * coefficientPassTwo),
+                    (rawPositions.get(i).getCartesianBrute().z  * coefficientPassOne) +
+                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).z * coefficientPassTwo))));
+
+
+            coefficientPassOne -= stepCoefficient;
+            coefficientPassTwo += stepCoefficient;
         }
     }
 
