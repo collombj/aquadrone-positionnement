@@ -11,7 +11,9 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-// TODO : complete
+/**
+ * Classe qui permet de se connecter et de communiquer avec un hôte distant (le drone, par exemple)
+ */
 public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;

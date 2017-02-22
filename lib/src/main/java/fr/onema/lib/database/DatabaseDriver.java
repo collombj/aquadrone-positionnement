@@ -14,12 +14,9 @@ import java.util.Properties;
 
 /**
  * Cette classe permet de gérer la connexion à une base de données et de faire les opérations usuelles sur celle ci
- *
- * @author francois & loic
- * @since 08-02-2017
  */
 public class DatabaseDriver {
-    public static final String INSERT_MEASURE = "INSERT INTO Measure(" +
+    private static final String INSERT_MEASURE = "INSERT INTO Measure(" +
             "timestamp," +
             "location_corrected," +
             "location_brut," +
@@ -48,17 +45,17 @@ public class DatabaseDriver {
             ",?" +
             ",?)" +
             "RETURNING ID";
-    public static final String INSERT_DIVE = "INSERT INTO Dive(start_time, end_time) VALUES (?,?) RETURNING ID";
-    public static final String SELECT_DIVE = "SELECT * FROM Dive ORDER BY id DESC LIMIT 1";
-    public static final String SELECT_MEASURES_FROM_DIVE = "SELECT id, timestamp, ST_X(location_brut) AS brutX," +
+    private static final String INSERT_DIVE = "INSERT INTO Dive(start_time, end_time) VALUES (?,?) RETURNING ID";
+    private static final String SELECT_DIVE = "SELECT * FROM Dive ORDER BY id DESC LIMIT 1";
+    private static final String SELECT_MEASURES_FROM_DIVE = "SELECT id, timestamp, ST_X(location_brut) AS brutX," +
             "ST_Y(location_brut) AS brutY, ST_Z(location_brut) AS brutZ, ST_X(location_corrected) AS correctX," +
             "ST_Y(location_corrected) AS correctY, ST_Z(location_corrected) AS correctZ, accelerationX," +
             " accelerationY, accelerationZ, roll, pitch, yaw, precision_cm, measure_value" +
             "  FROM Measure WHERE dive_id=? ORDER BY id";
-    public static final String UPDATE_MEASURE = "UPDATE Measure SET location_corrected = " +
+    private static final String UPDATE_MEASURE = "UPDATE Measure SET location_corrected = " +
             "ST_SetSRID(ST_MakePoint(?, ?, ?), ?), precision_cm = ?  WHERE id = ?";
-    public static final String UPDATE_DIVE_START = "UPDATE Dive SET start_time = ? WHERE id = ?";
-    public static final String INSERT_MEASURE_WITH_INFOS = "INSERT INTO Measure(" +
+    private static final String UPDATE_DIVE_START = "UPDATE Dive SET start_time = ? WHERE id = ?";
+    private static final String INSERT_MEASURE_WITH_INFOS = "INSERT INTO Measure(" +
             "timestamp," +
             "location_corrected," +
             "location_brut," +
@@ -89,9 +86,9 @@ public class DatabaseDriver {
             "(SELECT id FROM measure_information WHERE name=? ORDER BY id DESC LIMIT 1)" +
             ")" +
             "RETURNING ID";
-    public static final String UPDATE_DIVE_STOP = "UPDATE Dive SET end_time = ? WHERE id = ?";
-    public static final String SELECT_MEASURE_INFOS_FROM_ID = "SELECT * FROM measure_information WHERE id=?";
-    public static final String SELECT_MEASURE_INFOS_FROM_NAME = "SELECT * FROM measure_information WHERE name=? LIMIT 1";
+    private static final String UPDATE_DIVE_STOP = "UPDATE Dive SET end_time = ? WHERE id = ?";
+    private static final String SELECT_MEASURE_INFOS_FROM_ID = "SELECT * FROM measure_information WHERE id=?";
+    private static final String SELECT_MEASURE_INFOS_FROM_NAME = "SELECT * FROM measure_information WHERE name=? LIMIT 1";
     private final String host;
     private final int port;
     private final String base;
@@ -171,7 +168,7 @@ public class DatabaseDriver {
     /**
      * Ferme une connexion à la base de données.
      *
-     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détectée.
      */
     public void closeConnection() throws SQLException {
         connector.close();
@@ -220,7 +217,7 @@ public class DatabaseDriver {
      * Récupère la dernière plongée en base.
      *
      * @return La dernière plongée en base.
-     * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
+     * @throws SQLException Dans le cas ou une erreur de connexion est détectée.
      */
     public DiveEntity getLastDive() throws SQLException {
         try (PreparedStatement ps = connector.prepareStatement(SELECT_DIVE)) {

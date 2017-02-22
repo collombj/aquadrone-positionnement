@@ -82,16 +82,22 @@ public class Dive {
         for (Measure measure : position.getMeasures()) {
             // créer l'entité
             IMU imu = position.getImu();
+            int xAccel = imu == null ? 0 : imu.getAccelerometer().getxAcceleration();
+            int yAccel = imu == null ? 0 : imu.getAccelerometer().getyAcceleration();
+            int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
+            double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
+            double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
+            double yaw =imu == null ? 0 : imu.getGyroscope().getRoll();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
                     position.getPositionRecalculated(),
-                    imu == null ? 0 : imu.getAccelerometer().getxAcceleration(),
-                    imu == null ? 0 : imu.getAccelerometer().getyAcceleration(),
-                    imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
-                    imu == null ? 0 : imu.getGyroscope().getPitch(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    xAccel,
+                    yAccel,
+                    zAccel,
+                    roll,
+                    pitch,
+                    yaw,
                     -1,
                     measure.getValue());
 
@@ -132,16 +138,22 @@ public class Dive {
         for (Measure measure : position.getMeasures()) {
             // créer l'entité
             IMU imu = position.getImu();
+            int xAccel = imu == null ? 0 : imu.getAccelerometer().getxAcceleration();
+            int yAccel = imu == null ? 0 : imu.getAccelerometer().getyAcceleration();
+            int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
+            double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
+            double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
+            double yaw =imu == null ? 0 : imu.getGyroscope().getRoll();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
                     position.getPositionRecalculated(),
-                    imu == null ? 0 : imu.getAccelerometer().getxAcceleration(),
-                    imu == null ? 0 : imu.getAccelerometer().getyAcceleration(),
-                    imu == null ? 0 : imu.getAccelerometer().getzAcceleration(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
-                    imu == null ? 0 : imu.getGyroscope().getPitch(),
-                    imu == null ? 0 : imu.getGyroscope().getRoll(),
+                    xAccel,
+                    yAccel,
+                    zAccel,
+                    roll,
+                    pitch,
+                    yaw,
                     -1,
                     measure.getValue());
             //l insérer à la liste des mesures corrigées
