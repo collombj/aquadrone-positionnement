@@ -374,9 +374,7 @@ public class DatabaseDriver {
                 return generatedKeys.getInt(1);
             }
 
-        } finally
-
-        {
+        } finally {
             if (insertStatement != null) {
                 insertStatement.close();
             }

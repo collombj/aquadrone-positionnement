@@ -48,6 +48,9 @@ public class MessageWorker implements Worker {
     private Position currentPos;
     private long mavLinkConnection;
 
+    private final static String ALTITUDE = "Attitude [timestamp: ";
+    private final static String TIME = ", time: ";
+
     /**
      * Constructeur de MessageWorker
      * Attention, après l'instanciation la pluspars des champs seront encore null. Ils seront créés en cours de
@@ -164,12 +167,8 @@ public class MessageWorker implements Worker {
             }
         }
 
-        private String getStringWithTimestamp(long timestamp, long sensorTimestamp) {
-            return "Attitude [timestamp: " + timestamp + ", time: " + sensorTimestamp + "]";
-        }
-
         private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
-            LOGGER.log(Level.INFO, getStringWithTimestamp(timestamp, pressureMessage.time_boot_ms));
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + pressureMessage.time_boot_ms + "]");
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
@@ -177,7 +176,7 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
-            LOGGER.log(Level.INFO, getStringWithTimestamp(timestamp, temperatureMessage.time_boot_ms));
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
@@ -185,7 +184,7 @@ public class MessageWorker implements Worker {
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
-            LOGGER.log(Level.INFO, getStringWithTimestamp(timestamp, attitudeMessage.time_boot_ms));
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
@@ -203,7 +202,7 @@ public class MessageWorker implements Worker {
         }
 
         private void imuReceived(long timestamp, msg_scaled_imu imuMessage) {
-            LOGGER.log(Level.INFO, getStringWithTimestamp(timestamp, imuMessage.time_boot_ms));
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + imuMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -232,7 +231,7 @@ public class MessageWorker implements Worker {
         }
 
         private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
-            LOGGER.log(Level.INFO, getStringWithTimestamp(timestamp, gpsMessage.time_usec));
+            LOGGER.log(Level.INFO, "GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]");
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }

@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 import static fr.onema.lib.drone.Dive.State.ON;
 import static fr.onema.lib.drone.Dive.State.RECORD;
 
+
 public class Dive {
     private static final Logger LOGGER = Logger.getLogger(Dive.class.getName());
     private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
@@ -48,7 +49,6 @@ public class Dive {
 
     /**
      * Ajoute une position à la plongée
-     *
      * @param position une position
      */
     public void add(Position position) {
@@ -65,6 +65,7 @@ public class Dive {
             reference = position.getPositionBrute();
         } else {//si ce n'est pas le premier point on calcule
             if (!position.hasIMU() && !position.hasGPS()) { // on ignore les paquets sans imu
+                LOGGER.log(Level.WARNING, "A packet has been throwed away");
                 return;
             }
 
@@ -94,7 +95,7 @@ public class Dive {
             int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
             double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
-            double yaw =imu == null ? 0 : imu.getGyroscope().getRoll();
+            double yaw = imu == null ? 0 : imu.getGyroscope().getYaw();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
@@ -133,6 +134,8 @@ public class Dive {
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
         }
 
+        positions.get(positions.size()-1).getMeasures().forEach(m -> position.add(m));
+        position.setPositionRecalculated(position.getPositionBrute());
         // Update last one
         updateMeasuresAndPosition(position);
         // Creation de la liste des mesures recalculées
@@ -153,11 +156,11 @@ public class Dive {
             int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
             double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
-            double yaw =imu == null ? 0 : imu.getGyroscope().getRoll();
+            double yaw =imu == null ? 0 : imu.getGyroscope().getYaw();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
-                    position.getPositionRecalculated(),
+                    (position.getPositionRecalculated() == null ? position.getPositionBrute() : position.getPositionRecalculated()),
                     xAccel,
                     yAccel,
                     zAccel,

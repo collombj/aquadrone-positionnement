@@ -72,7 +72,7 @@ public class Configuration {
      * @return La représentation du fichier de configuration
      * @throws FileNotFoundException En cas d'absence de fichier de configuration
      */
-    private static void build(String path) throws FileNotFoundException {
+    public static Configuration build(String path) throws FileNotFoundException {
         Objects.requireNonNull(path, "A non null path is required for the settings");
 
         try (FileInputStream input = new FileInputStream(path)) {
@@ -85,6 +85,7 @@ public class Configuration {
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        return INSTANCE;
     }
 
 
