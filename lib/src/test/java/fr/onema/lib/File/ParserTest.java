@@ -7,13 +7,14 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class ParserTest {
 
     @Test
     public void testReferenceEntry() {
         ReferenceEntry ref = Parser.parseReference("1,2,3,4,5,6");
-        ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4,5f, 6);
+        ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4,5, 6);
         assertEquals(entry, ref);
     }
 

@@ -432,12 +432,12 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + xmag;
         result = 31 * result + ymag;
         result = 31 * result + zmag;
-        result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
-        result = 31 * result + gpsLat;
-        result = 31 * result + gpsLon;
-        result = 31 * result + gpsAlt;
+        result = 31 * result + (int) (gpsLat ^ (gpsLat >>> 32));
+        result = 31 * result + (int) (gpsLon ^ (gpsLon >>> 32));
+        result = 31 * result + (int) (gpsAlt ^ (gpsAlt >>> 32));
         return result;
     }
 }

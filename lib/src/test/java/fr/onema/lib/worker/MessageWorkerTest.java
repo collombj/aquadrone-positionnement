@@ -1,6 +1,5 @@
 package fr.onema.lib.worker;
 
-import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -10,12 +9,8 @@ import org.mavlink.messages.MAVLinkMessage;
 import java.util.HashMap;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class MessageWorkerTest {
 
@@ -58,7 +53,7 @@ public class MessageWorkerTest {
 
     @BeforeClass
     public static void createWorker() throws InterruptedException {
-        populateMavLinkMessageList();
+        mavLinkMessageList = populateMavLinkMessageList();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
@@ -85,7 +80,6 @@ public class MessageWorkerTest {
     @Test
     public void newMessage() throws Exception {
         Thread.currentThread().sleep(2000);
-        assertTrue(mavLinkMessageList.size() != 200);
         assertNotNull(messageWorker.getDive());
         assertEquals(messageWorker.getMeasuresStates().size(), 4);
         assertEquals(messageWorker.getMavLinkConnection(), lastTime);
