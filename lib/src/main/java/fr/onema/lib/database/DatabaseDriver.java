@@ -374,16 +374,12 @@ public class DatabaseDriver {
                 return generatedKeys.getInt(1);
             }
 
-        } finally
-
-        {
+        } finally {
             if (insertStatement != null) {
                 insertStatement.close();
             }
         }
         return -1;
-        // dive_id
-        insertStatement.setInt(18, diveID);
     }
 
 
