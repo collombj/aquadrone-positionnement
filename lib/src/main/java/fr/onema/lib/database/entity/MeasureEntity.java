@@ -81,6 +81,24 @@ public class MeasureEntity {
         this.id = id;
     }
 
+    @Override
+    public String toString() {
+        return "MeasureEntity{" +
+                "timestamp=" + timestamp +
+                ", accelerationX=" + accelerationX +
+                ", accelerationY=" + accelerationY +
+                ", accelerationZ=" + accelerationZ +
+                ", roll=" + roll +
+                ", pitch=" + pitch +
+                ", yaw=" + yaw +
+                ", measureValue='" + measureValue + '\'' +
+                ", locationBrute=" + locationBrute +
+                ", locationCorrected=" + locationCorrected +
+                ", precisionCm=" + precisionCm +
+                ", id=" + id +
+                '}';
+    }
+
     /**
      * @return L'identifiant en base de la mesure
      */

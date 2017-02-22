@@ -62,6 +62,7 @@ public class ServerListenerTest {
     public void testReceiveMessage() throws IOException, InterruptedException {
         NetworkSender sender = new NetworkSender(1500, "127.0.0.1");
         sender.openConnection();
+        sender.start();
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
         VirtualizerEntry virtual = new VirtualizerEntry(System.currentTimeMillis(), 2, 3, 4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);

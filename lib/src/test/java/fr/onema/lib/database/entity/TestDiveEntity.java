@@ -16,9 +16,9 @@ public class TestDiveEntity {
         DiveEntity e = new DiveEntity(1, 2, 3);
         assertTrue(e.equals(e));
         assertFalse(e.equals(null));
-        DiveEntity e2 = new DiveEntity(0, 2, 3);
-        DiveEntity e3 = new DiveEntity(1, 0, 3);
-        DiveEntity e4 = new DiveEntity(1, 2, 0);
+        DiveEntity e2 = new DiveEntity(2, 3, 4);
+        DiveEntity e3 = new DiveEntity(3, 4, 5);
+        DiveEntity e4 = new DiveEntity(4, 5, 6);
         assertFalse(e.equals(e2));
         assertFalse(e.equals(e3));
         assertFalse(e.equals(e4));
