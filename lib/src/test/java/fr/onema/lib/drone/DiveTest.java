@@ -2,13 +2,11 @@ package fr.onema.lib.drone;
 
 import fr.onema.lib.database.DatabaseTools;
 import fr.onema.lib.geo.CartesianVelocity;
-import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,17 +19,18 @@ import static org.junit.Assert.assertTrue;
  */
 public class DiveTest {
     private final Configuration configuration = Configuration.getInstance();
-    private Dive dive;
-    private GPSCoordinate previous = new GPSCoordinate(1, 2, 3);
-    private GPSCoordinate previous2 = new GPSCoordinate(3, 4, 5);
+    //private GPSCoordinate previous = new GPSCoordinate(1, 2, 3);
+    //private GPSCoordinate previous2 = new GPSCoordinate(3, 4, 5);
 
 
     public DiveTest() throws FileNotFoundException {
-        DatabaseWorker.getInstance().start();
+
     }
 
     @Before
     public void setUp() throws Exception {
+        Dive dive;
+        DatabaseWorker.getInstance().start();
         Configuration.Database configuration = this.configuration.getDatabaseInformation();
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
@@ -89,12 +88,6 @@ public class DiveTest {
     @Test
     public void simulTraitement() throws InterruptedException {
         assertTrue(true);//ne s'execute que si aucune exception n a été levée avant
-    }
-
-    @After
-    public void postTraitement() throws InterruptedException {
-        //Thread.sleep(1000);//s assure que le worker a eu le temps de finir ses traitements
-        //DatabaseWorker.getInstance().stop();//arrete le worker
     }
 
 }

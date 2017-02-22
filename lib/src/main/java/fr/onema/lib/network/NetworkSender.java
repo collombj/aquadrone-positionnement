@@ -8,7 +8,6 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,11 +73,15 @@ public class NetworkSender {
      * Envoi un message MavLink au destinataire
      */
     private void send(MAVLinkMessage msg) throws IOException {
-        String msgFormatted = msg.toString();
-        LOGGER.log(Level.INFO, msgFormatted);
-        buffer = msg.encode();
-        DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
-        dsocket.send(out);
+        if (msg != null) {
+            String msgFormatted = msg.toString();
+            LOGGER.log(Level.INFO, msgFormatted);
+            buffer = msg.encode();
+            DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
+            dsocket.send(out);
+        } else {
+            LOGGER.log(Level.SEVERE, "Tentative to send a null MAVLinkMessage.");
+        }
     }
 
     /**
@@ -123,7 +126,7 @@ public class NetworkSender {
             while (!isKilled || (isKilled && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
-                    msg = queue.poll(2000, TimeUnit.MILLISECONDS);
+                    msg = queue.take();
                     send(msg);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();

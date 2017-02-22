@@ -25,7 +25,7 @@ public class DatabaseWorker implements Worker {
     private static Thread dbWorkerThread;
     private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private static String notificationKey;
-    private static boolean isThreadStarted = false;
+
     /**
      * La methode d'insertion en base utilisée par le thread
      */
@@ -131,10 +131,6 @@ public class DatabaseWorker implements Worker {
         return INSTANCE;
     }
 
-    public static boolean isThreadStarted() {
-        return isThreadStarted;
-    }
-
     /**
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
@@ -165,7 +161,6 @@ public class DatabaseWorker implements Worker {
     @Override
     public void start() {
         dbWorkerThread.start();
-        isThreadStarted = true;
     }
 
     /**
@@ -174,7 +169,6 @@ public class DatabaseWorker implements Worker {
     @Override
     public void stop() {
         dbWorkerThread.interrupt();
-        isThreadStarted = false;
     }
 
     /**
