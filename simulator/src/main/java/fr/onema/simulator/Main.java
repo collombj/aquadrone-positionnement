@@ -6,6 +6,9 @@ import org.apache.commons.cli.*;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -91,21 +94,28 @@ public class Main {
      */
     private static final int PORT = 14550;
 
-    /**
-     * Nombre d'envoie par seconde pour la simulation
-     */
-    private static final int SPEED = 4;
+
 
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
+
 
     /**
      * Exemple d'utilisation de l'application avec différents paramètres
      */
     private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv" +
             LONG_ARGUMENT_SIGN + RUN_ARGUMENT + " simulation.csv [hostname]" +
-            LONG_ARGUMENT_SIGN + COMPARE_ARGUMENT + " fusion.csv resultat.csv [configuration.properties]\n\n\n";
+            LONG_ARGUMENT_SIGN + COMPARE_ARGUMENT + " fusion.csv resultat.csv [configuration.properties]" +
+            LONG_ARGUMENT_SIGN + PREPARE_ARGUMENT + " reference.csv reference50cm.csv" +
+            "\n\n\n";
 
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final String SETTINGS_ARGUMENT_SHORT = "D";
+    private static final String NAME_PROPERTIES = "name";
+    private static final String DEFAULT_NAME_PROPERTIES = Date.from(Instant.now()).toString();
+    private static final String SPEED_PROPERTIES = "speed";
+    private static final String DEFAULT_SPEED_PROPERTIES = "4";
+    private static final String ERROR_PROPERTIES = "error";
+    private static final String DEFAULT_ERROR_PROPERTIES = "50";
 
     private Main() {
         // Avoid instantiation
@@ -144,6 +154,14 @@ public class Main {
      * Filtre et exécute les actions relativent au paramètres passés en paramètres
      */
     private static void action(CommandLine command, Options options) {
+        // Récupération des paramètres
+        Properties properties;
+        if (command.hasOption(SETTINGS_ARGUMENT_SHORT)) {
+            properties = command.getOptionProperties(SETTINGS_ARGUMENT_SHORT);
+        } else {
+            properties = new Properties();
+        }
+
         // Génération des CSVs pour l'utilisation du simulateur
         if (command.hasOption(GENERATION_ARGUMENT)) {
             generationAction(command.getOptionValues(GENERATION_ARGUMENT));
@@ -154,9 +172,9 @@ public class Main {
         if (command.hasOption(RUN_ARGUMENT)) {
             String[] leftOverArgs = command.getArgs();
             if (leftOverArgs.length == 1) {
-                runAction(command.getOptionValues(RUN_ARGUMENT), leftOverArgs[0]);  // L'IP/hôte cible est optionnel
+                runAction(command.getOptionValues(RUN_ARGUMENT), leftOverArgs[0], properties);  // L'IP/hôte cible est optionnel
             } else {
-                runAction(command.getOptionValues(RUN_ARGUMENT), null);
+                runAction(command.getOptionValues(RUN_ARGUMENT), null, properties);
             }
             return;
         }
@@ -165,9 +183,9 @@ public class Main {
         if (command.hasOption(COMPARE_ARGUMENT)) {
             String[] leftOverArgs = command.getArgs();
             if (leftOverArgs.length == 1) {
-                compareAction(command.getOptionValues(COMPARE_ARGUMENT), leftOverArgs[0]);  // Le fichier de configuration
+                compareAction(command.getOptionValues(COMPARE_ARGUMENT), leftOverArgs[0], properties);  // Le fichier de configuration
             } else {
-                compareAction(command.getOptionValues(COMPARE_ARGUMENT), null);
+                compareAction(command.getOptionValues(COMPARE_ARGUMENT), null, properties);
             }
             return;
         }
@@ -196,9 +214,10 @@ public class Main {
     /**
      * Exécution de l'action COMPARAISON
      *
-     * @param values paramètres pour l'option
+     * @param values     paramètres pour l'option
+     * @param properties paramètres supplémentaires spécifiés par l'utilisateur
      */
-    private static void compareAction(String[] values, String settings) {
+    private static void compareAction(String[] values, String settings, Properties properties) {
         String referenceFilePath = values[0];
         String resultFilePath = values[1];
         String propertiesFilePath = settings;
@@ -209,17 +228,19 @@ public class Main {
 
         FileManager fileManager = new FileManager(referenceFilePath, "",
                 resultFilePath);
-        Virtualizer virtualizer = new Virtualizer(fileManager, 4, "", HOST, 14550);
+        Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, PORT); // argument inutile, mais constructeur les requierts
 
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
-            virtualizer.compare(configuration, 0.3);
+            virtualizer.compare(configuration, Integer.parseInt(properties.getProperty(ERROR_PROPERTIES, DEFAULT_ERROR_PROPERTIES)) / 100.);
             String list = fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
             LOGGER.log(Level.INFO, list);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
         } catch (ComparisonException e) {
             LOGGER.log(Level.SEVERE, "Error during the comparison", e);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.SEVERE, "Please specify an integer for the error value", e);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Unable to read in the result file", e);
         }
@@ -228,10 +249,11 @@ public class Main {
     /**
      * Exécution de l'action RUN -- simulation
      *
-     * @param values    paramètres pour l'option
-     * @param hostParam Hostname saisie en paramètre (optionnel - peut être null)
+     * @param values     paramètres pour l'option
+     * @param hostParam  Hostname saisie en paramètre (optionnel - peut être null)
+     * @param properties paramètres supplémentaires spécifiés par l'utilisateur
      */
-    private static void runAction(String[] values, String hostParam) {
+    private static void runAction(String[] values, String hostParam, Properties properties) {
         String virtualizedFilePath = values[0];
 
         String host = hostParam;
@@ -239,9 +261,11 @@ public class Main {
             host = HOST;
         }
 
-        FileManager fileManager = new FileManager("", virtualizedFilePath,
-                "");
-        Virtualizer virtualizer = new Virtualizer(fileManager, SPEED, "", host, PORT);
+        FileManager fileManager = new FileManager("", virtualizedFilePath, "");
+        Virtualizer virtualizer = new Virtualizer(fileManager,
+                Integer.parseInt(properties.getProperty(SPEED_PROPERTIES, DEFAULT_SPEED_PROPERTIES)),
+                properties.getProperty(NAME_PROPERTIES, DEFAULT_NAME_PROPERTIES),
+                host, PORT);
 
         try {
             LOGGER.log(Level.INFO, "Sending in progress");
@@ -311,10 +335,22 @@ public class Main {
                 .numberOfArgs(NUMBER_OF_ARGS_PREPARE)
                 .build();
 
+        Option settings = Option.builder(SETTINGS_ARGUMENT_SHORT)
+                .numberOfArgs(2)
+                .valueSeparator('=')
+                .desc("Parametrage de la simulation\n" +
+                        "Parametres possibles :\n" +
+                        "\t - " + SPEED_PROPERTIES + " : nombre de message a envoyer (par seconde)\n" +
+                        "\t - " + NAME_PROPERTIES + " : nom de la simulation\n" +
+                        "\t - " + ERROR_PROPERTIES + " : erreur (en cm) autorisee\n")
+                .build();
+
+
         return new Options()
                 .addOption(generatorOption)
                 .addOption(runOption)
                 .addOption(compareOption)
-                .addOption(prepareOption);
+                .addOption(prepareOption)
+                .addOption(settings);
     }
 }
