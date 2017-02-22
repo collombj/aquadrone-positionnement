@@ -2,10 +2,31 @@ package fr.onema.lib.virtualizer.entry;
 
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class ReferenceEntryTest {
+
+    @Test
+    public void missingTests() {
+        ReferenceEntry ref = new ReferenceEntry(1, 1, 1, 1, 1, (short)1);
+        assertTrue(ref.equals(ref));
+        assertFalse(ref.equals(null));
+        ReferenceEntry ref2 = new ReferenceEntry(2, 1, 1, 1, 1, (short)1);
+        ReferenceEntry ref3 = new ReferenceEntry(1, 2, 1, 1, 1, (short)1);
+        ReferenceEntry ref4 = new ReferenceEntry(1, 1, 2, 1, 1, (short)1);
+        ReferenceEntry ref5 = new ReferenceEntry(1, 1, 1, 2, 1, (short)1);
+        ReferenceEntry ref6 = new ReferenceEntry(1, 1, 1, 1, 2, (short)1);
+        ReferenceEntry ref7 = new ReferenceEntry(1, 1, 1, 1, 1, (short)2);
+        assertFalse(ref.equals(ref2));
+        assertFalse(ref.equals(ref3));
+        assertFalse(ref.equals(ref4));
+        assertFalse(ref.equals(ref5));
+        assertFalse(ref.equals(ref6));
+        assertFalse(ref.equals(ref7));
+        assertEquals(ref.hashCode(), ref.hashCode());
+        assertNotEquals(ref.hashCode(), ref2.hashCode());
+    }
+
     @Test(expected=IllegalArgumentException.class)
     public void illegalArgument() {
         ReferenceEntry ref = new ReferenceEntry(-1, 1,1,1, 1, (short)1 );

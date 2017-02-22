@@ -2,9 +2,11 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
+import org.mavlink.messages.MAVLinkMessage;
+import org.mavlink.messages.ardupilotmega.msg_gps_raw_int;
+import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 
@@ -15,6 +17,22 @@ public class ServerListenerTest {
     public void testConstructorNotNull() {
         ServerListener serverListener = new ServerListener(1500);
         assertNotNull(serverListener);
+    }
+
+    @Test
+    public void missingTests() {
+        ServerListener serverListener = new ServerListener(1500);
+        serverListener.start();
+        msg_gps_raw_int msg = new msg_gps_raw_int();
+        msg.time_usec = 2;
+        assertEquals(true, serverListener.testValidityMavlinkMessage(msg));
+        assertEquals(2, serverListener.getFirstTimestamp(msg));
+        assertEquals(2, serverListener.getTimestamp(msg));
+        msg_scaled_imu msg2 = new msg_scaled_imu();
+        msg2.time_boot_ms = 3;
+        assertEquals(3, serverListener.getBootTime(msg2));
+        assertNotNull(serverListener.getMessageWorker());
+        serverListener.stop();
     }
 
     @Test

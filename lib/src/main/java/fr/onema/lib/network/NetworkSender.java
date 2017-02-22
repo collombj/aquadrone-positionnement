@@ -8,17 +8,21 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe permettant d'envoyer les messages MavLink par UDP
+ * Les paquets sont ajoutés à une queue via la méthode add
+ * puis sont directement envoyés en UDP au destinataire
+ */
 public class NetworkSender {
     private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
     private final int port;
     private final String host;
+    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private byte[] buffer;
     private InetAddress hostAddress;
-    private final ArrayBlockingQueue<MAVLinkMessage> queue;
     private DatagramSocket dsocket;
     private Thread sender;
     private long firstTimestamp = -1;
@@ -74,17 +78,21 @@ public class NetworkSender {
      * Envoi un message MavLink au destinataire
      */
     private void send(MAVLinkMessage msg) throws IOException {
-        String msgFormatted = msg.toString();
-        LOGGER.log(Level.INFO, msgFormatted);
-        buffer = msg.encode();
-        DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
-        dsocket.send(out);
+        if (msg != null) {
+            String msgFormatted = msg.toString();
+            LOGGER.log(Level.INFO, msgFormatted);
+            buffer = msg.encode();
+            DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
+            dsocket.send(out);
+        } else {
+            LOGGER.log(Level.SEVERE, "Tentative to send a null MAVLinkMessage.");
+        }
     }
 
     /**
      * Permet d'ouvrir la connexion avec le destinataire
      */
-    public void openConnection() throws IOException {
+    void openConnection() throws IOException {
         dsocket = new DatagramSocket();
         buffer = new byte[1000];
         hostAddress = InetAddress.getByName(host);
@@ -123,7 +131,7 @@ public class NetworkSender {
             while (!isKilled || (isKilled && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
-                    msg = queue.poll(2000, TimeUnit.MILLISECONDS);
+                    msg = queue.take();
                     send(msg);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
@@ -132,7 +140,6 @@ public class NetworkSender {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-            System.out.println("toto:" + queue.size());
             dsocket.close();
         });
         sender.start();
@@ -143,7 +150,7 @@ public class NetworkSender {
      *
      * @return la thread
      */
-    public Thread getSender() {
+    Thread getSender() {
         return sender;
     }
 
@@ -152,7 +159,7 @@ public class NetworkSender {
      *
      * @return la blocking queue
      */
-    public ArrayBlockingQueue getQueue() {
+    ArrayBlockingQueue getQueue() {
         return queue;
     }
 
@@ -161,7 +168,7 @@ public class NetworkSender {
      *
      * @return la datagram socket
      */
-    public DatagramSocket getDsocket() {
+    DatagramSocket getDsocket() {
         return dsocket;
     }
 }

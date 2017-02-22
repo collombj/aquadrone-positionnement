@@ -2,9 +2,14 @@ package fr.onema.app.view;
 
 import fr.onema.app.Main;
 import fr.onema.app.model.CheckDependenciesAvailabilityTask;
+import fr.onema.lib.drone.Dive;
+import fr.onema.lib.tools.Configuration;
+import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -18,6 +23,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 /***
@@ -30,9 +36,11 @@ public class RootLayoutController {
     private double depthOffset = 0;
     private volatile BooleanProperty isRunning = new SimpleBooleanProperty();
     private StringProperty startButtonLabel = new SimpleStringProperty();
+    private Thread precisionProgress = new Thread();
     private Thread diveProgress = new Thread();
     private Thread dive = new Thread();
     private List<TableSensor> sensors = new ArrayList<>();
+    private DecimalFormat df = new DecimalFormat("#.##");
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -57,6 +65,14 @@ public class RootLayoutController {
 
     @FXML
     private ProgressBar precisionProgressBar;
+    @FXML
+    private TableView<TableSensor> sensorsTableView;
+    @FXML
+    private TableColumn<TableSensor, Integer> id;
+    @FXML
+    private TableColumn<TableSensor, String> type;
+    @FXML
+    private TableColumn<TableSensor, String> state;
 
     /***
      * Constructeur du controlleur du RootLayout
@@ -103,6 +119,7 @@ public class RootLayoutController {
     @FXML
     private void initialize() {
         progressIndicator.setVisible(false);
+        precisionProgressBar.setProgress(1.0);
         runButton.textProperty().bindBidirectional(startButtonLabel);
         startButtonLabel.setValue("Démarrer mesures");
         isRunning.addListener((observable, oldValue, newValue) -> {
@@ -112,7 +129,7 @@ public class RootLayoutController {
         });
 
         Timer timer = new Timer(true);
-        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(this, main), 0, 2_000);
+        timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(main), 0, 1_000);
     }
 
     /***
@@ -184,6 +201,7 @@ public class RootLayoutController {
         if (isRunning.get()) {
             dive.interrupt();
             diveProgress.interrupt();
+            precisionProgress.interrupt();
             main.stopExecution();
             setRunning(false);
         } else {
@@ -192,23 +210,6 @@ public class RootLayoutController {
             setRunning(true);
             diveProgress.start();
             dive.start();
-            /*
-            if (CheckDependenciesAvailabilityTask.checkMavlinkAvailability(main.getMessageWorker()) && CheckDependenciesAvailabilityTask.checkPostgresAvailability(main.getConfiguration())) {
-
-            } else {
-            */
-                /*
-                Platform.runLater(() -> {
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.setTitle("Erreur lors de l'exécution");
-                    alert.initModality(Modality.APPLICATION_MODAL);
-                    alert.setContentText("Les dépendances ne sont pas toutes actives, veuillez les relancer ...");
-                    alert.showAndWait();
-                });
-                */
-                // ignore
-            //}
-
         }
     }
 
@@ -233,7 +234,8 @@ public class RootLayoutController {
      */
     private void setupDiveProgressThread() {
         Task diveProgressTask = new Task() {
-            @Override public Void call() {
+            @Override
+            public Void call() {
                 final double max = main.getConfiguration().getDiveData().getDureemax() * 5;
                 for (double i = 0; i <= max; i++) {
                     try {
@@ -257,6 +259,7 @@ public class RootLayoutController {
         if (!isRunning.getValue()) {
             durationProgressBar.progressProperty().unbind();
             durationProgressBar.setProgress(0.0);
+            precisionProgressBar.setProgress(1.0);
             progressIndicator.setVisible(false);
             startButtonLabel.setValue("Démarrer mesures");
         } else {
@@ -265,17 +268,41 @@ public class RootLayoutController {
         }
     }
 
-    @FXML
-    private TableView<TableSensor> sensorsTableView;
+    public void updatePrecisionProgress(MessageWorker worker, Configuration configuration) {
+        Dive currentDive = worker.getDive();
+        if (currentDive != null) {
+            int numberOfMovements = currentDive.getNumberOfmovement();
+            double maxMovements = configuration.getDiveData().getMouvementsmax();
+            Platform.runLater(() -> precisionProgressBar.setProgress(numberOfMovements / maxMovements));
+        } else {
+            Platform.runLater(() -> precisionProgressBar.setProgress(1.0));
+        }
+    }
 
-    @FXML
-    private TableColumn<TableSensor, Integer> id;
+    public void updateSensors(Map<String, Long> map) {
+        id.setCellValueFactory(new PropertyValueFactory<>("id"));
+        type.setCellValueFactory(new PropertyValueFactory<>("type"));
+        state.setCellValueFactory(new PropertyValueFactory<>("state"));
+        sensors.clear();
 
-    @FXML
-    private TableColumn<TableSensor, String> type;
+        int i = 1;
+        for (Map.Entry<String, Long> e : map.entrySet()) {
+            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
+            i++;
+        }
+        sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.refresh();
+    }
 
-    @FXML
-    private TableColumn<TableSensor, String> state;
+    private String checkStateTime(long value) {
+        long current = System.currentTimeMillis();
+        double diffSeconds = (current - value) / 1000.0;
+        if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
+            return "inactif depuis : " + df.format(diffSeconds) + " secs.";
+        } else {
+            return "actif (dernière activité il y a : " + df.format(diffSeconds) + " secs.";
+        }
+    }
 
     /***
      *
@@ -301,37 +328,6 @@ public class RootLayoutController {
 
         public String getState() {
             return state;
-        }
-    }
-
-    public void updateSensors(Map<String, Long> map) {
-        id.setCellValueFactory(new PropertyValueFactory<>("id"));
-        type.setCellValueFactory(new PropertyValueFactory<>("type"));
-        state.setCellValueFactory(new PropertyValueFactory<>("state"));
-        sensors.clear();
-
-        int i = 1;
-        for (Map.Entry<String, Long> e : map.entrySet()) {
-            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
-            i++;
-        }
-        sensorsTableView.getItems().setAll(sensors);
-        /*
-        sensorsTableView.setFixedCellSize(25);
-        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
-        sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
-        sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
-        Platform.runLater(() -> main.getParent().sizeToScene());
-        */
-        sensorsTableView.refresh();
-    }
-
-    private String checkStateTime(long value) {
-        double diffSeconds = (System.currentTimeMillis() - value) / 1000.0;
-        if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
-            return "inactif depuis : " + diffSeconds + " secondes";
-        } else {
-            return "actif (dernière activité il y a : " + diffSeconds + " secondes";
         }
     }
 }

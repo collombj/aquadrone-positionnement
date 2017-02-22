@@ -1,6 +1,5 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
@@ -23,9 +22,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by Jérôme on 08/02/2017.
+ * Point d'entrée du simulateur
  */
-
 public class Virtualizer {
     private static final Logger LOGGER = Logger.getLogger(Virtualizer.class.getName());
     private FileManager fileManager;
@@ -81,8 +79,7 @@ public class Virtualizer {
 
     /**
      * Récupère la durée de la simulation en millisecondes
-     *
-     * @return la durée
+     * @return la durée de la simulation
      */
     public long getDuration() {
         return getStop() - getStart();
@@ -115,10 +112,8 @@ public class Virtualizer {
         }
     }
 
-
     /**
      * Récupère le vitesse d'obtention de données
-     *
      * @return speed
      */
     public int getSpeed() {
@@ -127,7 +122,6 @@ public class Virtualizer {
 
     /**
      * Récupère le nom de la simulation
-     *
      * @return simulationName
      */
     public String getSimulationName() {
@@ -136,7 +130,6 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de départ
-     *
      * @return start
      */
     private long getStart() {
@@ -145,7 +138,6 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de fin
-     *
      * @return stop
      */
     private long getStop() {
@@ -154,7 +146,6 @@ public class Virtualizer {
 
     /**
      * Récupère le port vers la base
-     *
      * @return port
      */
     public int getPort() {
@@ -163,7 +154,6 @@ public class Virtualizer {
 
     /**
      * Récupère le host de la base
-     *
      * @return host
      */
     public String getHost() {

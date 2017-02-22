@@ -9,8 +9,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.commons.cli.*;
 
-import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /***
@@ -20,17 +21,79 @@ public class Main extends Application {
     public static final double HORIZONTAL_DEFAULT_VALUE = 0;
     public static final double VERTICAL_DEFAULT_VALUE = 0;
     public static final double DEPTH_DEFAULT_VALUE = 0;
+    private static final String DEBUG_ARGUMENT_SHORT = "d";
+    private static final String DEBUG_ARGUMENT = "debug";
+    private static final int NUMBER_OF_ARGS_DEBUG = 1;
+    private static final String JAR_NAME = "simulator";
+    private static final String USAGE = "\t" + JAR_NAME +
+            "\t" + JAR_NAME + " --" + DEBUG_ARGUMENT + " log.csv" +
+            "\n\n\n";
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static String LOG_FILE = null;
     private Stage parent;
     private ServerListener server;
     private Configuration configuration;
     private DatabaseWorker databaseWorker;
     private MessageWorker messageWorker;
+    private RootLayoutController rlc;
 
-    // TODO : replace with customized logging system
-    private Logger logger;
+    public static void main(String[] args) {
+        CommandLineParser parser = new DefaultParser();
+        Options options = initOptions();
 
-    public static void main(String[] args) throws FileNotFoundException {
-        launch(args);
+        try {
+            CommandLine command = parser.parse(options, args);
+            action(command);
+            launch(args);
+        } catch (ParseException e) {
+            printHelp(options);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            System.exit(0);
+        }
+
+    }
+
+    /**
+     * Initialisation des options pour l'interface ligne de commande
+     *
+     * @return Options instanciées
+     */
+    private static Options initOptions() {
+        Option debugOption = Option.builder(DEBUG_ARGUMENT_SHORT)
+                .longOpt(DEBUG_ARGUMENT)
+                .argName(DEBUG_ARGUMENT)
+                .desc("Permet de generer un fichier de debug representant les messages MAVLink. Le fichier de sortie est" +
+                        "au format \"Simulation\".")
+                .numberOfArgs(NUMBER_OF_ARGS_DEBUG)
+                .build();
+
+        return new Options()
+                .addOption(debugOption);
+    }
+
+    /**
+     * Affichage de l'aide sur [System.out]
+     *
+     * @param options liste des options à afficher
+     */
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(JAR_NAME, USAGE, options, "", false);
+    }
+
+    /**
+     * Filtre et exécute les actions relativent au paramètres passés en paramètres
+     */
+    private static void action(CommandLine command) {
+        if (command.hasOption(DEBUG_ARGUMENT_SHORT)) {
+            LOG_FILE = command.getOptionValues(DEBUG_ARGUMENT_SHORT)[0];
+        }
+    }
+
+    public RootLayoutController getRlc() {
+        return rlc;
     }
 
     /***
@@ -45,11 +108,12 @@ public class Main extends Application {
         this.server = new ServerListener(14550);
         this.server.start();
         this.messageWorker = server.getMessageWorker();
+        // TODO : load Tracer if LOG_FILE != null
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
-        RootLayoutController rlc = new RootLayoutController(this);
+        rlc = new RootLayoutController(this);
         fxmlLoader.setController(rlc);
         fxmlLoader.load();
         primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
@@ -61,21 +125,12 @@ public class Main extends Application {
     @Override
     public void stop() throws Exception {
         super.stop();
-        // Stop toutes les threads lorsque l'on quitte l'application
         server.stop();
         databaseWorker.stop();
     }
 
     public void execute() {
-// TODO
         messageWorker.startRecording();
-
-        System.out.println("Task completed with followings parameters : \n"
-                + "Horizontal Offset = " + configuration.getFlow().getLat() + "\n"
-                + "Vertical Offset = " + configuration.getFlow().getLon() + "\n"
-                + "Depth Offset = " + configuration.getFlow().getAlt() + "\n"
-                + "Duration Tolerance = " + configuration.getDiveData().getDureemax() + "\n"
-                + "Precision = " + configuration.getDiveData().getPrecision());
     }
 
     public Configuration getConfiguration() {

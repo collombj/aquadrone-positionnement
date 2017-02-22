@@ -1,7 +1,6 @@
 package fr.onema.lib.sensor.position;
 
 import org.junit.Test;
-import org.mavlink.messages.ardupilotmega.msg_scaled_pressure;
 import org.mavlink.messages.ardupilotmega.msg_scaled_pressure2;
 
 import static org.junit.Assert.assertEquals;

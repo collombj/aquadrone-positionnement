@@ -8,22 +8,25 @@ import org.mavlink.messages.MAVLinkMessage;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.HashMap;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class MessageWorkerTest {
 
     private static MessageWorker messageWorker = new MessageWorker();
     private static Thread insertThread;
-
-    private static Deque<MAVLinkMessage> mavLinkMessageList;
+    private static Deque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList;
+    private static long lastTimestamp;
 
     private static void populateMavLinkMessageList() {
-        mavLinkMessageList = new ArrayDeque<>(210);
+        mavLinkMessageList = new ArrayDeque<>(260);
         VirtualizerEntry simulatedValue;
         for (int i = 0; i < 50; i++) {
+            lastTimestamp = System.currentTimeMillis()+250;
             simulatedValue = new VirtualizerEntry(
-                    System.currentTimeMillis(),
+                    lastTimestamp,
                     i,
                     i,
                     i,
@@ -39,22 +42,22 @@ public class MessageWorkerTest {
                     i,
                     (short) i
             );
-            mavLinkMessageList.add(simulatedValue.getGPSMessage());
-            mavLinkMessageList.add(simulatedValue.getIMUMessage(i));
-            mavLinkMessageList.add(simulatedValue.getPressureMessage(i));
-            mavLinkMessageList.add(simulatedValue.getTemperatureMessage(i));
+            mavLinkMessageList.add(new HashMap.SimpleEntry<>(lastTimestamp, simulatedValue.getGPSMessage()));
+            mavLinkMessageList.add(new HashMap.SimpleEntry<>(lastTimestamp, simulatedValue.getPressureMessage(i)));
+            mavLinkMessageList.add(new HashMap.SimpleEntry<>(lastTimestamp, simulatedValue.getIMUMessage(i)));
+            mavLinkMessageList.add(new HashMap.SimpleEntry<>(lastTimestamp, simulatedValue.getAttitudeMessage(i)));
+            mavLinkMessageList.add(new HashMap.SimpleEntry<>(lastTimestamp, simulatedValue.getTemperatureMessage(i)));
         }
     }
 
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         populateMavLinkMessageList();
-        DatabaseWorker.getInstance().start();
 
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
-                    messageWorker.newMessage(27091994, mavLinkMessageList.removeFirst());
+                    messageWorker.newMessage(mavLinkMessageList.getFirst().getKey(), mavLinkMessageList.removeFirst().getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 }
@@ -64,19 +67,19 @@ public class MessageWorkerTest {
         messageWorker.start();
         insertThread.start();
         insertThread.join();
-        Thread.currentThread().sleep(1000);
-    }
-
-    @Test
-    public void newMessage() throws Exception {
-        Thread.currentThread().sleep(1000);
-        assertTrue(mavLinkMessageList.size() != 200);
+        Thread.sleep(1000);
     }
 
     @AfterClass
     public static void stopThread() {
         messageWorker.stop();
-        DatabaseWorker.getInstance().stop();
         insertThread.interrupt();
+    }
+
+    @Test
+    public void newMessage() throws Exception {
+        assertNotNull(messageWorker.getDive());
+        assertEquals(messageWorker.getMeasuresStates().size(), 4);
+        assertEquals(messageWorker.getMavLinkConnection(), lastTimestamp);
     }
 }
