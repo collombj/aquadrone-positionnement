@@ -2,7 +2,10 @@ package fr.onema.lib.geo;
 
 import java.util.Objects;
 
-// TODO : complete
+/**
+ * Permet d'instancier une matrice et d'effectuer les opérations
+ * de base sur cette matrice
+ */
 public class Matrix {
 
     private final double[][] tab;

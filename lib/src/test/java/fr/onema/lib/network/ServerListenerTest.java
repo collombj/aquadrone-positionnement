@@ -12,7 +12,6 @@ import static org.junit.Assert.*;
 
 public class ServerListenerTest {
 
-
     @Test
     public void testConstructorNotNull() {
         ServerListener serverListener = new ServerListener(1500);
@@ -66,9 +65,15 @@ public class ServerListenerTest {
         sender.openConnection();
         ServerListener serverListener = new ServerListener(1500);
         serverListener.start();
-        VirtualizerEntry virtual = new VirtualizerEntry(System.currentTimeMillis(), 2,3,4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
+        VirtualizerEntry virtual = new VirtualizerEntry(System.currentTimeMillis(), 2, 3, 4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
         sender.add(virtual);
         sender.closeConnection();
         serverListener.stop();
+    }
+
+    @Test
+    public void getBootTimeTest() {
+        ServerListener serverListener = new ServerListener(1500);
+        assertEquals(serverListener.getBootTime(null), 0);
     }
 }
