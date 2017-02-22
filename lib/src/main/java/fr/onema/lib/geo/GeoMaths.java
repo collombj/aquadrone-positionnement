@@ -3,15 +3,11 @@ package fr.onema.lib.geo;
 
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.sensor.position.IMU.Accelerometer;
-import javafx.geometry.Pos;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
@@ -315,7 +311,7 @@ public class GeoMaths {
         int index = 0;
         while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
           rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
-         index++;
+            index++;
         }
 
         //appel a la fonction de correction si on a trouvé une position sous l'eau
