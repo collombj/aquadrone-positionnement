@@ -24,6 +24,7 @@ public class NetworkSender {
     private DatagramSocket dsocket;
     private Thread sender;
     private long firstTimestamp = -1;
+    private volatile boolean isKilled = false;
 
     /**
      * Constructeur de la classe NetworkSender
@@ -75,11 +76,15 @@ public class NetworkSender {
      * Envoi un message MavLink au destinataire
      */
     private void send(MAVLinkMessage msg) throws IOException {
-        String msgFormatted = msg.toString();
-        LOGGER.log(Level.INFO, msgFormatted);
-        buffer = msg.encode();
-        DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
-        dsocket.send(out);
+        if (msg != null) {
+            String msgFormatted = msg.toString();
+            LOGGER.log(Level.INFO, msgFormatted);
+            buffer = msg.encode();
+            DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
+            dsocket.send(out);
+        } else {
+            LOGGER.log(Level.SEVERE, "Tentative to send a null MAVLinkMessage.");
+        }
     }
 
     /**
@@ -95,7 +100,7 @@ public class NetworkSender {
      * Permet de fermer la connexion avec le destinataire
      */
     public void closeConnection() {
-        this.sender.interrupt();
+        this.isKilled = true;
     }
 
     /**
@@ -121,7 +126,7 @@ public class NetworkSender {
      */
     private void startThread() {
         sender = new Thread(() -> {
-            while (!Thread.interrupted() || (Thread.interrupted() && !queue.isEmpty())) {
+            while (!isKilled || (isKilled && !queue.isEmpty())) {
                 MAVLinkMessage msg;
                 try {
                     msg = queue.take();
@@ -133,6 +138,7 @@ public class NetworkSender {
                     LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
+
             dsocket.close();
         });
         sender.start();

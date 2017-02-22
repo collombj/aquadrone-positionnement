@@ -10,6 +10,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Logger;
 
 /***
@@ -28,7 +29,7 @@ public class Main extends Application {
     // TODO : replace with customized logging system
     private Logger logger;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
         launch(args);
     }
 
@@ -42,9 +43,8 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.configuration = Configuration.build("settings.properties");
+        this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
-        this.databaseWorker.init(configuration);
         this.databaseWorker.start();
         this.server = new ServerListener(14550);
         this.server.start();
