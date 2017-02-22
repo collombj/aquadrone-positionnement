@@ -9,6 +9,7 @@ import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 
+import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,6 +46,9 @@ public class MessageWorker implements Worker {
     private Boolean inDive = false;
     private Position currentPos;
     private long mavLinkConnection;
+
+    private final static String ALTITUDE = "Attitude [timestamp: ";
+    private final static String TIME = ", time: ";
 
     /**
      * Constructeur de MessageWorker
@@ -121,7 +125,7 @@ public class MessageWorker implements Worker {
     private class MavLinkMessagesThreadWorker implements Runnable {
 
 
-        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) {
+        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException {
             // If Dive doesn't exist
             if (dive == null) {
                 dive = new Dive();
@@ -153,7 +157,7 @@ public class MessageWorker implements Worker {
         }
 
         private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
-            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + pressureMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + pressureMessage.time_boot_ms + "]");
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
@@ -161,7 +165,7 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
-            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + temperatureMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
@@ -169,7 +173,7 @@ public class MessageWorker implements Worker {
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
-            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + attitudeMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
@@ -187,7 +191,7 @@ public class MessageWorker implements Worker {
         }
 
         private void imuReceived(long timestamp, msg_scaled_imu imuMessage) {
-            LOGGER.log(Level.INFO, "Attitude [timestamp: " + timestamp + ", time: " + imuMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + imuMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -216,7 +220,7 @@ public class MessageWorker implements Worker {
         }
 
         private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
-            LOGGER.log(Level.INFO, "GPS [timestamp: " + timestamp + ", time: " + gpsMessage.time_usec + "]");
+            LOGGER.log(Level.INFO, "GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]");
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }
@@ -227,8 +231,11 @@ public class MessageWorker implements Worker {
             long timestamp = gps.getTimestamp();
 
             if (inDive) {
+                savePosition();
+                currentPos = new Position();
                 currentPos.setGps(gps);
                 inDive = false;
+                currentPos.setTimestamp(timestamp);
                 dive.endDive(currentPos);
                 dive = null;
                 currentPos = null;
@@ -265,6 +272,8 @@ public class MessageWorker implements Worker {
                     computeMavLinkMessage(element.getKey(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }

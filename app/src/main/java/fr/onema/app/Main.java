@@ -102,7 +102,7 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.configuration = Configuration.build("settings.properties");
+        this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
         this.databaseWorker.init(configuration);
         this.databaseWorker.start();

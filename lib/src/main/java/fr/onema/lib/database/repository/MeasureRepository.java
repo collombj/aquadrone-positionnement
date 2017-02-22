@@ -54,6 +54,7 @@ public class MeasureRepository {
      * @return La dernière Dive qui a été insérée dans la base de données
      */
     public DiveEntity getLastDive() throws SQLException {
+
         return dbDriver.getLastDive();
     }
 
@@ -84,6 +85,7 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, String measureInfoName) throws SQLException {
+
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoName));
         return mesure;
     }
@@ -95,6 +97,7 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, int measureInfoId) throws SQLException {
+
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoId));
         return mesure;
     }
@@ -107,6 +110,7 @@ public class MeasureRepository {
      * @param precisionCm       La précision de la nouvelle mesure
      */
     public void updateMeasure(int measureId, GPSCoordinate positionCorrected, int precisionCm) throws SQLException {
+
         Objects.requireNonNull(positionCorrected);
         dbDriver.updatePosition(
                 measureId, positionCorrected.lat, positionCorrected.lon, positionCorrected.alt, precisionCm);

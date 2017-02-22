@@ -105,20 +105,7 @@ public class Virtualizer {
 
     private void writeIntoFile(ReferenceEntry ref, MeasureEntity measure, double errVal) throws IOException {
         try {
-            if (ref.getTimestamp() == measure.getTimestamp()) {
-                int realLat = ref.getLat();
-                int realLon = ref.getLon();
-                int realAlt = ref.getAlt();
-                GPSCoordinate realPoint = new GPSCoordinate(realLat, realLon, realAlt);
-                GPSCoordinate calculatedPoint = measure.getLocationCorrected();
-                double distance = GeoMaths.gpsDistance(realPoint, calculatedPoint);
-
-                if (distance > errVal) {
-                    fileManager.appendResults(ref, measure, errVal);
-                }
-            } else {
-                fileManager.appendResults(ref, measure, errVal);
-            }
+            fileManager.appendResults(ref, measure, errVal);
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
             throw e;

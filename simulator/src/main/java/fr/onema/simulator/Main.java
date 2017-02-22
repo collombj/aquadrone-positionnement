@@ -94,10 +94,7 @@ public class Main {
      */
     private static final int PORT = 14550;
 
-
-
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
-
 
     /**
      * Exemple d'utilisation de l'application avec différents paramètres

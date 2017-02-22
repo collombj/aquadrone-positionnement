@@ -39,8 +39,6 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrute);
-        Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrute = locationBrute;
@@ -235,6 +233,44 @@ public class MeasureEntity {
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
 
     }
+
+    /**
+     * Permet de determiner si deux entités correspondent à la même mesure sans tenir compte de l'identifiant en base
+     * et de la position recalculée
+     *
+     * @param o
+     * @return
+     */
+    public boolean diveEquals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+
+        MeasureEntity that = (MeasureEntity) o;
+
+        if (timestamp != that.timestamp)
+            return false;
+        if (accelerationX != that.accelerationX)
+            return false;
+        if (accelerationY != that.accelerationY)
+            return false;
+        if (accelerationZ != that.accelerationZ)
+            return false;
+        if (Double.compare(that.roll, roll) != 0)
+            return false;
+        if (Double.compare(that.pitch, pitch) != 0)
+            return false;
+        if (Double.compare(that.yaw, yaw) != 0)
+            return false;
+        if (precisionCm != that.precisionCm)
+            return false;
+        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
+            return false;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+
+    }
+
 
     @Override
     public int hashCode() {
