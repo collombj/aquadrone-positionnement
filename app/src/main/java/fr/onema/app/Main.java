@@ -29,6 +29,9 @@ public class Main extends Application {
             "\t" + JAR_NAME + " --" + DEBUG_ARGUMENT + " log.csv" +
             "\n\n\n";
     private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final String SETTINGS_ARGUMENT_SHORT = "D";
+    private static final String PORT_PROPERTIES = "port";
+    private static String PORT = "14550";
     private static String LOG_FILE = null;
     private Stage parent;
     private ServerListener server;
@@ -69,8 +72,17 @@ public class Main extends Application {
                 .numberOfArgs(NUMBER_OF_ARGS_DEBUG)
                 .build();
 
+        Option settings = Option.builder(SETTINGS_ARGUMENT_SHORT)
+                .numberOfArgs(2)
+                .valueSeparator('=')
+                .desc("Parametrage de l'application\n" +
+                        "Parametre possible :\n" +
+                        "\t - " + PORT_PROPERTIES + " : port sur lequel recevoir les messages MAVLink\n")
+                .build();
+
         return new Options()
-                .addOption(debugOption);
+                .addOption(debugOption)
+                .addOption(settings);
     }
 
     /**
@@ -90,6 +102,10 @@ public class Main extends Application {
         if (command.hasOption(DEBUG_ARGUMENT_SHORT)) {
             LOG_FILE = command.getOptionValues(DEBUG_ARGUMENT_SHORT)[0];
         }
+
+        if (command.hasOption(SETTINGS_ARGUMENT_SHORT)) {
+            PORT = command.getOptionProperties(SETTINGS_ARGUMENT_SHORT).getProperty(PORT_PROPERTIES, PORT);
+        }
     }
 
     public RootLayoutController getRlc() {
@@ -105,7 +121,7 @@ public class Main extends Application {
         this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
         this.databaseWorker.start();
-        this.server = new ServerListener(14550);
+        this.server = new ServerListener(Integer.parseInt(PORT));
         this.server.start();
         this.messageWorker = server.getMessageWorker();
         // TODO : load Tracer if LOG_FILE != null

@@ -37,34 +37,33 @@ public class ServerListener implements Worker {
      * Permet de démarrer la Thread d'écoute qui réçoit et transmet les mavlink messages
      */
     private void startThread() {
-        listener = new Thread(() -> {
-            while (!Thread.interrupted()) {
-                buf = new byte[265];
-                datagramPacket = new DatagramPacket(buf, buf.length);
-                try {
-                    datagramSocket.receive(datagramPacket);
-                    MAVLinkReader reader = new MAVLinkReader();
-                    MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
-                    if (!testValidityMavlinkMessage(mesg)) {
-                        LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
-                        continue;
-                    }
-                    while (mesg != null && reader.nbUnreadMessages() != 0) {
-                        this.messageWorker.newMessage(messageTimestamp, mesg);
-                        mesg = reader.getNextMessageWithoutBlocking();
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (IOException e) {
-                    Thread.currentThread().interrupt();
-                    if (!datagramSocket.isClosed()) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    }
+        listener = new Thread(this::worker);
+        listener.start();
+    }
+
+    private void worker() {
+        buf = new byte[265];
+        datagramPacket = new DatagramPacket(buf, buf.length);
+        while (!Thread.interrupted()) {
+            try {
+                datagramSocket.receive(datagramPacket);
+                MAVLinkReader reader = new MAVLinkReader();
+                MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
+                if (!testValidityMavlinkMessage(mesg)) {
+                    LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
+                } else {
+                    this.messageWorker.newMessage(messageTimestamp, mesg);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (IOException e) {
+                Thread.currentThread().interrupt();
+                if (!datagramSocket.isClosed()) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
-            datagramSocket.close();
-        });
-        listener.start();
+        }
+        datagramSocket.close();
     }
 
     public boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
