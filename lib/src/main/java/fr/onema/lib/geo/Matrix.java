@@ -2,7 +2,9 @@ package fr.onema.lib.geo;
 
 import java.util.Objects;
 
-// TODO : complete
+/**
+ * Classe qui crée une matrice
+ */
 public class Matrix {
 
     private final double[][] tab;
