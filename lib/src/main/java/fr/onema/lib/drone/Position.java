@@ -232,7 +232,6 @@ public class Position {
 
         this.setCartesianBrute(wrapper.getCoordinate());
 
-        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
         return wrapper.getVelocity();
     }
 
