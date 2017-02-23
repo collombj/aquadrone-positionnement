@@ -31,7 +31,8 @@ public class MessageWorker implements Worker {
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
     private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
-
+    private final static String TIMESTAMP = "Attitude [timestamp: ";
+    private final static String TIME = ", time: ";
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
@@ -40,15 +41,11 @@ public class MessageWorker implements Worker {
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Utilisé pour la fusion Atitude + IMU = IMU DB
     private MAVLinkMessage imuBuffer;
-
     // Represents the dive currently associated
     private Dive dive;
     private Boolean inDive = false;
     private Position currentPos;
     private long mavLinkConnection;
-
-    private final static String ALTITUDE = "Attitude [timestamp: ";
-    private final static String TIME = ", time: ";
 
     /**
      * Constructeur de MessageWorker
@@ -139,14 +136,15 @@ public class MessageWorker implements Worker {
                 case msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT: // ID -> msg_global_position_int -> GPS SIGNAL RECEIVED!
                     gpsReceived(timestamp, (msg_gps_raw_int) mavLinkMessage);
                     break; // GPS
-                case msg_scaled_imu.MAVLINK_MSG_ID_SCALED_IMU:
-                    imuReceived(timestamp, (msg_scaled_imu) mavLinkMessage);
+                case msg_raw_imu.MAVLINK_MSG_ID_RAW_IMU:
+                    imuReceived(timestamp, (msg_raw_imu) mavLinkMessage);
                     break;
                 case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
                     attitudeReceived(timestamp, (msg_attitude) mavLinkMessage);
                     break; //IMU
                 case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
                     pressureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
+                    temperatureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
                     break; // Pressure
                 case msg_scaled_pressure3.MAVLINK_MSG_ID_SCALED_PRESSURE3:
                     temperatureReceived(timestamp, (msg_scaled_pressure3) mavLinkMessage);
@@ -157,7 +155,7 @@ public class MessageWorker implements Worker {
         }
 
         private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
-            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + pressureMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, TIMESTAMP + timestamp + TIME + pressureMessage.time_boot_ms + "]");
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
@@ -165,7 +163,15 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
-            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
+            Temperature temperature = Temperature.build(timestamp, temperatureMessage);
+
+            currentPos.add(temperature);
+            updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
+        }
+
+        private void temperatureReceived(long timestamp, msg_scaled_pressure2 temperatureMessage) {
+            LOGGER.log(Level.INFO, TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
@@ -173,14 +179,14 @@ public class MessageWorker implements Worker {
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
-            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
+            LOGGER.log(Level.INFO, TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
             }
 
-            if (imuBuffer instanceof msg_scaled_imu) {
-                msg_scaled_imu imuMessage = (msg_scaled_imu) imuBuffer;
+            if (imuBuffer instanceof msg_raw_imu) {
+                msg_raw_imu imuMessage = (msg_raw_imu) imuBuffer;
                 imuBuffer = null;
                 IMU imu = IMU.build(timestamp, imuMessage, attitudeMessage);
                 processIMUData(imu);
@@ -190,8 +196,8 @@ public class MessageWorker implements Worker {
             imuBuffer = attitudeMessage; // Update msg_scale_imu value
         }
 
-        private void imuReceived(long timestamp, msg_scaled_imu imuMessage) {
-            LOGGER.log(Level.INFO, ALTITUDE + timestamp + TIME + imuMessage.time_boot_ms + "]");
+        private void imuReceived(long timestamp, msg_raw_imu imuMessage) {
+            LOGGER.log(Level.INFO, TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -269,7 +275,7 @@ public class MessageWorker implements Worker {
             while (!Thread.interrupted()) {
                 try {
                     AbstractMap.SimpleEntry<Long, MAVLinkMessage> element = messages.take();
-                    computeMavLinkMessage(element.getKey(), element.getValue());
+                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());  // FIXME use timestamp
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (SQLException e) {
