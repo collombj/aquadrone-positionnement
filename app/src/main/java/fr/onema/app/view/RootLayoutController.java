@@ -298,9 +298,9 @@ public class RootLayoutController {
         long current = System.currentTimeMillis();
         double diffSeconds = (current - value) / 1000.0;
         if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
-            return "inactif depuis : " + df.format(diffSeconds) + " secs.";
+            return "inactif depuis : " + df.format(diffSeconds) + " s";
         } else {
-            return "actif (dernière activité il y a : " + df.format(diffSeconds) + " secs.";
+            return "actif (dernière activité : " + df.format(diffSeconds) + " s)";
         }
     }
 

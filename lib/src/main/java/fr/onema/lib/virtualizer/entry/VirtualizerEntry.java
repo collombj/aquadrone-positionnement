@@ -181,9 +181,9 @@ public class VirtualizerEntry implements CSV {
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return IMUMAVLinkMessage
      */
-    public msg_scaled_imu getIMUMessage(long bootTime) {
-        msg_scaled_imu msg = new msg_scaled_imu();
-        msg.time_boot_ms = bootTime;
+    public msg_raw_imu getIMUMessage(long bootTime) {
+        msg_raw_imu msg = new msg_raw_imu();
+        msg.time_usec = bootTime;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
