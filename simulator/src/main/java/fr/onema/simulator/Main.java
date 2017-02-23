@@ -92,7 +92,7 @@ public class Main {
     /**
      * port par défaut de la cible de la simulation
      */
-    private static final int PORT = 14550;
+
 
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
 
@@ -113,6 +113,8 @@ public class Main {
     private static final String DEFAULT_SPEED_PROPERTIES = "4";
     private static final String ERROR_PROPERTIES = "error";
     private static final String DEFAULT_ERROR_PROPERTIES = "50";
+    private static final String PORT_PROPERTIES = "port";
+    private static final String  DEFAULT_PORT_PROPERTIES = "14550";
 
     private Main() {
         // Avoid instantiation
@@ -225,7 +227,7 @@ public class Main {
 
         FileManager fileManager = new FileManager(referenceFilePath, "",
                 resultFilePath);
-        Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, PORT); // argument inutile, mais constructeur les requierts
+        Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, Integer.parseInt(DEFAULT_PORT_PROPERTIES)); // argument inutile, mais constructeur les requierts
 
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
@@ -262,7 +264,9 @@ public class Main {
         Virtualizer virtualizer = new Virtualizer(fileManager,
                 Integer.parseInt(properties.getProperty(SPEED_PROPERTIES, DEFAULT_SPEED_PROPERTIES)),
                 properties.getProperty(NAME_PROPERTIES, DEFAULT_NAME_PROPERTIES),
-                host, PORT);
+                host,
+                Integer.parseInt(properties.getProperty(PORT_PROPERTIES, DEFAULT_PORT_PROPERTIES))
+        );
 
         try {
             LOGGER.log(Level.INFO, "Sending in progress");
@@ -325,7 +329,7 @@ public class Main {
         Option prepareOption = Option.builder(PREPARE_ARGUMENT_SHORT)
                 .longOpt(PREPARE_ARGUMENT)
                 .argName(PREPARE_ARGUMENT)
-                .desc("Permet de générer un fichier de reference avec des points tous les 50 cms (maximum)." +
+                .desc("Permet de generer un fichier de reference avec des points tous les 50 cms (maximum)." +
                         "Le fichier est egalement formate:\n" +
                         "\t- Latitude et Longitude sont multiplies par 10^7\n" +
                         "\t- Altitude est multiplie par 10^3")
@@ -339,7 +343,8 @@ public class Main {
                         "Parametres possibles :\n" +
                         "\t - " + SPEED_PROPERTIES + " : nombre de message a envoyer (par seconde)\n" +
                         "\t - " + NAME_PROPERTIES + " : nom de la simulation\n" +
-                        "\t - " + ERROR_PROPERTIES + " : erreur (en cm) autorisee\n")
+                        "\t - " + ERROR_PROPERTIES + " : erreur (en cm) autorisee\n" +
+                        "\t - " + PORT_PROPERTIES + " : port sur lequel envoyer les messages MAVLink\n")
                 .build();
 
 
