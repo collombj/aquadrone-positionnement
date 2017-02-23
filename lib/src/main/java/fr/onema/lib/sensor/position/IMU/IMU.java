@@ -4,7 +4,7 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Sensor;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
-import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
+import org.mavlink.messages.ardupilotmega.msg_raw_imu;
 
 import java.util.Objects;
 
@@ -34,7 +34,7 @@ public class IMU extends Sensor {
      * @param msg recuperation du flux mavlink
      * @return Un IMU instancié en fonction de messages MAVLink
      */
-    public static IMU build(long timestamp, msg_scaled_imu msg, msg_attitude msgAttitude) {
+    public static IMU build(long timestamp, msg_raw_imu msg, msg_attitude msgAttitude) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(msgAttitude);
         Accelerometer accelerometer = new Accelerometer(msg.xacc, msg.yacc, msg.zacc);
