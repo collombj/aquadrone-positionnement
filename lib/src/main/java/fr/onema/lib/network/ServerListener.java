@@ -52,7 +52,7 @@ public class ServerListener implements Worker {
                     continue;
                 }
 
-                if (testValidityMavlinkMessage(mesg) && mesg.messageType != msg_gps_raw_int.MAVLINK_MSG_ID_GPS_RAW_INT) {
+                if (testValidityMavlinkMessage(mesg)) {
                     this.messageWorker.newMessage(messageTimestamp, mesg);
                 } else {
                     //LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");

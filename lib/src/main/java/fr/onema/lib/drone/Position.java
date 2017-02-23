@@ -175,7 +175,7 @@ public class Position {
         this.gps = gps;
     }
 
-    List<Measure> getMeasures() {
+    public List<Measure> getMeasures() {
         return measures;
     }
 

@@ -1,7 +1,6 @@
-package fr.onema.lib.File;
+package fr.onema.lib.file;
 
 import fr.onema.lib.database.entity.MeasureEntity;
-import fr.onema.lib.file.FileManager;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
@@ -24,9 +23,9 @@ import static org.junit.Assert.assertNotNull;
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class FileManagerTest {
 
-    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
-    private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
-    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
+    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/file/rawInput.csv";
+    private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/file/virtualizedOutput.csv";
+    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/file/resultsOutput.csv";
     private final static FileManager fm = new FileManager(refFile, virtualizedFile, resultsFile);
     private final static FileManager fm_bugged = new FileManager("notapath", "notapath");
 

@@ -1,6 +1,5 @@
-package fr.onema.lib.File;
+package fr.onema.lib.file;
 
-import fr.onema.lib.file.Parser;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
@@ -13,7 +12,7 @@ public class ParserTest {
     @Test
     public void testReferenceEntry() {
         ReferenceEntry ref = Parser.parseReference("1,2,3,4,5,6");
-        ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4,5f, 6);
+        ReferenceEntry entry = new ReferenceEntry(1, 2, 3, 4,5, 6);
         assertEquals(entry, ref);
     }
 

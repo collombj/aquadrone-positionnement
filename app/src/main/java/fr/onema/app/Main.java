@@ -1,6 +1,7 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -124,7 +125,12 @@ public class Main extends Application {
         this.server = new ServerListener(Integer.parseInt(PORT));
         this.server.start();
         this.messageWorker = server.getMessageWorker();
-        // TODO : load Tracer if LOG_FILE != null
+        System.out.println("SETTING LOG");
+        if (LOG_FILE != null) {
+            this.messageWorker.setTracer(new FileManager("rawinput.csv", LOG_FILE, "resultOutput.csv"));
+            this.messageWorker.startLogger();
+            System.out.println("TRACER SET: " + LOG_FILE);
+        }
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
@@ -143,6 +149,7 @@ public class Main extends Application {
         super.stop();
         server.stop();
         databaseWorker.stop();
+        this.messageWorker.stopLogger();
     }
 
     public void execute() {

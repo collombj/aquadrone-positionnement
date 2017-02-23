@@ -2,6 +2,7 @@ package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Position;
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -31,8 +32,8 @@ public class MessageWorker implements Worker {
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
     private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
-    private final static String TIMESTAMP = "Attitude [timestamp: ";
-    private final static String TIME = ", time: ";
+    private static final String TIMESTAMP = "Attitude [timestamp: ";
+    private static final String TIME = ", time: ";
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
@@ -41,6 +42,7 @@ public class MessageWorker implements Worker {
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Utilisé pour la fusion Atitude + IMU = IMU DB
     private MAVLinkMessage imuBuffer;
+    private fr.onema.lib.worker.Logger tracer;
     // Represents the dive currently associated
     private Dive dive;
     private Boolean inDive = false;
@@ -53,7 +55,25 @@ public class MessageWorker implements Worker {
      * communication avec avec le serveur.
      */
     public MessageWorker() {
-        // Default constructor
+        // default constructor
+    }
+
+    public void startLogger() {
+        this.tracer.start();
+    }
+
+    public void stopLogger() {
+        this.tracer.stop();
+    }
+
+    /**
+     * Paramètre le FileManager qui doit êtra associé au MessageWorker. Ce FileManager servira uniquement à remplir le
+     * fichier de trace.
+     *
+     * @param fileManager Le FileManager enregistrant dans le traceur.
+     */
+    public void setTracer(FileManager fileManager) {
+        this.tracer = new fr.onema.lib.worker.Logger(fileManager);
     }
 
     /**
@@ -230,7 +250,7 @@ public class MessageWorker implements Worker {
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }
-            processGPSData(fr.onema.lib.sensor.position.GPS.build(timestamp, gpsMessage));
+            processGPSData(GPS.build(timestamp, gpsMessage));
         }
 
         private void processGPSData(GPS gps) {
@@ -263,6 +283,14 @@ public class MessageWorker implements Worker {
             }
 
             dive.add(currentPos);
+
+            if(tracer != null) {
+                try {
+                    tracer.addPosition(currentPos);
+                } catch (Exception e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
             currentPos = new Position();
         }
 
@@ -275,7 +303,7 @@ public class MessageWorker implements Worker {
             while (!Thread.interrupted()) {
                 try {
                     AbstractMap.SimpleEntry<Long, MAVLinkMessage> element = messages.take();
-                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());  // FIXME use timestamp
+                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (SQLException e) {
