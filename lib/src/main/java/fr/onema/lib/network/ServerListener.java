@@ -82,7 +82,11 @@ public class ServerListener implements Worker {
     // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
-            return ((msg_gps_raw_int) msg).time_usec;
+            if (((msg_gps_raw_int) msg).time_usec != 0) {
+                return messageTimestamp;
+            } else {
+                return 0;
+            }
         }
 
         return getBootTime(msg);
