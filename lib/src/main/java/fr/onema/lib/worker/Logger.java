@@ -69,9 +69,7 @@ public class Logger implements Worker {
             }
             while(!Thread.interrupted()) {
                 try {
-                    LOG.log(Level.INFO, "Waiting for a data to log.");
                     fileManager.appendVirtualized(createVirtualizedFromPosition(positions.take()));
-                    LOG.log(Level.INFO, "Created a log.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {

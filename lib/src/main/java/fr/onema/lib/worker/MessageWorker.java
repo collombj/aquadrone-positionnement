@@ -32,8 +32,8 @@ public class MessageWorker implements Worker {
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
     private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
-    private final static String TIMESTAMP = "Attitude [timestamp: ";
-    private final static String TIME = ", time: ";
+    private static final String TIMESTAMP = "Attitude [timestamp: ";
+    private static final String TIME = ", time: ";
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
@@ -283,6 +283,7 @@ public class MessageWorker implements Worker {
             }
 
             dive.add(currentPos);
+
             if(tracer != null) {
                 try {
                     tracer.addPosition(currentPos);
@@ -302,7 +303,7 @@ public class MessageWorker implements Worker {
             while (!Thread.interrupted()) {
                 try {
                     AbstractMap.SimpleEntry<Long, MAVLinkMessage> element = messages.take();
-                    computeMavLinkMessage(element.getKey(), element.getValue());
+                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (SQLException e) {

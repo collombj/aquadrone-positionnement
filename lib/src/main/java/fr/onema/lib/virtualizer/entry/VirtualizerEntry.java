@@ -162,7 +162,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = timestamp;
+        msg.time_usec = timestamp*1_000;
         msg.fix_type = 6;
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
@@ -183,7 +183,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_raw_imu getIMUMessage(long bootTime) {
         msg_raw_imu msg = new msg_raw_imu();
-        msg.time_usec = bootTime;
+        msg.time_usec = bootTime * 1_000;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;

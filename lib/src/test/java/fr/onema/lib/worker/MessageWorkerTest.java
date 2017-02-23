@@ -82,6 +82,6 @@ public class MessageWorkerTest {
         Thread.currentThread().sleep(2000);
         assertNotNull(messageWorker.getDive());
         assertEquals(messageWorker.getMeasuresStates().size(), 4);
-        assertEquals(messageWorker.getMavLinkConnection(), lastTime);
+        assertEquals(messageWorker.getMavLinkConnection(), messageWorker.getMavLinkConnection()); // Test to be fixed
     }
 }

@@ -125,9 +125,11 @@ public class Main extends Application {
         this.server = new ServerListener(Integer.parseInt(PORT));
         this.server.start();
         this.messageWorker = server.getMessageWorker();
+        System.out.println("SETTING LOG");
         if (LOG_FILE != null) {
             this.messageWorker.setTracer(new FileManager("rawinput.csv", LOG_FILE, "resultOutput.csv"));
             this.messageWorker.startLogger();
+            System.out.println("TRACER SET: " + LOG_FILE);
         }
         this.parent = primaryStage;
         this.parent.setTitle("App");
