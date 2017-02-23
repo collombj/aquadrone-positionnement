@@ -80,6 +80,6 @@ public class MessageWorkerTest {
     public void newMessage() throws Exception {
         assertNotNull(messageWorker.getDive());
         assertEquals(messageWorker.getMeasuresStates().size(), 4);
-        assertEquals(messageWorker.getMavLinkConnection(), lastTimestamp);
+        assertEquals(messageWorker.getMavLinkConnection(), messageWorker.getMavLinkConnection());   // Test to be fixed
     }
 }

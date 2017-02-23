@@ -69,7 +69,7 @@ public class ServerListener implements Worker {
         datagramSocket.close();
     }
 
-    public boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
+    boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
             messageTimestamp = timestamp;
@@ -93,7 +93,7 @@ public class ServerListener implements Worker {
     }
 
     // Public access to test
-    public long getBootTime(MAVLinkMessage msg) {
+    long getBootTime(MAVLinkMessage msg) {
         if (msg instanceof msg_raw_imu) {
             return ((msg_raw_imu) msg).time_usec / 1_000;
         } else if (msg instanceof msg_scaled_pressure2) {
