@@ -78,7 +78,7 @@ public class Dive {
                         position.getCartesianBrute(),
                         position.getTimestamp() - lastPos.getTimestamp());
             } else if (position.hasIMU()) {
-                lastVitesse = position.calculate(lastPos, lastVitesse, reference);
+                lastVitesse = position.calculate(lastPos, lastVitesse);
                 position.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(reference, position.getCartesianBrute()));
             }
         }
@@ -129,12 +129,12 @@ public class Dive {
         }
         position.setImu(IMU.build(lastVitesse, new CartesianVelocity(0, 0, 0), positions.get(positions.size() - 1).getTimestamp(), position.getTimestamp()));
         position.setPositionBrute(position.getGps().getPosition());
-        position.calculate(positions.get(positions.size() - 1), lastVitesse, reference); //Calcul de la position cartésienne
+        position.calculate(positions.get(positions.size() - 1), lastVitesse); //Calcul de la position cartésienne
         if (state == RECORD) {
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
         }
 
-        positions.get(positions.size()-1).getMeasures().forEach(m -> position.add(m));
+        positions.get(positions.size()-1).getMeasures().forEach(position::add);
         position.setPositionRecalculated(position.getPositionBrute());
         // Update last one
         updateMeasuresAndPosition(position);
@@ -160,7 +160,7 @@ public class Dive {
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
-                    (position.getPositionRecalculated() == null ? position.getPositionBrute() : position.getPositionRecalculated()),
+                    position.getPositionRecalculated() == null ? position.getPositionBrute() : position.getPositionRecalculated(),
                     xAccel,
                     yAccel,
                     zAccel,
