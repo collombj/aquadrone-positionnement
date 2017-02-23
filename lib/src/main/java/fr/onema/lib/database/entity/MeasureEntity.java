@@ -201,18 +201,19 @@ public class MeasureEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (!diveEquals(o))
-            return false;
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
             return false;
+
         MeasureEntity that = (MeasureEntity) o;
+
         if (id != that.id)
             return false;
-        return locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null;
+        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
+            return false;
+        return diveEquals(o);
     }
-
 
     public boolean diveEquals(Object o) {
         if (this == o)
@@ -236,9 +237,9 @@ public class MeasureEntity {
             return false;
         if (precisionCm != that.precisionCm)
             return false;
-        if (measureValue != null ? !measureValue.equals(that.measureValue) : that.measureValue != null)
+        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
             return false;
-        return locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
     }
 
     @Override
