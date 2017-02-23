@@ -57,7 +57,7 @@ public class Logger implements Worker {
     private class LoggerWorker implements Runnable{
 
         private VirtualizerEntry createVirtualizedFromPosition(Position position) {
-            return new VirtualizerEntry(position.getGps(), position.getImu(), position.getPressure());
+            return new VirtualizerEntry(position.getGps(), position.getImu(), position.getPressure(), position.getMeasures());
         }
 
         @Override
@@ -69,7 +69,9 @@ public class Logger implements Worker {
             }
             while(!Thread.interrupted()) {
                 try {
+                    LOG.log(Level.INFO, "Waiting for a data to log.");
                     fileManager.appendVirtualized(createVirtualizedFromPosition(positions.take()));
+                    LOG.log(Level.INFO, "Created a log.");
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {

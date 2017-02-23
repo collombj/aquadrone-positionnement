@@ -7,7 +7,6 @@ import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -53,7 +52,7 @@ public class LoggerTest {
             );
     }
 
-    @AfterClass
+/*    @AfterClass
     public static void delete() {
         File ref = new File(refFile);
         ref.delete();
@@ -62,7 +61,7 @@ public class LoggerTest {
         File res = new File(resultsFile);
         res.delete();
         logger.stop();
-    }
+    }*/
 
 
     @Test

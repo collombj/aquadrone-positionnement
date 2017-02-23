@@ -32,7 +32,8 @@ public class MessageWorker implements Worker {
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
     private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
-
+    private final static String ALTITUDE = "Attitude [timestamp: ";
+    private final static String TIME = ", time: ";
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
     private final Map<String, Long> measuresStates = new HashMap<>();
     // List that contains all the received MAVLinkMessages waiting to be treated by the worker
@@ -48,9 +49,6 @@ public class MessageWorker implements Worker {
     private Position currentPos;
     private long mavLinkConnection;
 
-    private final static String ALTITUDE = "Attitude [timestamp: ";
-    private final static String TIME = ", time: ";
-
     /**
      * Constructeur de MessageWorker
      * Attention, après l'instanciation la pluspars des champs seront encore null. Ils seront créés en cours de
@@ -58,6 +56,14 @@ public class MessageWorker implements Worker {
      */
     public MessageWorker() {
         // default constructor
+    }
+
+    public void startLogger() {
+        this.tracer.start();
+    }
+
+    public void stopLogger() {
+        this.tracer.stop();
     }
 
     /**
