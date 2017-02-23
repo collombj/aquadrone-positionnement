@@ -93,7 +93,7 @@ class MissingPointsGenerator {
         Objects.requireNonNull(stringPath);
         Objects.requireNonNull(csvFilePath);
         if ("".equals(stringPath)) {
-            throw new IllegalArgumentException("File path is empty");
+            throw new IllegalArgumentException("file path is empty");
         }
         List<String> outputs;
         Path filePath = Paths.get(stringPath);

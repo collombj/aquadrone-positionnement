@@ -1,7 +1,6 @@
-package fr.onema.lib.File;
+package fr.onema.lib.file;
 
 import fr.onema.lib.database.entity.MeasureEntity;
-import fr.onema.lib.file.FileManager;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;

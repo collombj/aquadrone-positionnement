@@ -54,11 +54,11 @@ public class LoggerTest {
 
 /*    @AfterClass
     public static void delete() {
-        File ref = new File(refFile);
+        file ref = new file(refFile);
         ref.delete();
-        File v = new File(virtualizedFile);
+        file v = new file(virtualizedFile);
         v.delete();
-        File res = new File(resultsFile);
+        file res = new file(resultsFile);
         res.delete();
         logger.stop();
     }*/

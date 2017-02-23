@@ -1,13 +1,11 @@
-package fr.onema.lib.File;
+package fr.onema.lib.file;
 
-import fr.onema.lib.file.Parser;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 public class ParserTest {
 
