@@ -69,16 +69,27 @@ public class ServerListener implements Worker {
         datagramSocket.close();
     }
 
+    //TODO
+
+    /**
+     * @param msg
+     * @return
+     */
     boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
             messageTimestamp = timestamp;
             return true;
         }
-
         return false;
     }
 
+    //TODO
+
+    /**
+     * @param msg
+     * @return
+     */
     // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
@@ -88,7 +99,6 @@ public class ServerListener implements Worker {
                 return 0;
             }
         }
-
         return getBootTime(msg);
     }
 
