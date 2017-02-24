@@ -36,9 +36,8 @@ public class Pressure extends Sensor {
      * @param temperature La valeur de température de la mesure
      * @return L'objet représentant la mesure gps
      */
-    public static Pressure build(long timestamp, int altitude, int temperature) {
-        // TODO : complete --> calcul de la pression à partir de l'altitude (et température ?)
-        int absolute = 0;
+    public static Pressure build(long timestamp, int altitude, int temperature) {//Méthode obsolète
+        int absolute = altitude;//placeholder
         return new Pressure(timestamp, absolute, 0, temperature);
     }
 
