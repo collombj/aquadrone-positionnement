@@ -60,6 +60,7 @@ public class Virtualizer {
         start = System.currentTimeMillis(); //Pour avoir un start en millisecondes
         List<VirtualizerEntry> entries = fileManager.readVirtualizedEntries();
         NetworkSender sender = new NetworkSender(port, host);
+        sender.start();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
         entries.forEach(x -> {

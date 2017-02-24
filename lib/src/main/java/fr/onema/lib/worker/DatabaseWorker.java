@@ -12,16 +12,12 @@ import java.util.function.BiConsumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-
 /**
- * Created by Francois Vanderperre on 08/02/2017.
- * <p>
  * Cette classe permet de créer un thread qui va gérer les accès à la base de données
  */
 public class DatabaseWorker implements Worker {
-
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE ;
+    private static DatabaseWorker INSTANCE;
     private static Thread dbWorkerThread;
     private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private static String notificationKey;
@@ -178,7 +174,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une nouvelle Dive en base de données
-     *
      * @param dive une DiveEntity
      */
     public void newDive(DiveEntity dive) {
@@ -189,7 +184,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une MeasureEntity
-     *
      * @param measureEntity   la MeasureEntity à insérer en base
      * @param diveID          l'identifiant de la plongée de la mesure
      * @param measureInfoName l'identifiant du type de mesure
@@ -202,7 +196,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet de mettre à jour une MeasureEntity dans la base de données
-     *
      * @param measureId         L'identifiant de la MeasureId à modifier
      * @param positionCorrected Les nouvelles coordonnées
      * @param precisionCm       La precision estimée de la mesure en cm
@@ -215,7 +208,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour l'heure de début d'une DiveEntity
-     *
      * @param timestamp L'heure de début de plongée
      * @param diveID    L'identifiant de la DiveEntity
      */
@@ -227,7 +219,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour la date de fin d'une DiveEntity
-     *
      * @param timestamp L'heure de fin de plongée
      * @param diveID    L'identifiant de la diveEntity
      */

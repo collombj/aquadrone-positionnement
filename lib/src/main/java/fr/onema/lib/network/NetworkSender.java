@@ -38,8 +38,11 @@ public class NetworkSender {
         this.port = port;
         this.host = host;
         queue = new ArrayBlockingQueue<>(100);
-        startThread();
         openConnection();
+    }
+
+    public void start() {
+        startThread();
     }
 
     /**
