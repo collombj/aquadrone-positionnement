@@ -63,7 +63,9 @@ public class MessageWorker implements Worker {
     }
 
     public void stopLogger() {
-        this.tracer.stop();
+        if (tracer != null) {
+            this.tracer.stop();
+        }
     }
 
     /**
