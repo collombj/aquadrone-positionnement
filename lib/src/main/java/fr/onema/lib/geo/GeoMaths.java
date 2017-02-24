@@ -270,21 +270,14 @@ public class GeoMaths {
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
 
-        System.out.println(accelerometer.toString());
-
         CartesianVelocity velocity = new CartesianVelocity(
                 (((accelerometer.getxAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
                 (((accelerometer.getyAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
                 (((accelerometer.getzAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
 
-
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
 
-        System.out.println("initial velocity: " + velocity.toString());
-
         CartesianCoordinate velocityRotated = doRotation(velocityVector, -yaw, -pitch, -roll);
-
-        System.out.println("rotated velocity: " + velocityRotated.toString());
 
         CartesianCoordinate computedCoords = new CartesianCoordinate(
                 last.x + (velocityRotated.x * (time / 1000.)),

@@ -214,10 +214,9 @@ public class Position {
      *
      * @param previousPosition La position précédente.
      * @param previousVelocity La vitesse de la position précédente.
-     * @param refPoint Les coordonnées GPS de référence
      * @return la vitesse au cours du deplacement
      */
-    CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
+    CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity) {
         if (this.hasGPS()) {
             this.positionRecalculated = this.positionBrute;
         }

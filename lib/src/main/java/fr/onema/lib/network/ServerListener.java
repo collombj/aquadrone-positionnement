@@ -16,8 +16,6 @@ import java.util.logging.Logger;
 public class ServerListener implements Worker {
     private static final Logger LOGGER = Logger.getLogger(ServerListener.class.getName());
     private final int port;
-    private byte[] buf;
-    private DatagramPacket datagramPacket;
     private DatagramSocket datagramSocket = null;
     private Thread listener;
     private MessageWorker messageWorker = new MessageWorker();
@@ -41,8 +39,8 @@ public class ServerListener implements Worker {
     }
 
     private void worker() {
-        buf = new byte[265];
-        datagramPacket = new DatagramPacket(buf, buf.length);
+        byte[] buf = new byte[265];
+        DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
         while (!Thread.interrupted()) {
             try {
                 datagramSocket.receive(datagramPacket);
@@ -55,7 +53,8 @@ public class ServerListener implements Worker {
                 if (testValidityMavlinkMessage(mesg)) {
                     this.messageWorker.newMessage(messageTimestamp, mesg);
                 } else {
-                    //LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
+                    LOGGER.log(Level.INFO,
+                            () -> "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
@@ -69,16 +68,21 @@ public class ServerListener implements Worker {
         datagramSocket.close();
     }
 
+
     boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
             messageTimestamp = timestamp;
             return true;
         }
-
         return false;
     }
 
+    /**
+     * Retourne le timestamp à associer à un message
+     * @param msg
+     * @return
+     */
     // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
@@ -88,7 +92,6 @@ public class ServerListener implements Worker {
                 return 0;
             }
         }
-
         return getBootTime(msg);
     }
 

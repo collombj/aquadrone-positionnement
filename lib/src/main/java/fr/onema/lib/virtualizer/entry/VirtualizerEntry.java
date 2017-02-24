@@ -51,7 +51,7 @@ public class VirtualizerEntry implements CSV {
      * @param temperature Temperature
      */
     public VirtualizerEntry(long timestamp, long gpsLat, long gpsLon, long gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
-        this(timestamp,xacc,yacc,zacc,roll,pitch,yaw,xmag,ymag,zmag,pressure,temperature);
+        this(timestamp, xacc, yacc, zacc, roll, pitch, yaw, xmag, ymag, zmag, pressure, temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
         this.gpsAlt = gpsAlt;
@@ -63,12 +63,13 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Constructeur de Virtualizer à partir de données GPS, IMU et Pressure.
-     * @param gps       Objet GPS
-     * @param imu       Objet IMU
-     * @param pressure  Objet Pressure
+     *
+     * @param gps      Objet GPS
+     * @param imu      Objet IMU
+     * @param pressure Objet Pressure
      */
     public VirtualizerEntry(GPS gps, IMU imu, Pressure pressure, List<Measure> measureList) {
-        if(gps == null) {
+        if (gps == null) {
             this.gpsLat = 0;
             this.gpsLon = 0;
             this.gpsAlt = 0;
@@ -77,7 +78,7 @@ public class VirtualizerEntry implements CSV {
             this.gpsLon = gps.getPosition().lon;
             this.gpsAlt = gps.getPosition().alt;
         }
-        if(imu == null) {
+        if (imu == null) {
             this.xacc = 0;
             this.yacc = 0;
             this.zacc = 0;
@@ -98,7 +99,7 @@ public class VirtualizerEntry implements CSV {
             this.ymag = imu.getCompass().getyMagnetic();
             this.zmag = imu.getCompass().getzMagnetic();
         }
-        if(pressure == null) {
+        if (pressure == null) {
             this.pressure = 0;
         } else {
             this.pressure = pressure.getAbsolute();
@@ -106,14 +107,14 @@ public class VirtualizerEntry implements CSV {
         if (!measureList.isEmpty()) { // Add here your measure values!
             if (measureList.stream().anyMatch(measure -> "temperature".equals(measure.getName()))) { // Check is at least one temperature is present
                 this.temperature = Integer.parseInt(
-                        measureList.stream().filter(m -> m.getName().equals("temperature")).findFirst().get().getValue());
+                        measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst().get().getValue());
             } else {
                 this.temperature = 0;
             }
         } else {
             this.temperature = 0;
         }
-        if(gps != null) {
+        if (gps != null) {
             this.timestamp = gps.getTimestamp();
         } else if (pressure != null) {
             this.timestamp = pressure.getTimestamp();
@@ -162,7 +163,7 @@ public class VirtualizerEntry implements CSV {
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = timestamp*1_000;
+        msg.time_usec = timestamp * 1_000;
         msg.fix_type = 6;
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
@@ -213,6 +214,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message de pression en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -225,6 +227,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message de temperature en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -241,6 +244,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS_SENSOR
+     *
      * @return Valeur de la latitude du gps
      */
     public long getGpsLat() {
@@ -249,6 +253,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la longitude du GPS_SENSOR
+     *
      * @return Valeur de la longitude du gps
      */
     public long getGpsLon() {
@@ -257,6 +262,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'altitude du GPS_SENSOR
+     *
      * @return Valeur de l'altitude du gps
      */
     public long getGpsAlt() {
@@ -274,6 +280,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Y
+     *
      * @return Valeur de l'acceleration en Y
      */
     public int getYacc() {
@@ -282,6 +289,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Z
+     *
      * @return Valeur de l'acceleration en Z
      */
     public int getZacc() {
@@ -290,6 +298,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en X
+     *
      * @return
      */
     public double getRoll() {
@@ -298,6 +307,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Y
+     *
      * @return
      */
     public double getPitch() {
@@ -306,6 +316,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Z
+     *
      * @return
      */
     public double getYaw() {
@@ -341,6 +352,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la pression
+     *
      * @return Valeur de la pression
      */
     public float getPressure() {
@@ -349,6 +361,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la temperature
+     *
      * @return Valeur de la température
      */
     public int getTemperature() {
@@ -443,7 +456,7 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + xmag;
         result = 31 * result + ymag;
         result = 31 * result + zmag;
-        result = 31 * result + (pressure != +0.0f ? Float.floatToIntBits(pressure) : 0);
+        result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
         result = 31 * result + (int) (gpsLat ^ (gpsLat >>> 32));
