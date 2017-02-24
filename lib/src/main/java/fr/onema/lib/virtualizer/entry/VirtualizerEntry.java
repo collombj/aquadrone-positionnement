@@ -8,6 +8,7 @@ import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe représentant les entrées du fichier virtualisées
@@ -105,12 +106,8 @@ public class VirtualizerEntry implements CSV {
             this.pressure = pressure.getAbsolute();
         }
         if (!measureList.isEmpty()) { // Add here your measure values!
-            if (measureList.stream().anyMatch(measure -> "temperature".equals(measure.getName()))) { // Check is at least one temperature is present
-                this.temperature = Integer.parseInt(
-                        measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst().get().getValue());
-            } else {
-                this.temperature = 0;
-            }
+            Optional<Measure> measure = measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst();
+            this.temperature = measure.map(measure1 -> Integer.parseInt(measure1.getValue())).orElse(0);
         } else {
             this.temperature = 0;
         }
