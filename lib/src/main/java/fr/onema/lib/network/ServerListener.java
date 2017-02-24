@@ -20,12 +20,9 @@ import java.util.logging.Logger;
 public class ServerListener implements Worker {
     private static final Logger LOGGER = Logger.getLogger(ServerListener.class.getName());
     private final int port;
-    private byte[] buf;
-    private DatagramPacket datagramPacket;
     private DatagramSocket datagramSocket = null;
     private Thread listener;
     private MessageWorker messageWorker = new MessageWorker();
-    private long firstTimestamp = -1;
     private long messageTimestamp = -1;
 
     /**
@@ -41,43 +38,42 @@ public class ServerListener implements Worker {
      * Permet de démarrer la Thread d'écoute qui réçoit et transmet les mavlink messages
      */
     private void startThread() {
-        listener = new Thread(() -> {
-            while (!Thread.interrupted()) {
-                buf = new byte[265];
-                datagramPacket = new DatagramPacket(buf, buf.length);
-                try {
-                    datagramSocket.receive(datagramPacket);
-                    MAVLinkReader reader = new MAVLinkReader();
-                    MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
-                    if (!testValidityMavlinkMessage(mesg)) {
-                        LOGGER.log(Level.INFO, "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
-                        continue;
-                    }
-                    while (mesg != null && reader.nbUnreadMessages() != 0) {
-                        this.messageWorker.newMessage(messageTimestamp, mesg);
-                        mesg = reader.getNextMessageWithoutBlocking();
-                    }
-                } catch (InterruptedException e) {
-                    Thread.currentThread().interrupt();
-                } catch (IOException e) {
-                    Thread.currentThread().interrupt();
-                    if (!datagramSocket.isClosed()) {
-                        LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                    }
-                }
-            }
-            datagramSocket.close();
-        });
+        listener = new Thread(this::worker);
         listener.start();
     }
 
-    public boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
-        if (firstTimestamp == -1) {
-            firstTimestamp = getFirstTimestamp(msg);
-            messageTimestamp = firstTimestamp;
-            return true;
-        }
+    private void worker() {
+        byte[] buf = new byte[265];
+        DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length);
+        while (!Thread.interrupted()) {
+            try {
+                datagramSocket.receive(datagramPacket);
+                MAVLinkReader reader = new MAVLinkReader();
+                MAVLinkMessage mesg = reader.getNextMessage(datagramPacket.getData(), datagramPacket.getLength());
+                if (mesg == null) {
+                    continue;
+                }
 
+                if (testValidityMavlinkMessage(mesg)) {
+                    this.messageWorker.newMessage(messageTimestamp, mesg);
+                } else {
+                    LOGGER.log(Level.INFO,
+                            () -> "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            } catch (IOException e) {
+                Thread.currentThread().interrupt();
+                if (!datagramSocket.isClosed()) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
+            }
+        }
+        datagramSocket.close();
+    }
+
+
+    boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
             messageTimestamp = timestamp;
@@ -86,28 +82,27 @@ public class ServerListener implements Worker {
         return false;
     }
 
-    // Public access to test
-    public long getFirstTimestamp(MAVLinkMessage msg) {
-        if (msg instanceof msg_gps_raw_int) {
-            return ((msg_gps_raw_int) msg).time_usec;
-        }
-
-        return System.currentTimeMillis() - getBootTime(msg);
-    }
-
+    /**
+     * Retourne le timestamp à associer à un message
+     * @param msg
+     * @return
+     */
     // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
-            return ((msg_gps_raw_int) msg).time_usec;
+            if (((msg_gps_raw_int) msg).time_usec != 0) {
+                return messageTimestamp;
+            } else {
+                return 0;
+            }
         }
-
-        return firstTimestamp + getBootTime(msg);
+        return getBootTime(msg);
     }
 
     // Public access to test
-    public long getBootTime(MAVLinkMessage msg) {
-        if (msg instanceof msg_scaled_imu) {
-            return ((msg_scaled_imu) msg).time_boot_ms;
+    long getBootTime(MAVLinkMessage msg) {
+        if (msg instanceof msg_raw_imu) {
+            return ((msg_raw_imu) msg).time_usec / 1_000;
         } else if (msg instanceof msg_scaled_pressure2) {
             return ((msg_scaled_pressure2) msg).time_boot_ms;
         } else if (msg instanceof msg_scaled_pressure3) {

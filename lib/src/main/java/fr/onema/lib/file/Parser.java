@@ -42,9 +42,9 @@ public class Parser {
             throw new IllegalArgumentException("15 Fields are required");
         }
         return new VirtualizerEntry(Long.parseLong(s[0]),
-                Integer.parseInt(s[1]),
-                Integer.parseInt(s[2]),
-                Integer.parseInt(s[3]),
+                Long.parseLong(s[1]),
+                Long.parseLong(s[2]),
+                Long.parseLong(s[3]),
                 Integer.parseInt(s[4]),
                 Integer.parseInt(s[5]),
                 Integer.parseInt(s[6]),

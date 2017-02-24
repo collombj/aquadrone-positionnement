@@ -14,10 +14,10 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Created by Acer on 10/02/2017.
+ * Created by François Vanderperre on 10/02/2017.
  */
 public class TestDatabaseWorker {
-    private final Configuration configuration;
+    private final Configuration configuration = Configuration.getInstance();
     private final DatabaseWorker dbWorker;
     private final MeasureRepository repository;
     private DiveEntity dive = new DiveEntity(System.currentTimeMillis(), System.currentTimeMillis() + 2000);
@@ -28,11 +28,9 @@ public class TestDatabaseWorker {
     private MeasureEntity entity = new MeasureEntity(start, brut, brut, 0, 0, 0, 0, 0, 0, 0, "QQ");
 
     public TestDatabaseWorker() throws Exception {
-        this.configuration = Configuration.build("settingsTest.properties");
-
-        DatabaseWorker.getInstance().init(configuration);
         dbWorker = DatabaseWorker.getInstance();
         repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(configuration);
+
     }
 
     @Before
@@ -41,8 +39,13 @@ public class TestDatabaseWorker {
         DatabaseTools.dropStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.createStructure(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
         DatabaseTools.insertFakeMeasureInformation(configuration.getHostname(), configuration.getPort(), configuration.getBase(), configuration.getUsername(), configuration.getPassword());
-        dbWorker.start();
         dbWorker.newDive(dive);
+
+
+    }
+
+    @Test
+    public void simulTraitement() throws Exception {
         Thread.sleep(1000);
         dbWorker.insertMeasure(entity, dive.getId(), "temperature");
         Thread.sleep(1000);
@@ -50,10 +53,6 @@ public class TestDatabaseWorker {
         dbWorker.startRecording(start, dive.getId());
         dbWorker.stopRecording(end, dive.getId());
         dbWorker.sendNotification();
-    }
-
-    @Test
-    public void simulTraitement() throws Exception {
         Thread.sleep(1500);
         DiveEntity dive2 = repository.getLastDive();
         assertFalse(dive.equals(dive2));

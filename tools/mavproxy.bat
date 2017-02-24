@@ -1,0 +1,1 @@
+"C:\Program Files (x86)\MAVProxy\mavproxy.exe" --master=192.168.2.1:14550 --out=127.0.0.1:14555 --out=127.0.0.1:14550 --source-system=42 --cmd="set heartbeat 0"

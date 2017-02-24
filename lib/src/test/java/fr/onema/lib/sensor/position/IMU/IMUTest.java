@@ -5,7 +5,7 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
-import org.mavlink.messages.ardupilotmega.msg_scaled_imu;
+import org.mavlink.messages.ardupilotmega.msg_raw_imu;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -14,7 +14,7 @@ public class IMUTest {
 
     @Test
     public void build() {
-        msg_scaled_imu msg = new msg_scaled_imu();
+        msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu);
@@ -22,7 +22,7 @@ public class IMUTest {
 
     @Test
     public void getAccelerometer() {
-        msg_scaled_imu msg = new msg_scaled_imu();
+        msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         msg.xacc = 3;
         msg.yacc = 4;
@@ -39,7 +39,7 @@ public class IMUTest {
 
     @Test
     public void getGyroscope() throws Exception {
-        msg_scaled_imu msg = new msg_scaled_imu();
+        msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         msg.xgyro = 3;
         msg.ygyro = 4;
@@ -56,7 +56,7 @@ public class IMUTest {
 
     @Test
     public void getCompass() throws Exception {
-        msg_scaled_imu msg = new msg_scaled_imu();
+        msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         msg.xmag = 3;
         msg.ymag = 4;

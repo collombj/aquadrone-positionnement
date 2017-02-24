@@ -83,7 +83,7 @@ public class VirtualizerTest {
 
     private static void initDB(FileManager fm) throws Exception {
         List<VirtualizerEntry> list = fm.readVirtualizedEntries();
-        Configuration config = Configuration.build(configPath);
+        Configuration config = Configuration.getInstance();
         Configuration.Database db = config.getDatabaseInformation();
 
         DatabaseTools.dropStructure(db.getHostname(), db.getPort(), db.getBase(), db.getUsername(), db.getPassword());
@@ -178,7 +178,7 @@ public class VirtualizerTest {
 
         String workingSourceDir = System.getProperty("user.dir").replace("simulator", "lib");
         Virtualizer v = new Virtualizer(fm, 100, "aaa", "localhost", 1234);
-        Configuration config = Configuration.build(workingSourceDir + "/settingsTest.properties");
+        Configuration config = Configuration.getInstance();
         v.start();
         assertNotEquals(v.getDuration(), 0);
         v.compare(config, 0);

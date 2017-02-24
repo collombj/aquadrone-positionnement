@@ -18,9 +18,9 @@ import java.util.logging.Logger;
 public class DatabaseWorker implements Worker {
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
     private static DatabaseWorker INSTANCE;
-    private Thread dbWorkerThread;
-    private LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
-    private String notificationKey;
+    private static Thread dbWorkerThread;
+    private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
+    private static String notificationKey;
 
     /**
      * La methode d'insertion en base utilisée par le thread
@@ -125,8 +125,8 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DatabaseWorker();
+        if (INSTANCE == null){
+            init();
         }
         return INSTANCE;
     }
@@ -136,7 +136,9 @@ public class DatabaseWorker implements Worker {
      * Doit etre appelée avant toute utilisation du databaseworker
      * @param configuration un object Configuration avec les paramètres de connexion à la base de données
      */
-    public void init(Configuration configuration) {
+    private static void init() {
+        INSTANCE = new DatabaseWorker();
+        Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
             try {
@@ -206,7 +208,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour l'heure de début d'une DiveEntity
-     *
      * @param timestamp L'heure de début de plongée
      * @param diveID    L'identifiant de la DiveEntity
      */
@@ -218,7 +219,6 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour la date de fin d'une DiveEntity
-     *
      * @param timestamp L'heure de fin de plongée
      * @param diveID    L'identifiant de la diveEntity
      */
@@ -231,7 +231,7 @@ public class DatabaseWorker implements Worker {
     /**
      * Cette méthode permet d'envoyer des notifications à la base de données
      */
-    void sendNotification() {
+    public void sendNotification() {
         if (!actionQueue.offer(new DatabaseAction(sendNotificationAux, notificationKey))) {
             LOGGER.log(Level.SEVERE, "DatabaseWorker.sendNotification : Database notification failed");
         }

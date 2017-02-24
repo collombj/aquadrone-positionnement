@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 /***
- * Controlleur associé à la vue ConfigurationLayout.fxml
+ * Controller associé à la vue ConfigurationLayout.fxml
  */
 public class ConfigurationController {
     private RootLayoutController parent;
@@ -77,7 +77,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Spinner -> Slider horizontal
+     * Binding des valeurs Spinner -> Slider horizontal
      */
     @FXML
     private void updateSliderFromSpinnerH() {
@@ -86,7 +86,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Spinner -> Slider vertical
+     * Binding des valeurs Spinner -> Slider vertical
      */
     @FXML
     private void updateSliderFromSpinnerV() {
@@ -95,7 +95,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Spinner -> Slider depth
+     * Binding des valeurs Spinner -> Slider depth
      */
     @FXML
     private void updateSliderFromSpinnerD() {
@@ -104,7 +104,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Slider -> Spinner horizontal
+     * Binding des valeurs Slider -> Spinner horizontal
      */
     @FXML
     private void updateSpinnerFromSliderH() {
@@ -113,7 +113,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Slider -> Spinner vertical
+     * Binding des valeurs Slider -> Spinner vertical
      */
     @FXML
     private void updateSpinnerFromSliderV() {
@@ -122,7 +122,7 @@ public class ConfigurationController {
     }
 
     /***
-     * Binding des valuers Slider -> Spinner depth
+     * Binding des valeurs Slider -> Spinner depth
      */
     @FXML
     private void updateSpinnerFromSliderD() {

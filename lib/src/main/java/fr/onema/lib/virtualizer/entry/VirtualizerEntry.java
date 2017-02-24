@@ -1,7 +1,13 @@
 package fr.onema.lib.virtualizer.entry;
 
+import fr.onema.lib.drone.Measure;
 import fr.onema.lib.file.CSV;
+import fr.onema.lib.sensor.position.GPS;
+import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.*;
+
+import java.util.List;
 
 /**
  * Classe représentant les entrées du fichier virtualisées
@@ -21,12 +27,13 @@ public class VirtualizerEntry implements CSV {
     private final float pressure;
     private final int temperature;
     private boolean hasGPS;
-    private int gpsLat;
-    private int gpsLon;
-    private int gpsAlt;
+    private long gpsLat;
+    private long gpsLon;
+    private long gpsAlt;
 
     /**
      * Constructeur de Virtualizer
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param gpsLat      Latitude du GPS_SENSOR
      * @param gpsLon      Longitude du GPS_SENSOR
@@ -43,7 +50,7 @@ public class VirtualizerEntry implements CSV {
      * @param pressure    Pression
      * @param temperature Temperature
      */
-    public VirtualizerEntry(long timestamp, int gpsLat, int gpsLon, int gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
+    public VirtualizerEntry(long timestamp, long gpsLat, long gpsLon, long gpsAlt, int xacc, int yacc, int zacc, double roll, double pitch, double yaw, int xmag, int ymag, int zmag, float pressure, int temperature) {
         this(timestamp, xacc, yacc, zacc, roll, pitch, yaw, xmag, ymag, zmag, pressure, temperature);
         this.gpsLat = gpsLat;
         this.gpsLon = gpsLon;
@@ -55,7 +62,71 @@ public class VirtualizerEntry implements CSV {
     }
 
     /**
-     * Constructeur de Virtualizer sans le GPS_SENSOR
+     * Constructeur de Virtualizer à partir de données GPS, IMU et Pressure.
+     *
+     * @param gps      Objet GPS
+     * @param imu      Objet IMU
+     * @param pressure Objet Pressure
+     */
+    public VirtualizerEntry(GPS gps, IMU imu, Pressure pressure, List<Measure> measureList) {
+        if (gps == null) {
+            this.gpsLat = 0;
+            this.gpsLon = 0;
+            this.gpsAlt = 0;
+        } else {
+            this.gpsLat = gps.getPosition().lat;
+            this.gpsLon = gps.getPosition().lon;
+            this.gpsAlt = gps.getPosition().alt;
+        }
+        if (imu == null) {
+            this.xacc = 0;
+            this.yacc = 0;
+            this.zacc = 0;
+            this.roll = 0;
+            this.pitch = 0;
+            this.yaw = 0;
+            this.xmag = 0;
+            this.ymag = 0;
+            this.zmag = 0;
+        } else {
+            this.xacc = imu.getAccelerometer().getxAcceleration();
+            this.yacc = imu.getAccelerometer().getyAcceleration();
+            this.zacc = imu.getAccelerometer().getzAcceleration();
+            this.roll = imu.getGyroscope().getRoll();
+            this.pitch = imu.getGyroscope().getPitch();
+            this.yaw = imu.getGyroscope().getYaw();
+            this.xmag = imu.getCompass().getxMagnetic();
+            this.ymag = imu.getCompass().getyMagnetic();
+            this.zmag = imu.getCompass().getzMagnetic();
+        }
+        if (pressure == null) {
+            this.pressure = 0;
+        } else {
+            this.pressure = pressure.getAbsolute();
+        }
+        if (!measureList.isEmpty()) { // Add here your measure values!
+            if (measureList.stream().anyMatch(measure -> "temperature".equals(measure.getName()))) { // Check is at least one temperature is present
+                this.temperature = Integer.parseInt(
+                        measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst().get().getValue());
+            } else {
+                this.temperature = 0;
+            }
+        } else {
+            this.temperature = 0;
+        }
+        if (gps != null) {
+            this.timestamp = gps.getTimestamp();
+        } else if (pressure != null) {
+            this.timestamp = pressure.getTimestamp();
+        } else {
+            this.timestamp = 0;
+        }
+        this.hasGPS = true;
+    }
+
+    /**
+     * Constructeur de Virtualizer sans le GPS
+     *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param xacc        Acceleration en x
      * @param yacc        Acceleration en y
@@ -87,11 +158,12 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message GPS_SENSOR en format MavLink
+     *
      * @return GPSMAVLinkMessage
      */
     public msg_gps_raw_int getGPSMessage() {
         msg_gps_raw_int msg = new msg_gps_raw_int();
-        msg.time_usec = timestamp;
+        msg.time_usec = timestamp * 1_000;
         msg.fix_type = 6;
         msg.lat = this.gpsLat;
         msg.lon = this.gpsLon;
@@ -106,12 +178,13 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message IMU en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return IMUMAVLinkMessage
      */
-    public msg_scaled_imu getIMUMessage(long bootTime) {
-        msg_scaled_imu msg = new msg_scaled_imu();
-        msg.time_boot_ms = bootTime;
+    public msg_raw_imu getIMUMessage(long bootTime) {
+        msg_raw_imu msg = new msg_raw_imu();
+        msg.time_usec = bootTime * 1_000;
         msg.xacc = this.xacc;
         msg.yacc = this.yacc;
         msg.zacc = this.zacc;
@@ -126,6 +199,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message Attitude en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return AttitudeMessage
      */
@@ -140,6 +214,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message de pression en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -152,6 +227,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Retourne le message de temperature en format MavLink
+     *
      * @param bootTime Milliseconde écoulées depuis le démarrage du drone
      * @return PressureMAVLinkMessage
      */
@@ -168,31 +244,35 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la latitude du GPS_SENSOR
+     *
      * @return Valeur de la latitude du gps
      */
-    public int getGpsLat() {
+    public long getGpsLat() {
         return gpsLat;
     }
 
     /**
      * Récupère la longitude du GPS_SENSOR
+     *
      * @return Valeur de la longitude du gps
      */
-    public int getGpsLon() {
+    public long getGpsLon() {
         return gpsLon;
     }
 
     /**
      * Récupère l'altitude du GPS_SENSOR
+     *
      * @return Valeur de l'altitude du gps
      */
-    public int getGpsAlt() {
+    public long getGpsAlt() {
         return gpsAlt;
     }
 
     /**
      * Récupère l'acceleration en X
-     * @return Valeur de l'acceleration en X
+     *
+     * @return xacc
      */
     public int getXacc() {
         return xacc;
@@ -200,6 +280,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Y
+     *
      * @return Valeur de l'acceleration en Y
      */
     public int getYacc() {
@@ -208,6 +289,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'acceleration en Z
+     *
      * @return Valeur de l'acceleration en Z
      */
     public int getZacc() {
@@ -216,6 +298,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en X
+     *
      * @return
      */
     public double getRoll() {
@@ -224,6 +307,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Y
+     *
      * @return
      */
     public double getPitch() {
@@ -232,6 +316,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la vitesse de rotation en Z
+     *
      * @return
      */
     public double getYaw() {
@@ -240,6 +325,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en X
+     *
      * @return xmag
      */
     public int getXmag() {
@@ -248,6 +334,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Y
+     *
      * @return ymag
      */
     public int getYmag() {
@@ -256,6 +343,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère l'orientation magnétique en Z
+     *
      * @return zmag
      */
     public int getZmag() {
@@ -264,6 +352,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la pression
+     *
      * @return Valeur de la pression
      */
     public float getPressure() {
@@ -272,6 +361,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère la temperature
+     *
      * @return Valeur de la température
      */
     public int getTemperature() {
@@ -280,6 +370,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Récupère le boolean de la présence du GPS_SENSOR
+     *
      * @return boolean
      */
     public boolean getHasGPS() {
@@ -288,6 +379,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Renvoi une string des valeurs au format CSV
+     *
      * @return la chaine de caractère CSV
      */
     @Override
@@ -297,6 +389,7 @@ public class VirtualizerEntry implements CSV {
 
     /**
      * Renvoi une string des champs au format CSV
+     *
      * @return la chaine de caractère CSV
      */
     @Override
@@ -366,9 +459,9 @@ public class VirtualizerEntry implements CSV {
         result = 31 * result + (Float.compare(pressure, +0.0f) != 0 ? Float.floatToIntBits(pressure) : 0);
         result = 31 * result + temperature;
         result = 31 * result + (hasGPS ? 1 : 0);
-        result = 31 * result + gpsLat;
-        result = 31 * result + gpsLon;
-        result = 31 * result + gpsAlt;
+        result = 31 * result + (int) (gpsLat ^ (gpsLat >>> 32));
+        result = 31 * result + (int) (gpsLon ^ (gpsLon >>> 32));
+        result = 31 * result + (int) (gpsAlt ^ (gpsAlt >>> 32));
         return result;
     }
 }

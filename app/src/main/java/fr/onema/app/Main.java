@@ -1,6 +1,7 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
+import fr.onema.lib.file.FileManager;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -9,7 +10,9 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.commons.cli.*;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /***
@@ -19,17 +22,91 @@ public class Main extends Application {
     public static final double HORIZONTAL_DEFAULT_VALUE = 0;
     public static final double VERTICAL_DEFAULT_VALUE = 0;
     public static final double DEPTH_DEFAULT_VALUE = 0;
+    private static final String DEBUG_ARGUMENT_SHORT = "d";
+    private static final String DEBUG_ARGUMENT = "debug";
+    private static final int NUMBER_OF_ARGS_DEBUG = 1;
+    private static final String JAR_NAME = "simulator";
+    private static final String USAGE = "\t" + JAR_NAME +
+            "\t" + JAR_NAME + " --" + DEBUG_ARGUMENT + " log.csv" +
+            "\n\n\n";
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final String SETTINGS_ARGUMENT_SHORT = "D";
+    private static final String PORT_PROPERTIES = "port";
+    private static String PORT = "14550";
+    private static String LOG_FILE = null;
     private Stage parent;
     private ServerListener server;
     private Configuration configuration;
     private DatabaseWorker databaseWorker;
     private MessageWorker messageWorker;
     private RootLayoutController rlc;
-    // TODO : replace with customized logging system
-    private Logger logger;
 
     public static void main(String[] args) {
-        launch(args);
+        CommandLineParser parser = new DefaultParser();
+        Options options = initOptions();
+
+        try {
+            CommandLine command = parser.parse(options, args);
+            action(command);
+            launch(args);
+        } catch (ParseException e) {
+            printHelp(options);
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        } finally {
+            System.exit(0);
+        }
+
+    }
+
+    /**
+     * Initialisation des options pour l'interface ligne de commande
+     *
+     * @return Options instanciées
+     */
+    private static Options initOptions() {
+        Option debugOption = Option.builder(DEBUG_ARGUMENT_SHORT)
+                .longOpt(DEBUG_ARGUMENT)
+                .argName(DEBUG_ARGUMENT)
+                .desc("Permet de generer un fichier de debug representant les messages MAVLink. Le fichier de sortie est" +
+                        "au format \"Simulation\".")
+                .numberOfArgs(NUMBER_OF_ARGS_DEBUG)
+                .build();
+
+        Option settings = Option.builder(SETTINGS_ARGUMENT_SHORT)
+                .numberOfArgs(2)
+                .valueSeparator('=')
+                .desc("Parametrage de l'application\n" +
+                        "Parametre possible :\n" +
+                        "\t - " + PORT_PROPERTIES + " : port sur lequel recevoir les messages MAVLink\n")
+                .build();
+
+        return new Options()
+                .addOption(debugOption)
+                .addOption(settings);
+    }
+
+    /**
+     * Affichage de l'aide sur [System.out]
+     *
+     * @param options liste des options à afficher
+     */
+    private static void printHelp(Options options) {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp(JAR_NAME, USAGE, options, "", false);
+    }
+
+    /**
+     * Filtre et exécute les actions relativent au paramètres passés en paramètres
+     */
+    private static void action(CommandLine command) {
+        if (command.hasOption(DEBUG_ARGUMENT_SHORT)) {
+            LOG_FILE = command.getOptionValues(DEBUG_ARGUMENT_SHORT)[0];
+        }
+
+        if (command.hasOption(SETTINGS_ARGUMENT_SHORT)) {
+            PORT = command.getOptionProperties(SETTINGS_ARGUMENT_SHORT).getProperty(PORT_PROPERTIES, PORT);
+        }
     }
 
     public RootLayoutController getRlc() {
@@ -42,13 +119,18 @@ public class Main extends Application {
      */
     @Override
     public void start(Stage primaryStage) throws Exception {
-        this.configuration = Configuration.build("settings.properties");
+        this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
-        this.databaseWorker.init(configuration);
         this.databaseWorker.start();
-        this.server = new ServerListener(14550);
+        this.server = new ServerListener(Integer.parseInt(PORT));
         this.server.start();
         this.messageWorker = server.getMessageWorker();
+        System.out.println("SETTING LOG");
+        if (LOG_FILE != null) {
+            this.messageWorker.setTracer(new FileManager("rawinput.csv", LOG_FILE, "resultOutput.csv"));
+            this.messageWorker.startLogger();
+            System.out.println("TRACER SET: " + LOG_FILE);
+        }
         this.parent = primaryStage;
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
@@ -67,6 +149,7 @@ public class Main extends Application {
         super.stop();
         server.stop();
         databaseWorker.stop();
+        this.messageWorker.stopLogger();
     }
 
     public void execute() {

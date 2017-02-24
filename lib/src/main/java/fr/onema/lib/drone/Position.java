@@ -67,7 +67,7 @@ public class Position {
     }
 
     /**
-     * recupère la position brute cartésienne. Utile pour le calcul de la position recalculé
+     * Recupère la position brute cartésienne. Utile pour le calcul de la position recalculé
      *
      * @return La position cartésienne brute
      */
@@ -76,7 +76,7 @@ public class Position {
     }
 
     /**
-     * met a jour la position brute cartésienne
+     * Met a jour la position brute cartésienne
      *
      * @param cartesianBrute La position cartésienne brute
      */
@@ -107,7 +107,7 @@ public class Position {
      *
      * @return La position GPS_SENSOR brute de la position.
      */
-    GPSCoordinate getPositionBrute() {
+    public GPSCoordinate getPositionBrute() {
         return positionBrute;
     }
 
@@ -175,7 +175,7 @@ public class Position {
         this.gps = gps;
     }
 
-    List<Measure> getMeasures() {
+    public List<Measure> getMeasures() {
         return measures;
     }
 
@@ -214,10 +214,9 @@ public class Position {
      *
      * @param previousPosition La position précédente.
      * @param previousVelocity La vitesse de la position précédente.
-     * @param refPoint Les coordonnées GPS de référence
      * @return la vitesse au cours du deplacement
      */
-    CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity, GPSCoordinate refPoint) {
+    CartesianVelocity calculate(Position previousPosition, CartesianVelocity previousVelocity) {
         if (this.hasGPS()) {
             this.positionRecalculated = this.positionBrute;
         }
@@ -232,9 +231,7 @@ public class Position {
 
         this.setCartesianBrute(wrapper.getCoordinate());
 
-        this.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(refPoint, cartesianBrute));
         return wrapper.getVelocity();
-
     }
 
     /**

@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -16,6 +18,8 @@ import java.util.Properties;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
+    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
+    private static Configuration instance;
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -33,11 +37,11 @@ public class Configuration {
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
 
-    private final String path;
-    private final Database database;
-    private final Geo geo;
-    private final Flow flow;
-    private final DiveData diveData;
+    private String path;
+    private Database database;
+    private Geo geo;
+    private Flow flow;
+    private DiveData diveData;
 
     private Configuration(String path, Properties properties) throws FileNotFoundException {
         this.path = path;
@@ -78,18 +82,33 @@ public class Configuration {
             Properties properties = new Properties();
             properties.load(input);
 
-            return new Configuration(path, properties);
+            instance = new Configuration(path, properties);
         } catch (FileNotFoundException e) {
             throw e;
         } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+        return instance;
+    }
+
+
+    public static Configuration getInstance() {
+        if (instance == null) {
+            try {
+                build("settings.properties");
+            } catch (FileNotFoundException e) {
+                LOGGER.log(Level.SEVERE,"Can't find the configuration file",e);
+            }
+        }
+        return instance;
+
     }
 
     /**
      * On entre une latitude, une longitude et une altitude. Ces valeurs sont comparées
      * à celles présentes dans notre fichier de configuration. En cas de différence on remplace, à l'intérieur
      * du fichier, l'ancienne valeur par la nouvelle valeur
+     *
      * @param x Latitude
      * @param y Longitude
      * @param z Altitude
@@ -128,6 +147,7 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer la configuration de la base de données.
      * Pour plus de détails se référer à {@link Database}.
+     *
      * @return La configuration de la base de données
      */
     public Database getDatabaseInformation() {
@@ -137,6 +157,7 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer les informations relatives à la géographie de l'application.
      * Pour plus de détails se référer à {@link Geo}.
+     *
      * @return La configuration géographique de l'application
      */
     public Geo getGeo() {
@@ -146,6 +167,7 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer la configuration des courrants (pour la correction de position.
      * Pour plus de détails se référer à {@link Flow} et {@link Dive}.
+     *
      * @return La configuration géographique de l'application
      */
     public Flow getFlow() {
@@ -154,6 +176,7 @@ public class Configuration {
 
     /**
      * Méthode permettant de récupérer la configuration des données de plongée
+     *
      * @return la configuration d'une plongée
      */
     public DiveData getDiveData() {
@@ -176,6 +199,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le courant présent sur l'axe latitudinale
+         *
          * @return Le courant en latitude
          */
         public double getLat() {
@@ -184,6 +208,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le courant présent sur l'axe longitudinal
+         *
          * @return Le courant en longitude
          */
         public double getLon() {
@@ -192,6 +217,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le courant présent sur l'axe de la profondeur
+         *
          * @return Le courant en profondeur
          */
         public double getAlt() {
@@ -201,7 +227,7 @@ public class Configuration {
         boolean update(double lat, double lon, double alt) {
             boolean edited = false;
 
-            if (Double.compare(lat, this.lat) != 0){
+            if (Double.compare(lat, this.lat) != 0) {
                 this.lat = lat;
                 edited = true;
             }
@@ -242,6 +268,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom d'hôte de la BDD
+         *
          * @return Nom d'hôte de la BDD
          */
         public String getHostname() {
@@ -250,6 +277,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le port de la BDD
+         *
          * @return Port de la BDD
          */
         public int getPort() {
@@ -258,6 +286,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom de la base relatif à l'application
+         *
          * @return Le nom de la base
          */
         public String getBase() {
@@ -266,6 +295,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom d'utilisateur pour la connexion à la BDD
+         *
          * @return Le nom d'utilisateur
          */
         public String getUsername() {
@@ -274,6 +304,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le mot de passe pour la connexion à la BDD
+         *
          * @return Le mot de passe
          */
         public String getPassword() {
@@ -282,6 +313,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir la clé de notification pour la BDD
+         *
          * @return La clé de notification
          */
         public String getNotifyKey() {
@@ -302,6 +334,7 @@ public class Configuration {
 
         /**
          * Le constructeur de la classe
+         *
          * @param precision             la précision en mètres
          * @param dureemax              la durée en secondes de la plognée
          * @param mouvementsmax         le nombre max de mouvements avant de perdre trop de précision
@@ -320,6 +353,7 @@ public class Configuration {
 
         /**
          * Retourne la précision
+         *
          * @return la précision en mètres
          */
         public double getPrecision() {
@@ -328,6 +362,7 @@ public class Configuration {
 
         /**
          * Retourne la durée max conseillée d'une plongée
+         *
          * @return la durée max conseillée d'une plongée
          */
         public int getDureemax() {
@@ -336,6 +371,7 @@ public class Configuration {
 
         /**
          * Retourne le nombre de mouvements max conseillés avant de perdre trop de précision
+         *
          * @return le nombre de mouvements max conseillé
          */
         public int getMouvementsmax() {
@@ -344,6 +380,7 @@ public class Configuration {
 
         /**
          * Retourne le délai avant de considerer un capteur HS
+         *
          * @return le délai avant de considérer un capteur HS en secondes
          */
         public int getDelaicapteurhs() {
@@ -352,6 +389,7 @@ public class Configuration {
 
         /**
          * Retourne la fréquence de test du flux mavlink
+         *
          * @return la fréquence de test du flux mavlink
          */
         public int getFrequencetestmavlink() {
@@ -360,6 +398,7 @@ public class Configuration {
 
         /**
          * Retourne la fréquence de test du flux database
+         *
          * @return la fréquence de test du flux database
          */
         public int getFrequencetestdatabase() {
@@ -379,6 +418,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le SRID des données à stocker en base
+         *
          * @return Le SRID souhaité
          */
         public int getSrid() {

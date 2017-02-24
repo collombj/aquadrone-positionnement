@@ -25,7 +25,7 @@ public class MeasureEntity {
      * Constructeur
      *
      * @param timestamp         La timestamp de la mesure, en millisecondes
-     * @param locationBrute      Les coordonnées GPS_SENSOR de la mesure calculées
+     * @param locationBrute     Les coordonnées GPS_SENSOR de la mesure calculées
      * @param locationCorrected Les coordonnées GPS_SENSOR de la mesure après correction
      * @param accelerationX     L'accélération selon l'axe X du drone
      * @param accelerationY     L'accélération selon l'axe Y du drone
@@ -39,8 +39,6 @@ public class MeasureEntity {
     public MeasureEntity(long timestamp, GPSCoordinate locationBrute, GPSCoordinate locationCorrected,
                          int accelerationX, int accelerationY, int accelerationZ, double roll, double pitch,
                          double yaw, int precisionCm, String measureValue) {
-        Objects.requireNonNull(locationBrute);
-        Objects.requireNonNull(locationCorrected);
         Objects.requireNonNull(measureValue);
         this.timestamp = timestamp;
         this.locationBrute = locationBrute;
@@ -228,6 +226,19 @@ public class MeasureEntity {
 
         MeasureEntity that = (MeasureEntity) o;
 
+        if (id != that.id)
+            return false;
+        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
+            return false;
+        return diveEquals(o);
+    }
+
+    public boolean diveEquals(Object o) {
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
+        MeasureEntity that = (MeasureEntity) o;
         if (timestamp != that.timestamp)
             return false;
         if (accelerationX != that.accelerationX)
@@ -244,14 +255,9 @@ public class MeasureEntity {
             return false;
         if (precisionCm != that.precisionCm)
             return false;
-        if (id != that.id)
-            return false;
         if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
             return false;
-        if (locationCorrected != null ? !locationCorrected.equals(that.locationCorrected) : that.locationCorrected != null)
-            return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
-
     }
 
     @Override

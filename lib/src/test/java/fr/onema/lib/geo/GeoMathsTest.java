@@ -280,37 +280,4 @@ public class GeoMathsTest {
         recalculatePosition(list, new GPSCoordinate(3,3,1), null) ;
 
     }
-    @Test
-    public void testRecalculaterawposition() {
-
-        Position p1 = new Position(5);
-
-        Position p2 = new Position(5);
-        Position p3 = new Position(5);
-
-        p1.setCartesianBrute(new CartesianCoordinate(0,0,0));
-        p2.setCartesianBrute(new CartesianCoordinate(2.77,2.77,-3.92));
-        p3.setCartesianBrute(new CartesianCoordinate(5,4,-7));
-
-
-
-
-        List<Position> list= new ArrayList<>();
-        list.add(0,p1);
-        list.add(1,p2);
-        list.add(2,p3);
-
-        GPSCoordinate ref = new GPSCoordinate(450_000_500, 450_000_000, 130_000);
-        GPSCoordinate refsurface = new GPSCoordinate(450_000_000, 440_000_000, 140_000);
-
-        recalculatePosition(list, ref, refsurface) ;
-
-        assertEquals(refsurface.lat,list.get(2).getPositionRecalculated().lat);
-        assertEquals(refsurface.lon,list.get(2).getPositionRecalculated().lon);
-        assertEquals(refsurface.alt,list.get(2).getPositionRecalculated().alt);
-
-
-
-    }
-
 }

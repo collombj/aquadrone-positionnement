@@ -105,8 +105,8 @@ public final class DatabaseTools {
                 "  ADD CONSTRAINT \"measureINFORMATION_UNIQUE_NAME\" UNIQUE (name);\n" +
                 "ALTER TABLE ONLY measure\n" +
                 "  ADD CONSTRAINT \"measure_PK_ID\" PRIMARY KEY (id);\n" +
-                "ALTER TABLE ONLY measure\n" +
-                "  ADD CONSTRAINT \"measure_UNIQUE_POSITION_MEASURE_VALUE\" UNIQUE (location_brut, location_corrected, measureinformation_id);\n" +
+                /*"ALTER TABLE ONLY measure\n" +
+                "  ADD CONSTRAINT \"measure_UNIQUE_POSITION_MEASURE_VALUE\" UNIQUE (location_brut, location_corrected, measureinformation_id);\n" +*/
                 "ALTER TABLE ONLY measure\n" +
                 "  ADD CONSTRAINT \"measure_FK_DIVE_ID_dive_ID\" FOREIGN KEY (dive_id) REFERENCES dive (id) ON DELETE CASCADE;\n" +
                 "ALTER TABLE ONLY measure\n" +
