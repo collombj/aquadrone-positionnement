@@ -31,9 +31,9 @@ import java.util.*;
  */
 public class RootLayoutController {
     private final Main main;
-    private double horizontalOffset = 0;
-    private double verticalOffset = 0;
-    private double depthOffset = 0;
+    private double offsetX = 0;
+    private double offsetY = 0;
+    private double offsetZ = 0;
     private volatile BooleanProperty isRunning = new SimpleBooleanProperty();
     private StringProperty startButtonLabel = new SimpleStringProperty();
     private Thread precisionProgress = new Thread();
@@ -65,12 +65,13 @@ public class RootLayoutController {
 
     @FXML
     private ProgressBar precisionProgressBar;
+
     @FXML
     private TableView<TableSensor> sensorsTableView;
-    @FXML
-    private TableColumn<TableSensor, Integer> id;
+
     @FXML
     private TableColumn<TableSensor, String> type;
+
     @FXML
     private TableColumn<TableSensor, String> state;
 
@@ -83,26 +84,26 @@ public class RootLayoutController {
 
     /***
      * Setter de la valeur de l'offset horizontal spécifier dans les paramètres
-     * @param horizontalOffset La valeur de l'offset horizontal
+     * @param offsetX La valeur de l'offset horizontal
      */
-    public void setHorizontalOffset(double horizontalOffset) {
-        this.horizontalOffset = horizontalOffset;
+    public void setOffsetX(double offsetX) {
+        this.offsetX = offsetX;
     }
 
     /***
      * Setter de la valeur de l'offset vertical spécifier dans les paramètres
-     * @param verticalOffset La valeur de l'offset vertical
+     * @param offsetY La valeur de l'offset vertical
      */
-    public void setVerticalOffset(double verticalOffset) {
-        this.verticalOffset = verticalOffset;
+    public void setOffsetY(double offsetY) {
+        this.offsetY = offsetY;
     }
 
     /***
      * Setter de la valeur de l'offset de profondeur spécifier dans les paramètres
-     * @param depthOffset La valeur de l'offset de profondeur
+     * @param offsetZ La valeur de l'offset de profondeur
      */
-    public void setDepthOffset(double depthOffset) {
-        this.depthOffset = depthOffset;
+    public void setOffsetZ(double offsetZ) {
+        this.offsetZ = offsetZ;
     }
 
     /***
@@ -184,7 +185,7 @@ public class RootLayoutController {
             stage.resizableProperty().setValue(false);
             ConfigurationController controller = loader.getController();
             controller.initialize();
-            controller.insertSpinnerValues(main.getConfiguration().getFlow().getLat(), main.getConfiguration().getFlow().getLon(), main.getConfiguration().getFlow().getAlt());
+            controller.insertSpinnerValues(main.getConfiguration().getOffset().getAccelerationOffsetX(), main.getConfiguration().getOffset().getAccelerationOffsetY(), main.getConfiguration().getOffset().getAccelerationOffsetZ());
             controller.init(this, main);
             stage.showAndWait();
         } else {
@@ -280,15 +281,12 @@ public class RootLayoutController {
     }
 
     public void updateSensors(Map<String, Long> map) {
-        id.setCellValueFactory(new PropertyValueFactory<>("id"));
         type.setCellValueFactory(new PropertyValueFactory<>("type"));
         state.setCellValueFactory(new PropertyValueFactory<>("state"));
         sensors.clear();
 
-        int i = 1;
         for (Map.Entry<String, Long> e : map.entrySet()) {
-            sensors.add(new TableSensor(i, e.getKey(), checkStateTime(e.getValue())));
-            i++;
+            sensors.add(new TableSensor(e.getKey(), checkStateTime(e.getValue())));
         }
         sensorsTableView.getItems().setAll(sensors);
         sensorsTableView.refresh();
@@ -307,19 +305,13 @@ public class RootLayoutController {
     /***
      *
      */
-    public class TableSensor {
-        private final int id;
+    private class TableSensor {
         private final String type;
         private final String state;
 
-        public TableSensor(int id, String type, String state) {
-            this.id = id;
+        private TableSensor(String type, String state) {
             this.type = Objects.requireNonNull(type);
             this.state = Objects.requireNonNull(state);
-        }
-
-        public int getId() {
-            return id;
         }
 
         public String getType() {

@@ -20,22 +20,22 @@ public class ConfigurationController {
     private Main main;
 
     @FXML
-    private Slider verticalSlider;
+    private Slider yOffsetSlider;
 
     @FXML
-    private Slider horizontalSlider;
+    private Slider xOffsetSlider;
 
     @FXML
-    private Slider depthSlider;
+    private Slider zOffsetSlider;
 
     @FXML
-    private Spinner<Double> verticalSpinner;
+    private Spinner<Double> yOffsetSpinner;
 
     @FXML
-    private Spinner<Double> horizontalSpinner;
+    private Spinner<Double> xOffsetSpinner;
 
     @FXML
-    private Spinner<Double> depthSpinner;
+    private Spinner<Double> zOffsetSpinner;
 
     @FXML
     private Button applyButton;
@@ -54,13 +54,13 @@ public class ConfigurationController {
     }
 
     @FXML
-    void insertSpinnerValues(double h, double v, double d) {
-        horizontalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(horizontalSlider.getMin(), horizontalSlider.getMax(), h, horizontalSlider.getMinorTickCount()));
-        verticalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(verticalSlider.getMin(), verticalSlider.getMax(), v, verticalSlider.getMinorTickCount()));
-        depthSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(depthSlider.getMin(), depthSlider.getMax(), d, depthSlider.getMinorTickCount()));
-        horizontalSlider.adjustValue(horizontalSpinner.getValue());
-        verticalSlider.adjustValue(verticalSpinner.getValue());
-        depthSlider.adjustValue(depthSpinner.getValue());
+    void insertSpinnerValues(double x, double y, double z) {
+        xOffsetSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(xOffsetSlider.getMin(), xOffsetSlider.getMax(), x, xOffsetSlider.getMinorTickCount()));
+        yOffsetSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(yOffsetSlider.getMin(), yOffsetSlider.getMax(), y, yOffsetSlider.getMinorTickCount()));
+        zOffsetSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(zOffsetSlider.getMin(), zOffsetSlider.getMax(), z, zOffsetSlider.getMinorTickCount()));
+        xOffsetSlider.adjustValue(xOffsetSpinner.getValue());
+        yOffsetSlider.adjustValue(yOffsetSpinner.getValue());
+        zOffsetSlider.adjustValue(zOffsetSpinner.getValue());
     }
 
     /***
@@ -68,66 +68,66 @@ public class ConfigurationController {
      */
     @FXML
     public void resetConfigurationLayout() {
-        horizontalSlider.adjustValue(Main.HORIZONTAL_DEFAULT_VALUE);
-        verticalSlider.adjustValue(Main.VERTICAL_DEFAULT_VALUE);
-        depthSlider.adjustValue(Main.DEPTH_DEFAULT_VALUE);
-        updateSpinner(horizontalSpinner, Main.HORIZONTAL_DEFAULT_VALUE);
-        updateSpinner(verticalSpinner, Main.VERTICAL_DEFAULT_VALUE);
-        updateSpinner(depthSpinner, Main.DEPTH_DEFAULT_VALUE);
+        xOffsetSlider.adjustValue(Main.X_DEFAULT_VALUE);
+        yOffsetSlider.adjustValue(Main.Y_DEFAULT_VALUE);
+        zOffsetSlider.adjustValue(Main.Z_DEFAULT_VALUE);
+        updateSpinner(xOffsetSpinner, Main.X_DEFAULT_VALUE);
+        updateSpinner(yOffsetSpinner, Main.Y_DEFAULT_VALUE);
+        updateSpinner(zOffsetSpinner, Main.Z_DEFAULT_VALUE);
     }
 
     /***
-     * Binding des valeurs Spinner -> Slider horizontal
+     * Binding des valeurs Spinner -> Slider X
      */
     @FXML
-    private void updateSliderFromSpinnerH() {
-        horizontalSlider.adjustValue(horizontalSpinner.getValue());
-        parent.setHorizontalOffset(horizontalSpinner.getValue());
+    private void updateSliderFromSpinnerX() {
+        xOffsetSlider.adjustValue(xOffsetSpinner.getValue());
+        parent.setOffsetX(xOffsetSpinner.getValue());
     }
 
     /***
-     * Binding des valeurs Spinner -> Slider vertical
+     * Binding des valeurs Spinner -> Slider Y
      */
     @FXML
-    private void updateSliderFromSpinnerV() {
-        verticalSlider.adjustValue(verticalSpinner.getValue());
-        parent.setVerticalOffset(verticalSpinner.getValue());
+    private void updateSliderFromSpinnerY() {
+        yOffsetSlider.adjustValue(yOffsetSpinner.getValue());
+        parent.setOffsetY(yOffsetSpinner.getValue());
     }
 
     /***
-     * Binding des valeurs Spinner -> Slider depth
+     * Binding des valeurs Spinner -> Slider Z
      */
     @FXML
-    private void updateSliderFromSpinnerD() {
-        depthSlider.adjustValue(depthSpinner.getValue());
-        parent.setDepthOffset(depthSpinner.getValue());
+    private void updateSliderFromSpinnerZ() {
+        zOffsetSlider.adjustValue(zOffsetSpinner.getValue());
+        parent.setOffsetZ(zOffsetSpinner.getValue());
     }
 
     /***
-     * Binding des valeurs Slider -> Spinner horizontal
+     * Binding des valeurs Slider -> Spinner X
      */
     @FXML
-    private void updateSpinnerFromSliderH() {
-        updateSpinner(horizontalSpinner, horizontalSlider.getValue());
-        parent.setHorizontalOffset(horizontalSpinner.getValue());
+    private void updateSpinnerFromSliderX() {
+        updateSpinner(xOffsetSpinner, xOffsetSlider.getValue());
+        parent.setOffsetX(xOffsetSpinner.getValue());
     }
 
     /***
-     * Binding des valeurs Slider -> Spinner vertical
+     * Binding des valeurs Slider -> Spinner Y
      */
     @FXML
-    private void updateSpinnerFromSliderV() {
-        updateSpinner(verticalSpinner, verticalSlider.getValue());
-        parent.setVerticalOffset(verticalSpinner.getValue());
+    private void updateSpinnerFromSliderY() {
+        updateSpinner(yOffsetSpinner, yOffsetSlider.getValue());
+        parent.setOffsetY(yOffsetSpinner.getValue());
     }
 
     /***
-     * Binding des valeurs Slider -> Spinner depth
+     * Binding des valeurs Slider -> Spinner Z
      */
     @FXML
-    private void updateSpinnerFromSliderD() {
-        updateSpinner(depthSpinner, depthSlider.getValue());
-        parent.setDepthOffset(depthSpinner.getValue());
+    private void updateSpinnerFromSliderZ() {
+        updateSpinner(zOffsetSpinner, zOffsetSlider.getValue());
+        parent.setOffsetZ(zOffsetSpinner.getValue());
     }
 
     private void updateSpinner(Spinner<Double> sp, Double d) {
@@ -149,11 +149,11 @@ public class ConfigurationController {
      */
     @FXML
     private void applyConfigurationOnNextDive() {
-        parent.setHorizontalOffset(horizontalSpinner.getValue());
-        parent.setVerticalOffset(verticalSpinner.getValue());
-        parent.setDepthOffset(depthSpinner.getValue());
+        parent.setOffsetX(xOffsetSpinner.getValue());
+        parent.setOffsetY(yOffsetSpinner.getValue());
+        parent.setOffsetZ(zOffsetSpinner.getValue());
         try {
-            main.getConfiguration().setCorrection(horizontalSpinner.getValue(), verticalSpinner.getValue(), depthSpinner.getValue());
+            main.getConfiguration().setCorrection(xOffsetSpinner.getValue(), yOffsetSpinner.getValue(), zOffsetSpinner.getValue());
         } catch (IOException e) {
             // TODO : complete
         }
