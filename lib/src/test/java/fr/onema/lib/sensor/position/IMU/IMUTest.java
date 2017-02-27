@@ -3,6 +3,7 @@ package fr.onema.lib.sensor.position.IMU;
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.tools.Configuration;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
@@ -32,9 +33,10 @@ public class IMUTest {
         msgAttitude.yaw = 1;
         IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
-        assertEquals(3, imu.getAccelerometer().getxAcceleration());
-        assertEquals(4, imu.getAccelerometer().getyAcceleration());
-        assertEquals(5, imu.getAccelerometer().getzAcceleration());
+        Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
+        assertEquals(3, imu.getAccelerometer().getxAcceleration() - offset.getAccelerationOffsetX());
+        assertEquals(4, imu.getAccelerometer().getyAcceleration() - offset.getAccelerationOffsetY());
+        assertEquals(5, imu.getAccelerometer().getzAcceleration() - offset.getAccelerationOffsetZ());
     }
 
     @Test
