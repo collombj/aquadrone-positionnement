@@ -7,6 +7,7 @@ import fr.onema.lib.tools.Configuration;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
 
+import java.io.FileNotFoundException;
 import java.util.Objects;
 
 /**
@@ -35,7 +36,7 @@ public class IMU extends Sensor {
      * @param msg recuperation du flux mavlink
      * @return Un IMU instancié en fonction de messages MAVLink
      */
-    public static IMU build(long timestamp, msg_raw_imu msg, msg_attitude msgAttitude) {
+    public static IMU build(long timestamp, msg_raw_imu msg, msg_attitude msgAttitude) throws FileNotFoundException {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(msgAttitude);
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();

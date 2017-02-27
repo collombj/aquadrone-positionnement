@@ -139,10 +139,10 @@ public class MessageWorker implements Worker {
         }
     }
 
-    private class MavLinkMessagesThreadWorker implements Runnable {
+    public class MavLinkMessagesThreadWorker implements Runnable {
 
 
-        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException, FileNotFoundException {
+        public void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException, FileNotFoundException {
             // If Dive doesn't exist
             if (dive == null) {
                 dive = new Dive();
@@ -198,7 +198,7 @@ public class MessageWorker implements Worker {
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
-        private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
+        private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) throws FileNotFoundException {
             LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
@@ -216,7 +216,7 @@ public class MessageWorker implements Worker {
             imuBuffer = attitudeMessage; // Update msg_scale_imu value
         }
 
-        private void imuReceived(long timestamp, msg_raw_imu imuMessage) {
+        private void imuReceived(long timestamp, msg_raw_imu imuMessage) throws FileNotFoundException {
             LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;

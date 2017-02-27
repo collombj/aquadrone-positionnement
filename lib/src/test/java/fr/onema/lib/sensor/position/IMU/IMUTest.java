@@ -4,17 +4,19 @@ package fr.onema.lib.sensor.position.IMU;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
+import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
+
+import java.io.FileNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class IMUTest {
-
     @Test
-    public void build() {
+    public void build() throws FileNotFoundException {
         msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         IMU imu = IMU.build(27091994, msg, msgAttitude);
@@ -22,7 +24,7 @@ public class IMUTest {
     }
 
     @Test
-    public void getAccelerometer() {
+    public void getAccelerometer() throws FileNotFoundException {
         msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         msg.xacc = 3;
