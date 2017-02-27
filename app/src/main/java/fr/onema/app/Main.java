@@ -56,7 +56,6 @@ public class Main extends Application {
         } finally {
             System.exit(0);
         }
-
     }
 
     /**
@@ -135,7 +134,7 @@ public class Main extends Application {
         this.parent.setTitle("App");
         this.parent.resizableProperty().set(false);
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
-        rlc = new RootLayoutController(this);
+        this.rlc = new RootLayoutController(this);
         fxmlLoader.setController(rlc);
         fxmlLoader.load();
         primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
@@ -153,6 +152,7 @@ public class Main extends Application {
     }
 
     public void execute() {
+        rlc.setRunning(true);
         messageWorker.startRecording();
     }
 
@@ -169,6 +169,7 @@ public class Main extends Application {
     }
 
     public void stopExecution() {
+        rlc.setRunning(false);
         messageWorker.stopRecording();
     }
 }
