@@ -241,6 +241,14 @@ public class MeasureEntity {
         MeasureEntity that = (MeasureEntity) o;
         if (timestamp != that.timestamp)
             return false;
+        if(!areSpatialValuesEquals(that))
+            return false;
+        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+    }
+
+    private boolean areSpatialValuesEquals(MeasureEntity that){
+        if (timestamp != that.timestamp)
+            return false;
         if (accelerationX != that.accelerationX)
             return false;
         if (accelerationY != that.accelerationY)
@@ -255,9 +263,9 @@ public class MeasureEntity {
             return false;
         if (precisionCm != that.precisionCm)
             return false;
-        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
+        if(locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
             return false;
-        return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
+        return true;
     }
 
     @Override
