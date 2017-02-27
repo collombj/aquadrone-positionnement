@@ -3,6 +3,7 @@ package fr.onema.lib.sensor.position.IMU;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Sensor;
+import fr.onema.lib.tools.Configuration;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
 
@@ -37,7 +38,10 @@ public class IMU extends Sensor {
     public static IMU build(long timestamp, msg_raw_imu msg, msg_attitude msgAttitude) {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(msgAttitude);
-        Accelerometer accelerometer = new Accelerometer(msg.xacc, msg.yacc, msg.zacc);
+        Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
+        Accelerometer accelerometer = new Accelerometer((int)Math.round(msg.xacc - offset.getAccelerationOffsetX()),
+                (int)Math.round(msg.yacc - offset.getAccelerationOffsetY()),
+                (int)Math.round(msg.zacc - offset.getAccelerationOffsetZ()));
         Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(timestamp, accelerometer, gyroscope, compass);
