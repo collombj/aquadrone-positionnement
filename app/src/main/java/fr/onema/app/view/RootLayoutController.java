@@ -110,7 +110,7 @@ public class RootLayoutController {
      * Setter de la valeur d'état de la plongée
      * @param running La valeur de l'état de plongée
      */
-    private void setRunning(boolean running) {
+    public void setRunning(boolean running) {
         isRunning.setValue(running);
     }
 
@@ -222,7 +222,6 @@ public class RootLayoutController {
             @Override
             protected Void call() throws Exception {
                 main.execute();
-                setRunning(false);
                 Thread.currentThread().interrupt();
                 return null;
             }
