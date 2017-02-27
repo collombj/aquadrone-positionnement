@@ -20,9 +20,9 @@ import java.util.logging.Logger;
  * Classe Main de l'application graphique
  */
 public class Main extends Application {
-    public static final double HORIZONTAL_DEFAULT_VALUE = 0;
-    public static final double VERTICAL_DEFAULT_VALUE = 0;
-    public static final double DEPTH_DEFAULT_VALUE = 0;
+    public static final double X_DEFAULT_VALUE = 0;
+    public static final double Y_DEFAULT_VALUE = 0;
+    public static final double Z_DEFAULT_VALUE = 0;
     private static final String DEBUG_ARGUMENT_SHORT = "d";
     private static final String DEBUG_ARGUMENT = "debug";
     private static final int NUMBER_OF_ARGS_DEBUG = 1;
@@ -57,7 +57,6 @@ public class Main extends Application {
         } finally {
             System.exit(0);
         }
-
     }
 
     /**
@@ -162,6 +161,7 @@ public class Main extends Application {
     }
 
     public void execute() {
+        rlc.setRunning(true);
         messageWorker.startRecording();
     }
 
@@ -178,6 +178,7 @@ public class Main extends Application {
     }
 
     public void stopExecution() {
+        rlc.setRunning(false);
         messageWorker.stopRecording();
     }
 }

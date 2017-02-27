@@ -25,9 +25,9 @@ public class Configuration {
     private static final String DB_TOKEN = "database.password";
     private static final String DB_NOTIFY_KEY = "database.notify-key";
     private static final String GEO_SRID = "geo.srid";
-    private static final String FLOW_LAT = "flow.lat";
-    private static final String FLOW_LON = "flow.lon";
-    private static final String FLOW_ALT = "flow.alt";
+    private static final String OFFSET_ACC_X = "offset.acc.x";
+    private static final String OFFSET_ACC_Y = "offset.acc.y";
+    private static final String OFFSET_ACC_Z = "offset.acc.z";
     private static final String DIVEDATA_PRECISION = "divedata.precision";
     private static final String DIVEDATA_DUREE_MAX = "divedata.dureemax";
     private static final String DIVEDATA_MOUVEMENTS_MAX = "divedata.mouvementsmax";
@@ -38,7 +38,7 @@ public class Configuration {
     private String path;
     private Database database;
     private Geo geo;
-    private Flow flow;
+    private AccelerationOffset offset;
     private DiveData diveData;
 
     private Configuration(String path, Properties properties) throws FileNotFoundException {
@@ -52,11 +52,9 @@ public class Configuration {
                 properties.getProperty(DB_NOTIFY_KEY)
         );
         this.geo = new Geo(Integer.parseInt(properties.getProperty(GEO_SRID)));
-        this.flow = new Flow(
-                Double.parseDouble(properties.getProperty(FLOW_LAT)),
-                Double.parseDouble(properties.getProperty(FLOW_LON)),
-                Double.parseDouble(properties.getProperty(FLOW_ALT))
-        );
+        this.offset = new AccelerationOffset(Double.parseDouble(properties.getProperty(OFFSET_ACC_X)),
+                Double.parseDouble(properties.getProperty(OFFSET_ACC_Y)),
+                Double.parseDouble(properties.getProperty(OFFSET_ACC_Z)));
 
         this.diveData = new DiveData(Double.parseDouble(properties.getProperty(DIVEDATA_PRECISION)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_DUREE_MAX)),
@@ -103,15 +101,15 @@ public class Configuration {
      * à celles présentes dans notre fichier de configuration. En cas de différence on remplace, à l'intérieur
      * du fichier, l'ancienne valeur par la nouvelle valeur
      *
-     * @param x Latitude
-     * @param y Longitude
-     * @param z Altitude
+     * @param accelerationOffsetX Offset de l'accélération sur l'axe x
+     * @param accelerationOffsetY Offset de l'accélération sur l'axe y
+     * @param accelerationOffsetZ Offset de l'accélération sur l'axe z
      * @throws IOException -Si le fichier n'est pas trouvé
      *                     -Si l'écriture dans ce fichier plante
      *                     -Si on ne peut pas fermer le fichier de sortie(probablement parce qu'il l'est déjà)
      */
-    public void setCorrection(double x, double y, double z) throws IOException {
-        if (flow.update(x, y, z)) {
+    public void setCorrection(double accelerationOffsetX, double accelerationOffsetY, double accelerationOffsetZ) throws IOException {
+        if (offset.update(accelerationOffsetX, accelerationOffsetY, accelerationOffsetZ)) {
             update();
         }
     }
@@ -125,9 +123,9 @@ public class Configuration {
         properties.put(DB_TOKEN, database.getPassword());
         properties.put(DB_NOTIFY_KEY, database.getNotifyKey());
         properties.put(GEO_SRID, Integer.toString(geo.getSrid()));
-        properties.put(FLOW_LAT, Double.toString(flow.getLat()));
-        properties.put(FLOW_LON, Double.toString(flow.getLon()));
-        properties.put(FLOW_ALT, Double.toString(flow.getAlt()));
+        properties.put(OFFSET_ACC_X, Double.toString(offset.getAccelerationOffsetX()));
+        properties.put(OFFSET_ACC_Y, Double.toString(offset.getAccelerationOffsetY()));
+        properties.put(OFFSET_ACC_Z, Double.toString(offset.getAccelerationOffsetZ()));
         properties.put(DIVEDATA_PRECISION, Double.toString(diveData.getPrecision()));
         properties.put(DIVEDATA_DUREE_MAX, Integer.toString(diveData.getDureemax()));
         properties.put(DIVEDATA_MOUVEMENTS_MAX, Integer.toString(diveData.getMouvementsmax()));
@@ -159,13 +157,13 @@ public class Configuration {
     }
 
     /**
-     * Méthode permettant de récupérer la configuration des courrants (pour la correction de position.
-     * Pour plus de détails se référer à {@link Flow} et {@link Dive}.
+     * Méthode permettant de récupérer la configuration de l'accélération (pour la correction de position.
+     * Pour plus de détails se référer à {@link AccelerationOffset} et {@link Dive}.
      *
      * @return La configuration géographique de l'application
      */
-    public Flow getFlow() {
-        return flow;
+    public AccelerationOffset getOffset() {
+        return offset;
     }
 
     /**
@@ -178,65 +176,50 @@ public class Configuration {
     }
 
     /**
-     * Class représentant le courant d'eau
+     * Class représentant le décalage de l'accélération sur les axes x, y, z
      */
-    public static final class Flow {
-        private double lat;
-        private double lon;
-        private double alt;
+    public static final class AccelerationOffset {
+        private double accelerationOffsetX;
+        private double accelerationOffsetY;
+        private double accelerationOffsetZ;
 
-        Flow(double lat, double lon, double alt) {
-            this.lat = lat;
-            this.lon = lon;
-            this.alt = alt;
+        public AccelerationOffset(double accelerationOffsetX, double accelerationOffsetY, double accelerationOffsetZ) {
+            this.accelerationOffsetX = accelerationOffsetX;
+            this.accelerationOffsetY = accelerationOffsetY;
+            this.accelerationOffsetZ = accelerationOffsetZ;
         }
 
-        /**
-         * Méthode permettant d'obtenir le courant présent sur l'axe latitudinale
-         *
-         * @return Le courant en latitude
-         */
-        public double getLat() {
-            return lat;
-        }
-
-        /**
-         * Méthode permettant d'obtenir le courant présent sur l'axe longitudinal
-         *
-         * @return Le courant en longitude
-         */
-        public double getLon() {
-            return lon;
-        }
-
-        /**
-         * Méthode permettant d'obtenir le courant présent sur l'axe de la profondeur
-         *
-         * @return Le courant en profondeur
-         */
-        public double getAlt() {
-            return alt;
-        }
-
-        boolean update(double lat, double lon, double alt) {
+        boolean update(double accelerationOffsetX, double accelerationOffsetY, double accelerationOffsetZ) {
             boolean edited = false;
 
-            if (Double.compare(lat, this.lat) != 0) {
-                this.lat = lat;
+            if (Double.compare(accelerationOffsetX, this.accelerationOffsetX) != 0) {
+                this.accelerationOffsetX = accelerationOffsetX;
                 edited = true;
             }
 
-            if (Double.compare(lon, this.lon) != 0) {
-                this.lon = lon;
+            if (Double.compare(accelerationOffsetY, this.accelerationOffsetY) != 0) {
+                this.accelerationOffsetY = accelerationOffsetY;
                 edited = true;
             }
 
-            if (Double.compare(alt, this.alt) != 0) {
-                this.alt = alt;
+            if (Double.compare(accelerationOffsetZ, this.accelerationOffsetZ) != 0) {
+                this.accelerationOffsetZ = accelerationOffsetZ;
                 edited = true;
             }
 
             return edited;
+        }
+
+        public double getAccelerationOffsetX() {
+            return accelerationOffsetX;
+        }
+
+        public double getAccelerationOffsetY() {
+            return accelerationOffsetY;
+        }
+
+        public double getAccelerationOffsetZ() {
+            return accelerationOffsetZ;
         }
     }
 

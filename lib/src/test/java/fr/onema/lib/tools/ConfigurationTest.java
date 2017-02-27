@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -34,6 +35,9 @@ public class ConfigurationTest {
             "divedata.frequencetestmavlink=1\n" +
             "divedata.frequencetestdatabase=1";
     private File filePath;
+
+    public ConfigurationTest() throws FileNotFoundException {
+    }
 
     @Before
     public void setUp() throws Exception {
