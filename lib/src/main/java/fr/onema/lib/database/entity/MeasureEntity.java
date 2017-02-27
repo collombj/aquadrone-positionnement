@@ -247,8 +247,6 @@ public class MeasureEntity {
     }
 
     private boolean areSpatialValuesEquals(MeasureEntity that){
-        if (timestamp != that.timestamp)
-            return false;
         if (accelerationX != that.accelerationX)
             return false;
         if (accelerationY != that.accelerationY)
