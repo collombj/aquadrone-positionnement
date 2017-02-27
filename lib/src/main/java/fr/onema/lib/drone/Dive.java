@@ -11,6 +11,7 @@ import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Dive {
     /**
      * Crée une nouvelle Dive
      */
-    public Dive() throws SQLException {
+    public Dive() throws SQLException, FileNotFoundException {
         diveEntity = new DiveEntity();
 
         MeasureRepository repos =
