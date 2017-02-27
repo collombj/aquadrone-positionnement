@@ -79,10 +79,10 @@ public class Configuration {
             properties.load(input);
 
             instance = new Configuration(path, properties);
-        } catch (FileNotFoundException e) {
-            throw e;
         } catch (IOException e) {
             throw new IllegalStateException(e);
+        } catch (NullPointerException e) {
+            throw new IllegalStateException("All fields are not fields", e);
         }
         return instance;
     }
