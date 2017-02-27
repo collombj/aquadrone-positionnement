@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -19,7 +18,6 @@ import java.util.logging.Logger;
  */
 public class Configuration {
     private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
-    private static Configuration instance;
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -36,7 +34,7 @@ public class Configuration {
     private static final String DIVEDATA_DELAI_CAPTEUR_HS = "divedata.delaicapteurhs";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
-
+    private static Configuration instance;
     private String path;
     private Database database;
     private Geo geo;
@@ -90,13 +88,9 @@ public class Configuration {
     }
 
 
-    public static Configuration getInstance() {
+    public static Configuration getInstance() throws FileNotFoundException {
         if (instance == null) {
-            try {
                 build("settings.properties");
-            } catch (FileNotFoundException e) {
-                LOGGER.log(Level.SEVERE,"Can't find the configuration file",e);
-            }
         }
         return instance;
 

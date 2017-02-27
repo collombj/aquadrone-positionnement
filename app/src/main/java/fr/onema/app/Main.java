@@ -12,6 +12,7 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
 
+import java.io.FileNotFoundException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -114,33 +115,42 @@ public class Main extends Application {
 
     /***
      * Méthode start appelée lors de l'initialisation de l'application pour définir les paramètres du conteneur de base
-     * @throws Exception
      */
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void start(Stage primaryStage) {
+        try {
+            initWorker();
+
+            this.parent = primaryStage;
+            this.parent.setTitle("App");
+            this.parent.resizableProperty().set(false);
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
+            rlc = new RootLayoutController(this);
+            fxmlLoader.setController(rlc);
+            fxmlLoader.load();
+            primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
+            primaryStage.sizeToScene();
+            primaryStage.setAlwaysOnTop(true);
+            primaryStage.show();
+        } catch (Exception e) {
+            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+        }
+    }
+
+    private void initWorker() throws FileNotFoundException {
         this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
+        if (this.databaseWorker == null) {
+            return;
+        }
         this.databaseWorker.start();
         this.server = new ServerListener(Integer.parseInt(PORT));
         this.server.start();
         this.messageWorker = server.getMessageWorker();
-        System.out.println("SETTING LOG");
         if (LOG_FILE != null) {
             this.messageWorker.setTracer(new FileManager("rawinput.csv", LOG_FILE, "resultOutput.csv"));
             this.messageWorker.startLogger();
-            System.out.println("TRACER SET: " + LOG_FILE);
         }
-        this.parent = primaryStage;
-        this.parent.setTitle("App");
-        this.parent.resizableProperty().set(false);
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
-        this.rlc = new RootLayoutController(this);
-        fxmlLoader.setController(rlc);
-        fxmlLoader.load();
-        primaryStage.setScene(new Scene(fxmlLoader.getRoot()));
-        primaryStage.sizeToScene();
-        primaryStage.setAlwaysOnTop(true);
-        primaryStage.show();
     }
 
     @Override
@@ -148,7 +158,6 @@ public class Main extends Application {
         super.stop();
         server.stop();
         databaseWorker.stop();
-        this.messageWorker.stopLogger();
     }
 
     public void execute() {

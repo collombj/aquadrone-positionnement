@@ -1,7 +1,6 @@
 # coding=utf-8
 import re
 import socket
-from datetime import datetime
 
 import mavlink10 as mavlink
 
@@ -49,10 +48,10 @@ def parse_llh(msg, mav):
     :param mav: MAVLink pour l'envoie des messages
     :param msg: Message à parser
     """
-    # splits = msg.split("   ")  # séparation avec 3 espaces
+    # séparation avec 3 espaces
     splitter = re.compile(r"(\s+|\S+)")
     splits = splitter.findall(msg)
-    time = datetime.now().time().microsecond
+    time = int(round(time.time() * 1000))
     lat = int(float(splits[4]) * 10000000)
     lon = int(float(splits[6]) * 10000000)
     alt = int(float(splits[8]) * 1000)
