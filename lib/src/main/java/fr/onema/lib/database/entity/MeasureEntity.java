@@ -259,8 +259,9 @@ public class MeasureEntity {
             return false;
         if (Double.compare(that.yaw, yaw) != 0)
             return false;
-        if (precisionCm != that.precisionCm)
-            return false;
+        //TODO Voir si nécessaire, sinon revoir le calcul de précision
+        /*if (precisionCm != that.precisionCm)
+            return false;*/
         if(locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
             return false;
         return true;
