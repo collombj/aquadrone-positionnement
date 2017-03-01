@@ -295,6 +295,7 @@ public class RootLayoutController {
         sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.refresh();
+        Platform.runLater(() -> resizeParent());
     }
 
     private String checkStateTime(long value) {
