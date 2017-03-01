@@ -11,6 +11,7 @@ import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class Dive {
     /**
      * Crée une nouvelle Dive
      */
-    public Dive() throws SQLException {
+    public Dive() throws SQLException, FileNotFoundException {
         diveEntity = new DiveEntity();
 
         MeasureRepository repos =
@@ -131,6 +132,12 @@ public class Dive {
         if (!position.hasGPS()) {
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS_SENSOR");
         }
+
+        if(positions.isEmpty()) {
+            LOGGER.log(Level.INFO, "An empty dive has been ignored");
+            return;
+        }
+
         position.setImu(IMU.build(lastVitesse, new CartesianVelocity(0, 0, 0), positions.get(positions.size() - 1).getTimestamp(), position.getTimestamp()));
         position.setPositionBrute(position.getGps().getPosition());
         position.calculate(positions.get(positions.size() - 1), lastVitesse); //Calcul de la position cartésienne

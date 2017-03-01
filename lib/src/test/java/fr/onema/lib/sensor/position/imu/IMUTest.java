@@ -3,17 +3,20 @@ package fr.onema.lib.sensor.position.imu;
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
+import fr.onema.lib.tools.Configuration;
+import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
+
+import java.io.FileNotFoundException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class IMUTest {
-
     @Test
-    public void build() {
+    public void build() throws FileNotFoundException {
         msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         IMU imu = IMU.build(27091994, msg, msgAttitude);
@@ -21,7 +24,7 @@ public class IMUTest {
     }
 
     @Test
-    public void getAccelerometer() {
+    public void getAccelerometer() throws FileNotFoundException {
         msg_raw_imu msg = new msg_raw_imu();
         msg_attitude msgAttitude = new msg_attitude();
         msg.xacc = 3;
@@ -32,9 +35,10 @@ public class IMUTest {
         msgAttitude.yaw = 1;
         IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
-        assertEquals(3, imu.getAccelerometer().getxAcceleration());
-        assertEquals(4, imu.getAccelerometer().getyAcceleration());
-        assertEquals(5, imu.getAccelerometer().getzAcceleration());
+        Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
+        assertEquals(3, imu.getAccelerometer().getxAcceleration() + (int)offset.getAccelerationOffsetX());
+        assertEquals(4, imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY());
+        assertEquals(5, imu.getAccelerometer().getzAcceleration() + (int)offset.getAccelerationOffsetZ());
     }
 
     @Test

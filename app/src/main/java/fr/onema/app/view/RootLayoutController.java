@@ -304,7 +304,7 @@ public class RootLayoutController {
     /***
      *
      */
-    private class TableSensor {
+    public class TableSensor {
         private final String type;
         private final String state;
 

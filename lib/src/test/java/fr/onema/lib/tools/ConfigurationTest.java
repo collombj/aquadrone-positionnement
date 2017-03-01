@@ -37,6 +37,9 @@ public class ConfigurationTest {
             "divedata.frequencetestdatabase=1";
     private File filePath;
 
+    public ConfigurationTest() throws FileNotFoundException {
+    }
+
     @Before
     public void setUp() throws Exception {
         try {

@@ -6,6 +6,7 @@ import fr.onema.lib.database.repository.MeasureRepository;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.BiConsumer;
@@ -126,7 +127,12 @@ public class DatabaseWorker implements Worker {
      */
     public static DatabaseWorker getInstance() {
         if (instance == null){
-            init();
+            try {
+                init();
+            } catch (FileNotFoundException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                return null;
+            }
         }
         return instance;
     }
@@ -135,7 +141,7 @@ public class DatabaseWorker implements Worker {
      * Initialise le singlet
      * Doit etre appelée avant toute utilisation du databaseworker
      */
-    private static void init() {
+    private static void init() throws FileNotFoundException {
         instance = new DatabaseWorker();
         Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
@@ -151,6 +157,8 @@ public class DatabaseWorker implements Worker {
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+            } catch (Exception e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
             }
         });
     }
