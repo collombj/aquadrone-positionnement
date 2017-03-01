@@ -77,6 +77,8 @@ public class VirtualizerEntry implements CSV {
             this.gpsLat = gps.getPosition().lat;
             this.gpsLon = gps.getPosition().lon;
             this.gpsAlt = gps.getPosition().alt;
+
+            this.hasGPS = true;
         }
         if (imu == null) {
             this.xacc = 0;
@@ -114,14 +116,16 @@ public class VirtualizerEntry implements CSV {
         } else {
             this.temperature = 0;
         }
+
         if (gps != null) {
             this.timestamp = gps.getTimestamp();
         } else if (pressure != null) {
             this.timestamp = pressure.getTimestamp();
+        } else if(imu != null){
+            this.timestamp = imu.getTimestamp(); //Désolé pour le bout de scotch, ce constructeur est ... concept
         } else {
-            this.timestamp = 0;
+            timestamp = 0; //Encore désolé, constructeur FIXME
         }
-        this.hasGPS = true;
     }
 
     /**
