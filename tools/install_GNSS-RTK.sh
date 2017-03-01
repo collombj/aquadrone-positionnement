@@ -25,7 +25,7 @@ network={
 EOL
 
 # Add auto launch
-cmd='/home/pi/GNSS/starter.sh'
+cmd='sudo screen -dm -S GNSS /home/pi/GNSS/worker.sh'
 sudo sed -i -e "\%$cmd%d" \
 -e "0,/^[^#]*exit 0/s%%$cmd\n&%" \
 /etc/rc.local

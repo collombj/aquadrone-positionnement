@@ -10,6 +10,7 @@ import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.AbstractMap;
 import java.util.HashMap;
@@ -26,7 +27,7 @@ import java.util.logging.Logger;
  */
 public class MessageWorker implements Worker {
 
-    private static final long FIX_THRESHOLD = 5;
+    private static final long FIX_THRESHOLD = 1; // FIXME
     private static final String IMU_SENSOR = "IMU";
     private static final String GPS_SENSOR = "GPS";
     private static final String TEMPERATURE_SENSOR = "Temperature";
@@ -60,12 +61,6 @@ public class MessageWorker implements Worker {
 
     public void startLogger() {
         this.tracer.start();
-    }
-
-    public void stopLogger() {
-        if (tracer != null) {
-            this.tracer.stop();
-        }
     }
 
     /**
@@ -139,12 +134,15 @@ public class MessageWorker implements Worker {
     public void stop() {
         this.mavLinkConnection = 0;
         this.mavLinkMessagesThread.interrupt();
+        if (tracer != null) {
+            this.tracer.stop();
+        }
     }
 
-    private class MavLinkMessagesThreadWorker implements Runnable {
+    public class MavLinkMessagesThreadWorker implements Runnable {
 
 
-        private void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException {
+        public void computeMavLinkMessage(long timestamp, MAVLinkMessage mavLinkMessage) throws SQLException, FileNotFoundException {
             // If Dive doesn't exist
             if (dive == null) {
                 dive = new Dive();
@@ -200,7 +198,7 @@ public class MessageWorker implements Worker {
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
-        private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) {
+        private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) throws FileNotFoundException {
             LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
@@ -218,7 +216,7 @@ public class MessageWorker implements Worker {
             imuBuffer = attitudeMessage; // Update msg_scale_imu value
         }
 
-        private void imuReceived(long timestamp, msg_raw_imu imuMessage) {
+        private void imuReceived(long timestamp, msg_raw_imu imuMessage) throws FileNotFoundException {
             LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
@@ -248,7 +246,8 @@ public class MessageWorker implements Worker {
         }
 
         private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
-            LOGGER.log(Level.INFO, () -> "GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]");
+            LOGGER.log(Level.INFO, () -> "GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]" +
+                    " / FIX TYPE : " + gpsMessage.fix_type);
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
             }
@@ -264,7 +263,11 @@ public class MessageWorker implements Worker {
                 currentPos.setGps(gps);
                 inDive = false;
                 currentPos.setTimestamp(timestamp);
-                dive.endDive(currentPos);
+                try {
+                    dive.endDive(currentPos);
+                } catch (ArrayIndexOutOfBoundsException e) {
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                }
                 dive = null;
                 currentPos = null;
                 return;
@@ -308,8 +311,9 @@ public class MessageWorker implements Worker {
                     computeMavLinkMessage(System.currentTimeMillis(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
-                } catch (SQLException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage() , e);
+                } catch (Exception e) {
+                    Thread.currentThread().interrupt();
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
                 }
             }
         }

@@ -28,12 +28,12 @@
                         <Separator prefWidth="200.0" />
                         <HBox alignment="CENTER_LEFT">
                             <children>
-                                <Slider blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="50" onMouseClicked="#updateSpinnerFromSliderX" onMouseDragged="#updateSpinnerFromSliderX" prefWidth="350.0" showTickLabels="true" showTickMarks="true" fx:id="xOffsetSlider">
+                                <Slider blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSliderX" onMouseDragged="#updateSpinnerFromSliderX" prefWidth="350.0" showTickLabels="true" showTickMarks="true" fx:id="xOffsetSlider">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="15.0" right="10.0" top="5.0" />
                                     </HBox.margin>
                                 </Slider>
-                                <Spinner onMouseClicked="#updateSliderFromSpinnerX" prefWidth="100.0" fx:id="xOffsetSpinner">
+                                <Spinner editable="true" onKeyReleased="#updateSliderFromSpinnerX" onKeyTyped="#updateSliderFromSpinnerX" onMouseClicked="#updateSliderFromSpinnerX" prefWidth="100.0" fx:id="xOffsetSpinner">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -57,12 +57,12 @@
                         <Separator prefWidth="200.0" />
                         <HBox alignment="CENTER_LEFT">
                             <children>
-                                <Slider fx:id="yOffsetSlider" blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="50" onMouseClicked="#updateSpinnerFromSliderY" onMouseDragged="#updateSpinnerFromSliderY" prefWidth="350.0" showTickLabels="true" showTickMarks="true">
+                                <Slider fx:id="yOffsetSlider" blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSliderY" onMouseDragged="#updateSpinnerFromSliderY" prefWidth="350.0" showTickLabels="true" showTickMarks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="15.0" right="10.0" top="5.0" />
                                     </HBox.margin>
                                 </Slider>
-                                <Spinner fx:id="yOffsetSpinner" onMouseClicked="#updateSliderFromSpinnerY" prefWidth="100.0">
+                                <Spinner fx:id="yOffsetSpinner" editable="true" onKeyReleased="#updateSliderFromSpinnerY" onKeyTyped="#updateSliderFromSpinnerY" onMouseClicked="#updateSliderFromSpinnerY" prefWidth="100.0">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>
@@ -86,12 +86,12 @@
                         <Separator prefWidth="200.0" />
                         <HBox alignment="CENTER_LEFT">
                             <children>
-                                <Slider fx:id="zOffsetSlider" blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="50" onMouseClicked="#updateSpinnerFromSliderZ" onMouseDragged="#updateSpinnerFromSliderZ" prefWidth="350.0" showTickLabels="true" showTickMarks="true">
+                                <Slider fx:id="zOffsetSlider" blockIncrement="1.0" majorTickUnit="500.0" max="2000.0" min="-2000.0" minorTickCount="1" onMouseClicked="#updateSpinnerFromSliderZ" onMouseDragged="#updateSpinnerFromSliderZ" prefWidth="350.0" showTickLabels="true" showTickMarks="true">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="15.0" right="10.0" top="5.0" />
                                     </HBox.margin>
                                 </Slider>
-                                <Spinner fx:id="zOffsetSpinner" onMouseClicked="#updateSliderFromSpinnerZ" prefWidth="100.0">
+                                <Spinner fx:id="zOffsetSpinner" editable="true" onKeyReleased="#updateSliderFromSpinnerZ" onKeyTyped="#updateSliderFromSpinnerZ" onMouseClicked="#updateSliderFromSpinnerZ" prefWidth="100.0">
                                     <HBox.margin>
                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                     </HBox.margin>

@@ -56,9 +56,6 @@ public class ServerListener implements Worker {
 
                 if (testValidityMavlinkMessage(mesg)) {
                     this.messageWorker.newMessage(messageTimestamp, mesg);
-                } else {
-                    LOGGER.log(Level.INFO,
-                            () -> "Message Dropped [timestamp: " + getTimestamp(mesg) + " < " + messageTimestamp + "]");
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
