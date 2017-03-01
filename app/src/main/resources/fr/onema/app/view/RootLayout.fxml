@@ -148,7 +148,7 @@
                 </TitledPane>
                 <TitledPane fx:id="sensorsTitledPane" animated="false" onMouseClicked="#resizeParent" text="Capteurs">
                     <content>
-                        <AnchorPane prefWidth="300.0">
+                        <AnchorPane prefWidth="450.0">
                             <children>
                                 <TableView fx:id="sensorsTableView" maxHeight="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <columns>

@@ -6,6 +6,7 @@ import fr.onema.lib.drone.Dive;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -287,7 +288,12 @@ public class RootLayoutController {
         for (Map.Entry<String, Long> e : map.entrySet()) {
             sensors.add(new TableSensor(e.getKey(), checkStateTime(e.getValue())));
         }
+
         sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.setFixedCellSize(25);
+        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
+        sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
+        sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.refresh();
     }
 
