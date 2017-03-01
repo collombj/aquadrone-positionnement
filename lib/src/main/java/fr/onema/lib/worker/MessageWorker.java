@@ -179,6 +179,7 @@ public class MessageWorker implements Worker {
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
+            currentPos.setTimestamp(timestamp);
             updateState(PRESSURE_SENSOR, pressure.getTimestamp());
         }
 
@@ -187,6 +188,7 @@ public class MessageWorker implements Worker {
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
+            currentPos.setTimestamp(timestamp);
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
@@ -308,7 +310,7 @@ public class MessageWorker implements Worker {
             while (!Thread.interrupted()) {
                 try {
                     AbstractMap.SimpleEntry<Long, MAVLinkMessage> element = messages.take();
-                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());
+                    computeMavLinkMessage(element.getKey(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
