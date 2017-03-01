@@ -1,12 +1,13 @@
 package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -20,25 +21,20 @@ import static org.junit.Assert.assertTrue;
 
 public class LoggerTest {
 
-    private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
-    private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
 
-    private final static FileManager fileManager = new FileManager(refFile, virtualizedFile, resultsFile);
-    private static Logger logger;
+    private final static VirtualizedOutput virtualizedOutput = new VirtualizedOutput(virtualizedFile);
+    private static Tracer tracer;
     private static BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
 
     @BeforeClass
     public static void prepare() throws Exception {
-        File ref = new File(refFile);
-        ref.delete();
         File v = new File(virtualizedFile);
         v.delete();
-        File res = new File(resultsFile);
-        res.delete();
+
         populatePositions();
-        logger = new Logger(fileManager);
-        logger.start();
+        tracer = new Tracer(virtualizedOutput);
+        tracer.start();
     }
 
     private static void populatePositions() {
@@ -52,16 +48,12 @@ public class LoggerTest {
             );
     }
 
-/*    @AfterClass
+    @AfterClass
     public static void delete() {
-        file ref = new file(refFile);
-        ref.delete();
-        file v = new file(virtualizedFile);
+        File v = new File(virtualizedFile);
         v.delete();
-        file res = new file(resultsFile);
-        res.delete();
-        logger.stop();
-    }*/
+        tracer.stop();
+    }
 
 
     @Test
@@ -69,18 +61,18 @@ public class LoggerTest {
 
         new Thread(() -> {
             while (!positions.isEmpty()) {
-                logger.addPosition(positions.pop());
+                tracer.addPosition(positions.pop());
             }
         }).start();
         Thread.sleep(1000);
-        List<VirtualizerEntry> virtualizerEntryList = fileManager.readVirtualizedEntries();
+        List<VirtualizerEntry> virtualizerEntryList = virtualizedOutput.readVirtualizedEntries();
         assertFalse(virtualizerEntryList.isEmpty());
         assertTrue(virtualizerEntryList.get(2).getTimestamp() != 0);
     }
 
     @Test(expected = NullPointerException.class)
     public void newMAVLinkMessageNull() {
-        logger.addPosition(null);
+        tracer.addPosition(null);
     }
 
 }

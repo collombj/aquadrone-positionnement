@@ -3,7 +3,7 @@ package fr.onema.simulator;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.FileManager;
 import fr.onema.lib.network.NetworkSender;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;

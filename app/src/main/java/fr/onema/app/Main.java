@@ -1,7 +1,7 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.FileManager;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;

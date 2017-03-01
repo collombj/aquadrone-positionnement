@@ -1,6 +1,6 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.FileManager;
 import fr.onema.lib.tools.Configuration;
 import org.apache.commons.cli.*;
 

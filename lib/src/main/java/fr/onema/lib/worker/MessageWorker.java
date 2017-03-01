@@ -2,7 +2,7 @@ package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.IMU.IMU;
@@ -43,7 +43,7 @@ public class MessageWorker implements Worker {
     private final Thread mavLinkMessagesThread = new Thread(new MavLinkMessagesThreadWorker());
     // Utilisé pour la fusion Atitude + IMU = IMU DB
     private MAVLinkMessage imuBuffer;
-    private fr.onema.lib.worker.Logger tracer;
+    private Tracer tracer;
     // Represents the dive currently associated
     private Dive dive;
     private Boolean inDive = false;
@@ -67,10 +67,10 @@ public class MessageWorker implements Worker {
      * Paramètre le FileManager qui doit êtra associé au MessageWorker. Ce FileManager servira uniquement à remplir le
      * fichier de trace.
      *
-     * @param fileManager Le FileManager enregistrant dans le traceur.
+     * @param virtualizedOutput Le FileManager enregistrant dans le traceur.
      */
-    public void setTracer(FileManager fileManager) {
-        this.tracer = new fr.onema.lib.worker.Logger(fileManager);
+    public void setTracer(VirtualizedOutput virtualizedOutput) {
+        this.tracer = new Tracer(virtualizedOutput);
     }
 
     /**

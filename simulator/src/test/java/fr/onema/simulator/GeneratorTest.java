@@ -1,6 +1,6 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.FileManager;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import org.junit.AfterClass;
