@@ -74,10 +74,10 @@ public class Dive {
             if (position.hasGPS()) {
                 position.setPositionBrute(position.getGps().getPosition());
                 position.setCartesianBrute(GeoMaths.computeCartesianPosition(reference, position.getPositionBrute()));
-                lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
+                /*lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
                         lastPos.getCartesianBrute(),
                         position.getCartesianBrute(),
-                        position.getTimestamp() - lastPos.getTimestamp());
+                        position.getTimestamp() - lastPos.getTimestamp());*/
             } else if (position.hasIMU()) {
                 lastVitesse = position.calculate(lastPos, lastVitesse);
                 position.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(reference, position.getCartesianBrute()));

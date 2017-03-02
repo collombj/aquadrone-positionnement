@@ -13,7 +13,7 @@ import static junit.framework.TestCase.assertEquals;
 
 
 public class GeoMathsTest {
-
+/*
     @Test(expected = NullPointerException.class)
     public void testCartesianDistanceNonNull1() {
         CartesianCoordinate pos1 = null;
@@ -279,5 +279,5 @@ public class GeoMathsTest {
 
         recalculatePosition(list, new GPSCoordinate(3,3,1), null) ;
 
-    }
+    }*/
 }
