@@ -18,7 +18,7 @@ import static org.junit.Assert.assertEquals;
 public class ResultsOutputTest {
 
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/file/resultsOutput.csv";
-    private final static ResultsOutput RESULTS_OUTPUT_BUG = new ResultsOutput("notapath");
+    private final static ResultsOutput RESULTS_OUTPUT_BUG = new ResultsOutput("");
 
     @AfterClass
     public static void delete() {

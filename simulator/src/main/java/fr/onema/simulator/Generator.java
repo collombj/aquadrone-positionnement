@@ -1,6 +1,7 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.file.manager.FileManager;
+import fr.onema.lib.file.manager.RawInput;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
@@ -19,13 +20,15 @@ import java.util.Objects;
  * Classe permettant la gestion des conversions entre données brutes et virtualisées du générateur CSV
  */
 public class Generator {
-    private final FileManager fileManager;
+    private final VirtualizedOutput fileManager;
+    private final RawInput rawInput;
     private final List<ReferenceEntry> inputReferencies;
     private ReferenceEntry previous = null;
 
-    public Generator(String inputFilePath, String virtualizedFilePath) throws IOException {
-        this.fileManager = new FileManager(Objects.requireNonNull(inputFilePath), Objects.requireNonNull(virtualizedFilePath));
-        this.inputReferencies = fileManager.readReferenceEntries();
+    public Generator(String rawInputFilePath, String virtualizedFilePath) throws IOException {
+        this.fileManager = new VirtualizedOutput(Objects.requireNonNull(virtualizedFilePath));
+        this.rawInput = new RawInput(Objects.requireNonNull(rawInputFilePath));
+        this.inputReferencies = rawInput.readReferenceEntries();
     }
 
     /***

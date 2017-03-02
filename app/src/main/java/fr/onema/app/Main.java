@@ -1,7 +1,7 @@
 package fr.onema.app;
 
 import fr.onema.app.view.RootLayoutController;
-import fr.onema.lib.file.manager.FileManager;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
@@ -148,7 +148,7 @@ public class Main extends Application {
         this.server.start();
         this.messageWorker = server.getMessageWorker();
         if (LOG_FILE != null) {
-            this.messageWorker.setTracer(new FileManager("rawinput.csv", LOG_FILE, "resultOutput.csv"));
+            this.messageWorker.setTracer(new VirtualizedOutput(LOG_FILE));
             this.messageWorker.startLogger();
         }
     }

@@ -63,11 +63,6 @@ public class Tracer implements Worker {
 
         @Override
         public void run() {
-            try {
-                virtualizedOutput.openFileForResults();
-            } catch (IOException e) {
-                LOG.log(Level.SEVERE, e.getMessage(), e);
-            }
             while(!Thread.interrupted()) {
                 try {
                     virtualizedOutput.appendVirtualized(createVirtualizedFromPosition(positions.take()));

@@ -24,7 +24,8 @@ public class RawInput implements FileManager {
     private final String rawInputFilePath;
 
     public RawInput(String inputFilePath) {
-        this.rawInputFilePath = Objects.requireNonNull(inputFilePath);
+        this.rawInputFilePath =
+                Objects.requireNonNull(inputFilePath.replaceAll("/\\\\", String.valueOf(File.separatorChar)));
     }
 
     @Override
@@ -39,7 +40,8 @@ public class RawInput implements FileManager {
     @Override
     public void appendRaw(GPS gps, Temperature temp) throws IOException {
         File f = new File(rawInputFilePath);
-        if (!f.exists() && f.createNewFile()) {
+        if (!f.exists()) {
+            f.createNewFile();
             String out = "Écriture du fichier de référence : " + rawInputFilePath;
             LOGGER.log(Level.FINE, out);
         }

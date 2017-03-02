@@ -1,6 +1,6 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.file.manager.FileManager;
+import fr.onema.lib.file.manager.RawInput;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import org.junit.AfterClass;
@@ -17,7 +17,8 @@ import java.io.File;
 public class GeneratorTest {
     private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/simulator/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/simulator/virtualizedOutput.csv";
-    private final static FileManager fm = new FileManager(refFile, virtualizedFile);
+
+    private final static RawInput rawInput = new RawInput(refFile);
 
     @BeforeClass
     public static void prepare() throws Exception {
@@ -35,13 +36,13 @@ public class GeneratorTest {
         msg2.time_boot_ms = msg.time_usec;
         msg2.temperature = 6;
         long timestamp = 27091994;
-        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
+        rawInput.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
         msg.time_usec = System.currentTimeMillis();
         msg2.time_boot_ms = msg.time_usec;
-        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
+        rawInput.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
         msg.time_usec = System.currentTimeMillis();
         msg2.time_boot_ms = msg.time_usec;
-        fm.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
+        rawInput.appendRaw(GPS.build(timestamp, msg), Temperature.build(timestamp, msg2));
     }
 
     @AfterClass

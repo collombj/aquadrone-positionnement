@@ -26,7 +26,8 @@ public class ResultsOutput implements FileManager {
     private final String resultsOutputFilePath;
 
     public ResultsOutput(String resultsOutputFilePath) {
-        this.resultsOutputFilePath = Objects.requireNonNull(resultsOutputFilePath);
+        this.resultsOutputFilePath =
+                Objects.requireNonNull(resultsOutputFilePath.replaceAll("/\\\\", String.valueOf(File.separatorChar)));
     }
 
     @Override

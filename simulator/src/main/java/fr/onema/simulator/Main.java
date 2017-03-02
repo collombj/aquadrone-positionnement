@@ -1,6 +1,8 @@
 package fr.onema.simulator;
 
-import fr.onema.lib.file.manager.FileManager;
+import fr.onema.lib.file.manager.RawInput;
+import fr.onema.lib.file.manager.ResultsOutput;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.tools.Configuration;
 import org.apache.commons.cli.*;
 
@@ -224,15 +226,17 @@ public class Main {
         if (propertiesFilePath == null) {
             propertiesFilePath = "settings.properties";
         }
+        RawInput rawInput = new RawInput(referenceFilePath);
+        ResultsOutput resultsOutput = new ResultsOutput(resultFilePath);
 
-        FileManager fileManager = new FileManager(referenceFilePath, "",
-                resultFilePath);
-        Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, Integer.parseInt(DEFAULT_PORT_PROPERTIES)); // argument inutile, mais constructeur les requierts
+        //FileManager fileManager = new FileManager(referenceFilePath, "",
+        //        resultFilePath);
+        //Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, Integer.parseInt(DEFAULT_PORT_PROPERTIES)); // argument inutile, mais constructeur les requierts
 
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
-            virtualizer.compare(configuration, Integer.parseInt(properties.getProperty(ERROR_PROPERTIES, DEFAULT_ERROR_PROPERTIES)) / 100.);
-            String list = fileManager.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
+            Virtualizer.compare(configuration, rawInput, resultsOutput, Integer.parseInt(properties.getProperty(ERROR_PROPERTIES, DEFAULT_ERROR_PROPERTIES)) / 100.);
+            String list = resultsOutput.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
             LOGGER.log(Level.INFO, list);
         } catch (FileNotFoundException e) {
             LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
@@ -260,8 +264,9 @@ public class Main {
             host = HOST;
         }
 
-        FileManager fileManager = new FileManager("", virtualizedFilePath, "");
-        Virtualizer virtualizer = new Virtualizer(fileManager,
+        //FileManager fileManager = new FileManager("", virtualizedFilePath, "");
+        VirtualizedOutput virtualizedOutput = new VirtualizedOutput(virtualizedFilePath);
+        Virtualizer virtualizer = new Virtualizer(virtualizedOutput,
                 Integer.parseInt(properties.getProperty(SPEED_PROPERTIES, DEFAULT_SPEED_PROPERTIES)),
                 properties.getProperty(NAME_PROPERTIES, DEFAULT_NAME_PROPERTIES),
                 host,

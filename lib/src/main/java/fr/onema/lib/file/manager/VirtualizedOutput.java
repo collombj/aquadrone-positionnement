@@ -23,7 +23,8 @@ public class VirtualizedOutput implements FileManager {
     private final String virtualizedOutputFilePath;
 
     public VirtualizedOutput(String virtualizedOutputFilePath) {
-        this.virtualizedOutputFilePath = Objects.requireNonNull(virtualizedOutputFilePath);
+        this.virtualizedOutputFilePath =
+                Objects.requireNonNull(virtualizedOutputFilePath.replaceAll("/\\\\", String.valueOf(File.separatorChar)));
     }
 
     @Override
@@ -38,7 +39,8 @@ public class VirtualizedOutput implements FileManager {
     @Override
     public void appendVirtualized(VirtualizerEntry ve) throws IOException {
         File f = new File(virtualizedOutputFilePath);
-        if (!f.exists() && f.createNewFile()) {
+        if (!f.exists()) {
+            f.createNewFile();
             String out = "Écriture du fichier de données virtualisées : " + virtualizedOutputFilePath;
             LOGGER.log(Level.FINE, out);
         }

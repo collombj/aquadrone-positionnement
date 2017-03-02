@@ -44,6 +44,8 @@ public class RawInputTest {
     public static void delete() {
         File ref = new File(refFile);
         ref.delete();
+        File notapath = new File("notapath");
+        notapath.delete();
     }
 
     @Test

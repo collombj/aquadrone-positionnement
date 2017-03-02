@@ -9,13 +9,9 @@ import org.mavlink.messages.ardupilotmega.msg_scaled_pressure3;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.NoSuchFileException;
 
 import static org.junit.Assert.assertEquals;
 
-/**
- * Created by loics on 01/03/2017.
- */
 public class VirtualizedOutputTest {
 
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/file/virtualizedOutput.csv";
@@ -44,6 +40,8 @@ public class VirtualizedOutputTest {
     public static void delete() {
         File ref = new File(virtualizedFile);
         ref.delete();
+        File notapath = new File("notapath");
+        notapath.delete();
     }
 
     @Test
@@ -72,12 +70,12 @@ public class VirtualizedOutputTest {
     }
 
 
-    @Test(expected = NoSuchFileException.class)
+    @Test(expected = IOException.class)
     public void testException2() throws IOException {
         VIRTUALIZED_OUTPUT_BUG.readVirtualizedEntries();
     }
 
-    @Test
+    @Test(expected = IOException.class)
     public void testException4() throws IOException {
         VIRTUALIZED_OUTPUT_BUG.appendVirtualized(new VirtualizerEntry(1, 2, 3, 4, 5, 6, 7, 8, 9,
                 10, 11, 12, 13, 14, 15));
