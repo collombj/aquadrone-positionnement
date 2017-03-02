@@ -15,15 +15,6 @@ public class PressureTest {
     }
 
     @Test
-    public void build2() {
-        Pressure p2 = Pressure.build(3, 1, 2);
-        assertEquals(p2.getTimestamp(), 3);
-        assertEquals(p2.getAbsolute(), 0, 0);
-        assertEquals(p2.getDifferential(), 0, 0);
-        assertEquals(p2.getTemperature(), 2);
-    }
-
-    @Test
     public void getAbsolute() throws Exception {
         msg_scaled_pressure2 msg = new msg_scaled_pressure2();
         msg.press_abs = 3;
@@ -64,5 +55,4 @@ public class PressureTest {
         Pressure p = Pressure.build(27091994, msg);
         assertEquals(p.getCSVHeader(), "timestamp,asbolute,differential,temperature");
     }
-
 }
