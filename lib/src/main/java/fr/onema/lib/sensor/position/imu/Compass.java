@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 /***
  * Classe représentant le compas magnétique sur les axes x, y, z

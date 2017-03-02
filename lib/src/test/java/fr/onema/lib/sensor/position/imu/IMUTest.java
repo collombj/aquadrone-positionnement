@@ -1,10 +1,9 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
-import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;

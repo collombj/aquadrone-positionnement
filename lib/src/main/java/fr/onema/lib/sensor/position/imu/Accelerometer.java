@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 /***
  * Classe permettant la description de l'accélération sur les axes x, y, z
