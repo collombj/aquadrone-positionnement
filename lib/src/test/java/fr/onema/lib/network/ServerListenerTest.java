@@ -34,7 +34,7 @@ public class ServerListenerTest {
 
     @Test
     public void testStartThread() throws InterruptedException {
-        ServerListener serverListener = new ServerListener(1502);
+        ServerListener serverListener = new ServerListener(1503);
         serverListener.start();
         Thread.sleep(100);
         assertNotNull(serverListener.getListener());
