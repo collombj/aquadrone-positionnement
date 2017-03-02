@@ -137,7 +137,11 @@ public class Main extends Application {
         }
     }
 
-    private void initWorker() throws FileNotFoundException {
+    /**
+     * Public for testing purposes
+     * @throws FileNotFoundException
+     */
+    public void initWorker() throws FileNotFoundException {
         this.configuration = Configuration.getInstance();
         this.databaseWorker = DatabaseWorker.getInstance();
         if (this.databaseWorker == null) {

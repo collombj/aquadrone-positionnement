@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  */
 public class DatabaseWorker implements Worker {
     private static final Logger LOGGER = Logger.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE;
+    private static DatabaseWorker dbInstance;
     private static Thread dbWorkerThread;
     private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private static String notificationKey;
@@ -126,7 +126,7 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
-        if (INSTANCE == null){
+        if (dbInstance == null){
             try {
                 init();
             } catch (FileNotFoundException e) {
@@ -134,7 +134,7 @@ public class DatabaseWorker implements Worker {
                 return null;
             }
         }
-        return INSTANCE;
+        return dbInstance;
     }
 
     /**
@@ -142,7 +142,7 @@ public class DatabaseWorker implements Worker {
      * Doit etre appelée avant toute utilisation du databaseworker
      */
     private static void init() throws FileNotFoundException {
-        INSTANCE = new DatabaseWorker();
+        dbInstance = new DatabaseWorker();
         Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
