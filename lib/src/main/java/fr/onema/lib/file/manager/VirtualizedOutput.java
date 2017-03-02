@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Stream;
 
+/**
+ * Classe écrivant les résultats d'une simulation dans un fichier.
+ */
 public class VirtualizedOutput implements FileManager {
 
     private final String virtualizedOutputFilePath;

@@ -19,6 +19,9 @@ import java.util.logging.Level;
 import java.util.stream.Stream;
 
 
+/**
+ * Classe représentant des valeurs à prendre en compte pour réaliser une simulation.
+ */
 public class RawInput implements FileManager {
 
     private final String rawInputFilePath;

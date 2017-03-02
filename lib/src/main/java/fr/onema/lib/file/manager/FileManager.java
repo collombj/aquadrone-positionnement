@@ -70,6 +70,13 @@ public interface FileManager {
      */
     List<String> getResults(String replacement) throws IOException;
 
+    /**
+     * Donne le nombre de ligne dans un fichier
+     *
+     * @param f Le fichier à analyser.
+     * @return Le nombre de ligne dans le fichier donné.
+     * @throws IOException Si un problème d'ouverture du fichier est remonté.
+     */
     default int getLineNumber(File f) throws IOException {
         return (int) Files.lines(Paths.get(f.getPath())).count();
     }

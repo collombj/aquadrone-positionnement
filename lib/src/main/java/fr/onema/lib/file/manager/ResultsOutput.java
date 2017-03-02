@@ -21,6 +21,9 @@ import java.util.stream.Stream;
 
 import static fr.onema.lib.geo.GeoMaths.deg2rad;
 
+/**
+ * Classe permettant d'écrire les résultats des mesures dans un fichier.
+ */
 public class ResultsOutput implements FileManager {
 
     private final String resultsOutputFilePath;
