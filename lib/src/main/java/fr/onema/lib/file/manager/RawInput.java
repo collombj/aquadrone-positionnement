@@ -52,6 +52,8 @@ public class RawInput implements FileManager {
             fw.write("\n" + gps.getTimestamp() + "," + gps.getPosition().lat + "," + gps.getPosition().lon + ","
                     + gps.getPosition().alt + "," + gps.getDirection() + "," + temp.getValue());
             fw.close();
+        } catch (IOException e) {
+            throw e;
         }
     }
 
