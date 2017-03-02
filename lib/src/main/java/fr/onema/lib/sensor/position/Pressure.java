@@ -29,6 +29,15 @@ public class Pressure extends Sensor {
         return new Pressure(timestamp, msg.press_abs, msg.press_diff, msg.temperature);
     }
 
+    /***
+     * Factory de la mesure de pression
+     * @param timestamp L'heure de la mesure
+     * @param temperature La valeur de température de la mesure
+     * @return L'objet représentant la mesure gps
+     */
+     public static Pressure build(long timestamp, int temperature) {
+        return new Pressure(timestamp, 0, 0, temperature);
+    }
 
     /**
      * Permet de calculer la profondeur en fonction de la pression absolue et de la pression atmosphérique
