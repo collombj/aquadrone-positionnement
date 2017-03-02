@@ -269,18 +269,14 @@ public class GeoMaths {
      */
     public static MovementWrapper computeNewPosition(CartesianCoordinate last, Accelerometer lastAcc, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
         Objects.requireNonNull(last);
+        Objects.requireNonNull(lastAcc);
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
 
-        System.out.println("previous: " + previousVelocity);
-
         CartesianVelocity velocity = new CartesianVelocity(
-                ((((accelerometer.getxAcceleration() - lastAcc.getxAcceleration()) / 50.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
-                ((((accelerometer.getyAcceleration() - lastAcc.getyAcceleration()) / 50.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
-                ((((accelerometer.getzAcceleration() - lastAcc.getzAcceleration()) / 50.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
-
-        System.out.println("accelX: " + (((accelerometer.getxAcceleration() - lastAcc.getxAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.));
-        System.out.println(velocity);
+                ((((accelerometer.getxAcceleration() - lastAcc.getxAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
+                ((((accelerometer.getyAcceleration() - lastAcc.getyAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
+                ((((accelerometer.getzAcceleration() - lastAcc.getzAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
 
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
 

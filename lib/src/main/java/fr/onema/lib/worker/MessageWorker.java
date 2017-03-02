@@ -308,7 +308,7 @@ public class MessageWorker implements Worker {
             while (!Thread.interrupted()) {
                 try {
                     AbstractMap.SimpleEntry<Long, MAVLinkMessage> element = messages.take();
-                    computeMavLinkMessage(System.currentTimeMillis(), element.getValue());
+                    computeMavLinkMessage(element.getKey(), element.getValue());
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {

@@ -9,6 +9,7 @@ import java.io.PrintStream;
 import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 /**
@@ -36,6 +37,7 @@ public class Configuration {
     private static final String DIVEDATA_DELAI_CAPTEUR_HS = "divedata.delaicapteurhs";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
+    private static final String DIVEDATA_COEFFICIENT_RANGE_IMU = "divedata.coefficientrangeimu";
     private static Configuration instance;
     private String path;
     private Database database;
@@ -43,7 +45,7 @@ public class Configuration {
     private AccelerationOffset offset;
     private DiveData diveData;
 
-    private Configuration(String path, Properties properties) throws FileNotFoundException {
+    private Configuration(String path, Properties properties) {
         this.path = path;
         this.database = new Database(
                 properties.getProperty(DB_HOST),
@@ -63,7 +65,8 @@ public class Configuration {
                 Integer.parseInt(properties.getProperty(DIVEDATA_MOUVEMENTS_MAX)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_DELAI_CAPTEUR_HS)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK)),
-                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)));
+                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)),
+                Double.parseDouble(properties.getProperty(DIVEDATA_COEFFICIENT_RANGE_IMU)));
     }
 
     /**
@@ -134,6 +137,7 @@ public class Configuration {
         properties.put(DIVEDATA_DELAI_CAPTEUR_HS, Integer.toString(diveData.getDelaicapteurhs()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK, Integer.toString(diveData.getFrequencetestmavlink()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE, Integer.toString(diveData.getFrequencetestdatabase()));
+        properties.put(DIVEDATA_COEFFICIENT_RANGE_IMU, Double.toString(diveData.getCoefficientRangeIMU()));
         PrintStream output = new PrintStream(path);
         properties.store(output, null);
     }
@@ -310,6 +314,7 @@ public class Configuration {
         private final int delaicapteurhs;
         private final int frequencetestmavlink;
         private final int frequencetestdatabase;
+        private final double coefficientRangeIMU;
 
         /**
          * Le constructeur de la classe
@@ -321,13 +326,14 @@ public class Configuration {
          * @param frequencetestmavlink  la fréquence de test du flux mavlink
          * @param frequencetestdatabase la fréquence de test du flux mavlink
          */
-        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase) {
+        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase, double coefficientRangeIMU) {
             this.precision = precision;
             this.dureemax = dureemax;
             this.mouvementsmax = mouvementsmax;
             this.delaicapteurhs = delaicapteurhs;
             this.frequencetestmavlink = frequencetestmavlink;
             this.frequencetestdatabase = frequencetestdatabase;
+            this.coefficientRangeIMU = coefficientRangeIMU;
         }
 
         /**
@@ -382,6 +388,10 @@ public class Configuration {
          */
         public int getFrequencetestdatabase() {
             return frequencetestdatabase;
+        }
+
+        public double getCoefficientRangeIMU() {
+            return coefficientRangeIMU;
         }
     }
 
