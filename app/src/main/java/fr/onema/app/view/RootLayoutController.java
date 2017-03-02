@@ -42,6 +42,7 @@ public class RootLayoutController {
     private Thread dive = new Thread();
     private List<TableSensor> sensors = new ArrayList<>();
     private DecimalFormat df = new DecimalFormat("#.##");
+    private boolean configFileUsed;
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -186,7 +187,12 @@ public class RootLayoutController {
             stage.resizableProperty().setValue(false);
             ConfigurationController controller = loader.getController();
             controller.initialize();
-            controller.insertSpinnerValues(main.getConfiguration().getOffset().getAccelerationOffsetX(), main.getConfiguration().getOffset().getAccelerationOffsetY(), main.getConfiguration().getOffset().getAccelerationOffsetZ());
+            if (!configFileUsed) {
+                controller.insertSpinnerValues(main.getConfiguration().getOffset().getAccelerationOffsetX(), main.getConfiguration().getOffset().getAccelerationOffsetY(), main.getConfiguration().getOffset().getAccelerationOffsetZ());
+                configFileUsed = true;
+            } else {
+                controller.insertSpinnerValues(offsetX, offsetY, offsetZ);
+            }
             controller.init(this, main);
             stage.showAndWait();
         } else {
