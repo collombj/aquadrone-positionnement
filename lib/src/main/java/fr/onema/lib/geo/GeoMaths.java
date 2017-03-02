@@ -303,16 +303,16 @@ public class GeoMaths {
         // detection de la premiere position sous l'eau
         int index = 0;
         while (index < rawPositions.size() && rawPositions.get(index).hasGPS()) {
-          rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
+            rawPositions.get(index).setPositionRecalculated(rawPositions.get(index).getPositionBrute());
             index++;
         }
 
         //appel a la fonction de correction si on a trouvé une position sous l'eau
-        if (index < rawPositions.size()){
-            correctionMethodOne(rawPositions.subList(index,rawPositions.size()-1), ref, resurface, rawPositions.get(index-1), rawPositions.get(rawPositions.size()-1));
+        if (index < rawPositions.size()) {
+            correctionMethodOne(rawPositions.subList(index, rawPositions.size() - 1), ref, resurface, rawPositions.get(index - 1), rawPositions.get(rawPositions.size() - 1));
         }
 
-        rawPositions.get(rawPositions.size()-1).setPositionRecalculated(rawPositions.get(rawPositions.size()-1).getPositionBrute());
+        rawPositions.get(rawPositions.size() - 1).setPositionRecalculated(rawPositions.get(rawPositions.size() - 1).getPositionBrute());
 
     }
 
@@ -340,12 +340,12 @@ public class GeoMaths {
 
         //Ici on calcule a partir du point de resurface des coordonnées brutes en inversant l'orientation du drone jusqu'au point de départ de la plongée
         ArrayList<CartesianCoordinate> passTwo = new ArrayList<>();
-        MovementWrapper previousWrapper = new MovementWrapper(passOne.get(passOne.size()-2), new CartesianVelocity(0, 0, 0));
+        MovementWrapper previousWrapper = new MovementWrapper(passOne.get(passOne.size() - 2), new CartesianVelocity(0, 0, 0));
         Position previousPos = resurfacePosition;
 
-        passTwo.add(passOne.get(passOne.size()-2));
+        passTwo.add(passOne.get(passOne.size() - 2));
 
-        for(int i = rawPositions.size()-1; i > 0; i--) {
+        for (int i = rawPositions.size() - 1; i > 0; i--) {
 
             MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
                     -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(), previousWrapper.velocity,
@@ -357,9 +357,9 @@ public class GeoMaths {
         }
 
         //On calcule le delta entre la position de plongée de départ calculée et la position de départ réelle
-        double deltax2 = refPosition.getCartesianBrute().x - passTwo.get(passTwo.size()-1).x;
-        double deltay2 = refPosition.getCartesianBrute().y - passTwo.get(passTwo.size()-1).y;
-        double deltaz2 = refPosition.getCartesianBrute().z - passTwo.get(passTwo.size()-1).z;
+        double deltax2 = refPosition.getCartesianBrute().x - passTwo.get(passTwo.size() - 1).x;
+        double deltay2 = refPosition.getCartesianBrute().y - passTwo.get(passTwo.size() - 1).y;
+        double deltaz2 = refPosition.getCartesianBrute().z - passTwo.get(passTwo.size() - 1).z;
         double ecart2 = 1. / (passTwo.size() - 1);
 
         ArrayList<CartesianCoordinate> passTwoRecalculated = new ArrayList<>();
@@ -380,22 +380,44 @@ public class GeoMaths {
         double coefficientPassOne = 1.;
         double coefficientPassTwo = 0.;
 
-        double stepCoefficient = 1./(rawPositions.size()-1);
+        double stepCoefficient = 1. / (rawPositions.size() - 1);
 
         for (int i = 0; i < rawPositions.size(); i++) {
 
             rawPositions.get(i).setPositionRecalculated(computeGPSCoordinateFromCartesian(ref, new CartesianCoordinate(
                     (rawPositions.get(i).getCartesianBrute().x * coefficientPassOne) +
-                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).x * coefficientPassTwo),
+                            (passTwoRecalculated.get(passTwoRecalculated.size() - 1 - i).x * coefficientPassTwo),
                     (rawPositions.get(i).getCartesianBrute().y * coefficientPassOne) +
-                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).y * coefficientPassTwo),
-                    (rawPositions.get(i).getCartesianBrute().z  * coefficientPassOne) +
-                            (passTwoRecalculated.get(passTwoRecalculated.size()-1-i).z * coefficientPassTwo))));
+                            (passTwoRecalculated.get(passTwoRecalculated.size() - 1 - i).y * coefficientPassTwo),
+                    (rawPositions.get(i).getCartesianBrute().z * coefficientPassOne) +
+                            (passTwoRecalculated.get(passTwoRecalculated.size() - 1 - i).z * coefficientPassTwo))));
 
 
             coefficientPassOne -= stepCoefficient;
             coefficientPassTwo += stepCoefficient;
         }
+    }
+//TODO javadoc
+
+    /**
+     * Retourne la difference entre deux coordonnées cartésiennes sous forme d'une coordonnée cartésienne
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    public static CartesianCoordinate cartesianMinus(CartesianCoordinate a, CartesianCoordinate b) {
+        return new CartesianCoordinate(a.x - b.x, a.y - b.y, a.z - b.z);
+    }
+
+    /**
+     * Renvoie la longueur d'un vecteur ou la distance d'un point à l'origine du repère cartésien
+     *
+     * @param position
+     * @return
+     */
+    public static double cartesianLength(CartesianCoordinate position) {
+        return Math.sqrt(Math.pow(position.x, 2) + Math.pow(position.y, 2) + Math.pow(position.z, 2));
     }
 
 

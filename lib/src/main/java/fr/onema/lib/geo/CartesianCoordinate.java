@@ -23,6 +23,6 @@ public class CartesianCoordinate {
 
     @Override
     public String toString() {
-        return "[x: " + x + ", y: " + y + ", v: " + z +"]";
+        return "[x: " + x + ", y: " + y + ", v: " + z + "]";
     }
 }

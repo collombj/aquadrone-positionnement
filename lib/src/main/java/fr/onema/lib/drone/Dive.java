@@ -35,6 +35,7 @@ public class Dive {
     private List<MeasureEntity> measures = new ArrayList<>();
     private List<MeasureEntity> measuresUpdated = new ArrayList<>();
 
+
     /**
      * Crée une nouvelle Dive
      */
@@ -50,6 +51,7 @@ public class Dive {
 
     /**
      * Ajoute une position à la plongée
+     *
      * @param position une position
      */
     public void add(Position position) {
@@ -129,7 +131,7 @@ public class Dive {
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS_SENSOR");
         }
 
-        if(positions.isEmpty()) {
+        if (positions.isEmpty()) {
             LOGGER.log(Level.INFO, "An empty dive has been ignored");
             return;
         }
@@ -141,7 +143,7 @@ public class Dive {
             dbWorker.stopRecording(System.currentTimeMillis(), diveEntity.getId());
         }
 
-        positions.get(positions.size()-1).getMeasures().forEach(position::add);
+        positions.get(positions.size() - 1).getMeasures().forEach(position::add);
         position.setPositionRecalculated(position.getPositionBrute());
         // Update last one
         updateMeasuresAndPosition(position);
@@ -163,7 +165,7 @@ public class Dive {
             int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
             double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
-            double yaw =imu == null ? 0 : imu.getGyroscope().getYaw();
+            double yaw = imu == null ? 0 : imu.getGyroscope().getYaw();
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
@@ -244,4 +246,45 @@ public class Dive {
         ON,
         RECORD
     }
+
+    //TODO
+
+    /**
+     *
+     */
+    private void detectNewMovement() {
+        if (positions.size() > 2) {
+
+            // determiner si le % depasse la marge imposée
+            // incrémenter le mouvement
+
+            // calculer les vecteurs des positions successives
+
+            CartesianCoordinate firstMovement = GeoMaths.cartesianMinus(
+                    positions.get(positions.size() - 2).getCartesianBrute(),
+                    positions.get(positions.size() - 3).getCartesianBrute());
+            CartesianCoordinate lastMovement = GeoMaths.cartesianMinus(
+                    positions.get(positions.size() - 1).getCartesianBrute(),
+                    positions.get(positions.size() - 2).getCartesianBrute());
+
+            double ratio = GeoMaths.cartesianLength(lastMovement) / GeoMaths.cartesianLength(firstMovement);
+            CartesianCoordinate lastMovementPondered = new CartesianCoordinate(
+                    lastMovement.x * ratio,
+                    lastMovement.y * ratio,
+                    lastMovement.z * ratio
+            );
+            computeMovement(firstMovement,lastMovementPondered);
+
+        }
+    }
+
+    private void computeMovement(CartesianCoordinate start, CartesianCoordinate end) {
+        double moveX = end.x - start.x;
+        double moveY = end.y - start.y;
+        double moveZ = end.z - start.z;
+
+
+    }
+
+
 }

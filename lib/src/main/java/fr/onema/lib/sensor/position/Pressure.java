@@ -39,6 +39,13 @@ public class Pressure extends Sensor {
     public static Pressure build(long timestamp, int altitude, int temperature) {
         // TODO : complete --> calcul de la pression à partir de l'altitude (et température ?)
         int absolute = 0;
+        // pression absolue  = pression atmospherique + pression hydrostatique
+        // pression hydrostatique = pression absolue - pression atmospherique
+        // pression = masse vol du liquide * profondeur * intensité de gravité
+        // profondeur = ( pression absolue - pression atmospherique) / (massvol * intensité de gravité)
+
+
+
         return new Pressure(timestamp, absolute, 0, temperature);
     }
 
