@@ -49,7 +49,8 @@ public class VirtualizedOutput implements FileManager {
                 fw.write(VirtualizerEntry.HEADER);
             }
             fw.write("\n" + ve.toCSV());
-            fw.close();
+        } catch (IOException e) {
+            throw e;
         }
     }
 
