@@ -62,7 +62,7 @@ public class ConfigurationTest {
         Configuration.build(null);
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = IllegalStateException.class)
     public void testBadPath() throws Exception {
         Configuration.build("/toto/test/abcd");
     }
