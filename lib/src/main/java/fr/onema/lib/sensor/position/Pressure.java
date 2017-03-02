@@ -29,6 +29,7 @@ public class Pressure extends Sensor {
         return new Pressure(timestamp, msg.press_abs, msg.press_diff, msg.temperature);
     }
 
+
     /**
      * Permet de calculer la profondeur en fonction de la pression absolue et de la pression atmosphérique
      * @param atmosphericPressure
