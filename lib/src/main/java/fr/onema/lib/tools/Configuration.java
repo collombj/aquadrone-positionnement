@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -17,7 +16,6 @@ import java.util.logging.Logger;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
