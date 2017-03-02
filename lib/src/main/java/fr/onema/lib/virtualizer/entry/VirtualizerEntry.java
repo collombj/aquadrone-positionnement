@@ -3,11 +3,12 @@ package fr.onema.lib.virtualizer.entry;
 import fr.onema.lib.drone.Measure;
 import fr.onema.lib.file.CSV;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe représentant les entrées du fichier virtualisées
@@ -104,13 +105,9 @@ public class VirtualizerEntry implements CSV {
         } else {
             this.pressure = pressure.getAbsolute();
         }
-        if (!measureList.isEmpty()) { // Add here your measure values!
-            if (measureList.stream().anyMatch(measure -> "temperature".equals(measure.getName()))) { // Check is at least one temperature is present
-                this.temperature = Integer.parseInt(
-                        measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst().get().getValue());
-            } else {
-                this.temperature = 0;
-            }
+        Optional<Measure> o = measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst();
+        if (o.isPresent()) {
+            this.temperature = Integer.parseInt(o.get().getValue());
         } else {
             this.temperature = 0;
         }
