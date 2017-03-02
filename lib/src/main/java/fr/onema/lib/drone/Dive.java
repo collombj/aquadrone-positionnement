@@ -13,9 +13,7 @@ import fr.onema.lib.worker.DatabaseWorker;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,22 +28,26 @@ public class Dive {
     private List<Position> positions = new ArrayList<>();
     private DiveEntity diveEntity;
     private State state;
-    private int numberOfmovement;
+    private int numberOfMovement;
     private CartesianVelocity lastVitesse;
     private List<MeasureEntity> measures = new ArrayList<>();
     private List<MeasureEntity> measuresUpdated = new ArrayList<>();
+
+    private final int margin;
+    private Deque<String> movementPatterns = new ArrayDeque<>();
 
 
     /**
      * Crée une nouvelle Dive
      */
     public Dive() throws SQLException, FileNotFoundException {
+        margin = Configuration.getInstance().getDiveData().getMargeMouvement();
         diveEntity = new DiveEntity();
 
         MeasureRepository repos =
                 MeasureRepository.MeasureRepositoryBuilder.getRepositoryWritable(Configuration.getInstance());
         repos.insertDive(diveEntity);
-        numberOfmovement = 0;
+        numberOfMovement = 0;
         state = ON;
     }
 
@@ -80,9 +82,11 @@ public class Dive {
                         lastPos.getCartesianBrute(),
                         position.getCartesianBrute(),
                         position.getTimestamp() - lastPos.getTimestamp());
+                movementPatterns = new ArrayDeque<>();//on vide la liste de movements
             } else if (position.hasIMU()) {
                 lastVitesse = position.calculate(lastPos, lastVitesse);
                 position.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(reference, position.getCartesianBrute()));
+                detectNewMovement();
             }
         }
 
@@ -227,15 +231,15 @@ public class Dive {
      * Incremente le nombre de mouvements effectués
      */
     public void newMovement() {
-        numberOfmovement++;
+        numberOfMovement++;
     }
 
 
     /**
      * @return le nombre de mouvements
      */
-    public int getNumberOfmovement() {
-        return numberOfmovement;
+    public int getNumberOfMovement() {
+        return numberOfMovement;
     }
 
     /**
@@ -247,19 +251,12 @@ public class Dive {
         RECORD
     }
 
-    //TODO
-
-    /**
-     *
+    /*
+        determine si un movement est trop brusque et réduit la précision de la mesure
      */
     private void detectNewMovement() {
         if (positions.size() > 2) {
-
-            // determiner si le % depasse la marge imposée
-            // incrémenter le mouvement
-
             // calculer les vecteurs des positions successives
-
             CartesianCoordinate firstMovement = GeoMaths.cartesianMinus(
                     positions.get(positions.size() - 2).getCartesianBrute(),
                     positions.get(positions.size() - 3).getCartesianBrute());
@@ -273,18 +270,80 @@ public class Dive {
                     lastMovement.y * ratio,
                     lastMovement.z * ratio
             );
-            computeMovement(firstMovement,lastMovementPondered);
-
+            computeMovement(firstMovement, lastMovementPondered);
         }
     }
 
     private void computeMovement(CartesianCoordinate start, CartesianCoordinate end) {
-        double moveX = end.x - start.x;
-        double moveY = end.y - start.y;
-        double moveZ = end.z - start.z;
-
-
+        // detection haut / bas
+        String upOrDown = getUpOrDown(start, end);
+        //detection gauche droite
+        String leftOrRight = getLeftOrRight(start, end);
+        //comparaison avec la série de mouvements en cours
+        findPattern(upOrDown, leftOrRight);
     }
 
+
+    private String getLeftOrRight(CartesianCoordinate start, CartesianCoordinate end) {
+        // indentation alembiquée a cause de sonarlint
+        if (isRight(start, end)) {
+            return "right";
+        }
+        if (isLeft(start, end)) {
+            return "left";
+        }
+        return "";
+    }
+
+    private boolean isLeft(CartesianCoordinate start, CartesianCoordinate end) {
+        if (start.x >= 0 && start.y >= 0 && end.x > start.x - start.z * (margin * 0.01)) {
+            return true;
+        }
+        if (start.x >= 0 && start.y <= 0 && end.x < start.x + start.z * (margin * 0.01)) {
+            return true;
+        }
+        if (start.x <= 0 && start.y >= 0 && end.x > start.x - Math.abs(start.z * (margin * 0.01))) {
+            return true;
+        }
+        return start.x <= 0 && start.y <= 0 && end.x > start.x + Math.abs(start.z * (margin * 0.01));
+    }
+
+    private boolean isRight(CartesianCoordinate start, CartesianCoordinate end) {
+        if (start.x >= 0 && start.y >= 0 && end.x > start.x + start.z * (margin * 0.01)) {
+            return true;
+        }
+        if (start.x >= 0 && start.y <= 0 && end.x < start.x - start.z * (margin * 0.01)) {
+            return true;
+        }
+        if (start.x <= 0 && start.y >= 0 && end.x > start.x + Math.abs(start.z * (margin * 0.01))) {
+            return true;
+        }
+        return start.x <= 0 && start.y <= 0 && end.x > start.x - Math.abs(start.z * (margin * 0.01));
+    }
+
+    private String getUpOrDown(CartesianCoordinate start, CartesianCoordinate end) {
+        if (end.z > start.z + Math.abs(start.z * (margin * 0.01))) {
+            return "up";
+        }
+        if (end.z < start.z - Math.abs(start.z * (margin * 0.01))) {
+            return "down";
+        }
+        return "";
+    }
+
+    private void findPattern(String upOrDown, String leftOrRight) {
+        if (movementPatterns.size() == 2) {
+            String move1 = movementPatterns.getFirst();
+            String move2 = movementPatterns.getLast();
+            if (upOrDown != null && move1.contains(upOrDown) && move2.contains(upOrDown)) {
+                newMovement();
+            }
+            if (leftOrRight != null && move1.contains(leftOrRight) && move2.contains(leftOrRight)) {
+                newMovement();
+            }
+            movementPatterns.removeFirst();
+        }
+        movementPatterns.add(upOrDown + ";" + leftOrRight);
+    }
 
 }

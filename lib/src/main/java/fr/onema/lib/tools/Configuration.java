@@ -34,6 +34,7 @@ public class Configuration {
     private static final String DIVEDATA_DELAI_CAPTEUR_HS = "divedata.delaicapteurhs";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
+    private static final String DIVEDATA_MOVEMENT_MARGIN = "divedata.margemouvement";
     private static Configuration instance;
     private String path;
     private Database database;
@@ -61,7 +62,8 @@ public class Configuration {
                 Integer.parseInt(properties.getProperty(DIVEDATA_MOUVEMENTS_MAX)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_DELAI_CAPTEUR_HS)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK)),
-                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)));
+                Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)),
+                Integer.parseInt(properties.getProperty(DIVEDATA_MOVEMENT_MARGIN)));
     }
 
     /**
@@ -90,7 +92,7 @@ public class Configuration {
 
     public static Configuration getInstance() throws FileNotFoundException {
         if (instance == null) {
-                build("settings.properties");
+            build("settings.properties");
         }
         return instance;
 
@@ -305,6 +307,7 @@ public class Configuration {
         private final double precision;
         private final int dureemax;
         private final int mouvementsmax;
+        private final int margemouvement;
         private final int delaicapteurhs;
         private final int frequencetestmavlink;
         private final int frequencetestdatabase;
@@ -319,10 +322,12 @@ public class Configuration {
          * @param frequencetestmavlink  la fréquence de test du flux mavlink
          * @param frequencetestdatabase la fréquence de test du flux mavlink
          */
-        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase) {
+        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink,
+                        int frequencetestdatabase, int margemouvement) {
             this.precision = precision;
             this.dureemax = dureemax;
             this.mouvementsmax = mouvementsmax;
+            this.margemouvement = margemouvement;
             this.delaicapteurhs = delaicapteurhs;
             this.frequencetestmavlink = frequencetestmavlink;
             this.frequencetestdatabase = frequencetestdatabase;
@@ -380,6 +385,10 @@ public class Configuration {
          */
         public int getFrequencetestdatabase() {
             return frequencetestdatabase;
+        }
+
+        public int getMargeMouvement() {
+            return margemouvement;
         }
     }
 
