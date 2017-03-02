@@ -229,8 +229,7 @@ public class Main {
         RawInput rawInput = new RawInput(referenceFilePath);
         ResultsOutput resultsOutput = new ResultsOutput(resultFilePath);
 
-        //FileManager fileManager = new FileManager(referenceFilePath, "",
-        //        resultFilePath);
+        //FileManager fileManager = new FileManager(referenceFilePath, "", resultFilePath);
         //Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, Integer.parseInt(DEFAULT_PORT_PROPERTIES)); // argument inutile, mais constructeur les requierts
 
         try {
