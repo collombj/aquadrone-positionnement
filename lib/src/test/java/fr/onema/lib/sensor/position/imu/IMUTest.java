@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.imu;
+package fr.onema.lib.sensor.position.IMU;
 
 
 import fr.onema.lib.geo.CartesianVelocity;
@@ -37,7 +37,7 @@ public class IMUTest {
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
         double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
         assertEquals(1, Math.round((imu.getAccelerometer().getxAcceleration() + (int)offset.getAccelerationOffsetX()) * coefficientRangeIMU), 0);
-        assertEquals(29, Math.round((imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY()) * coefficientRangeIMU), 0);
+        assertEquals(2, Math.round((imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY()) * coefficientRangeIMU), 0);
         assertEquals(3, Math.round((imu.getAccelerometer().getzAcceleration() + (int)offset.getAccelerationOffsetZ()) * coefficientRangeIMU), 0);
     }
 

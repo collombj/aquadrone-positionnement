@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.imu;
+package fr.onema.lib.sensor.position.IMU;
 
 import org.junit.Test;
 

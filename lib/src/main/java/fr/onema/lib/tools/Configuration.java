@@ -3,13 +3,10 @@ package fr.onema.lib.tools;
 import fr.onema.lib.drone.Dive;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.StringJoiner;
 import java.util.logging.Logger;
 
 /**
@@ -67,7 +64,7 @@ public class Configuration {
                 Integer.parseInt(properties.getProperty(DIVEDATA_DELAI_CAPTEUR_HS)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)),
-                Double.parseDouble(properties.getProperty(DIVEDATA_COEFFICIENT_RANGE_IMU)));
+                Double.parseDouble(properties.getProperty(DIVEDATA_COEFFICIENT_RANGE_IMU)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_MOVEMENT_MARGIN)));
     }
 

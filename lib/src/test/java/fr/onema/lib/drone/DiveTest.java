@@ -4,7 +4,7 @@ import fr.onema.lib.database.DatabaseTools;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.imu.IMU;
+import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
 import org.junit.Before;
@@ -12,7 +12,6 @@ import org.junit.Test;
 
 import java.io.FileNotFoundException;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**

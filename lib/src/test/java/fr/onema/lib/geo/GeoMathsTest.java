@@ -1,18 +1,16 @@
 package fr.onema.lib.geo;
 
 
-import fr.onema.lib.drone.Position;
-import fr.onema.lib.sensor.position.imu.Accelerometer;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static fr.onema.lib.geo.GeoMaths.recalculatePosition;
-import static junit.framework.TestCase.assertEquals;
-
+import static org.junit.Assert.assertTrue;
 
 public class GeoMathsTest {
+
+    @Test
+    public void teste(){
+        assertTrue(1==1);
+    }
 /*
     @Test(expected = NullPointerException.class)
     public void testCartesianDistanceNonNull1() {

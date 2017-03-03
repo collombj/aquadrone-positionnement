@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.imu;
+package fr.onema.lib.sensor.position.IMU;
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GeoMaths;
