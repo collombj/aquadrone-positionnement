@@ -278,7 +278,7 @@ public class RootLayoutController {
     public void updatePrecisionProgress(MessageWorker worker, Configuration configuration) {
         Dive currentDive = worker.getDive();
         if (currentDive != null) {
-            int numberOfMovements = currentDive.getNumberOfmovement();
+            int numberOfMovements = currentDive.getNumberOfMovement();
             double maxMovements = configuration.getDiveData().getMouvementsmax();
             Platform.runLater(() -> precisionProgressBar.setProgress(numberOfMovements / maxMovements));
         } else {
