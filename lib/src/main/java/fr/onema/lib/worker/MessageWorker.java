@@ -3,6 +3,7 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.FileManager;
+import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.Pressure;
@@ -12,10 +13,7 @@ import org.mavlink.messages.ardupilotmega.*;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import java.util.AbstractMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.logging.Level;
@@ -46,9 +44,13 @@ public class MessageWorker implements Worker {
     private fr.onema.lib.worker.Logger tracer;
     // Represents the dive currently associated
     private Dive dive;
-    private Boolean inDive = false;
     private Position currentPos;
     private long mavLinkConnection;
+
+    // utilisé pour stabiliser le gps avant et apres une plongée
+    private State state;
+    private Boolean isStabilized = false;
+    private Stabilizer stabilizer;
 
     /**
      * Constructeur de MessageWorker
@@ -147,6 +149,8 @@ public class MessageWorker implements Worker {
             if (dive == null) {
                 dive = new Dive();
                 currentPos = new Position();
+                state = State.beforeDive;
+                stabilizer = new Stabilizer();
             }
 
             // If the MAVLinkMessage is an accurate GPS_SENSOR message
@@ -157,17 +161,25 @@ public class MessageWorker implements Worker {
                     gpsReceived(timestamp, (msg_gps_raw_int) mavLinkMessage);
                     break; // GPS
                 case msg_raw_imu.MAVLINK_MSG_ID_RAW_IMU:
-                    imuReceived(timestamp, (msg_raw_imu) mavLinkMessage);
+                    if (isStabilized || state == State.inDive) {
+                        imuReceived(timestamp, (msg_raw_imu) mavLinkMessage);
+                    }
                     break;
                 case msg_attitude.MAVLINK_MSG_ID_ATTITUDE:
-                    attitudeReceived(timestamp, (msg_attitude) mavLinkMessage);
+                    if (isStabilized || state == State.inDive) {
+                        attitudeReceived(timestamp, (msg_attitude) mavLinkMessage);
+                    }
                     break; //IMU
                 case msg_scaled_pressure2.MAVLINK_MSG_ID_SCALED_PRESSURE2:
-                    pressureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
-                    temperatureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
+                    if (isStabilized || state == State.inDive) {
+                        pressureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
+                        temperatureReceived(timestamp, (msg_scaled_pressure2) mavLinkMessage);
+                    }
                     break; // Pressure
                 case msg_scaled_pressure3.MAVLINK_MSG_ID_SCALED_PRESSURE3:
-                    temperatureReceived(timestamp, (msg_scaled_pressure3) mavLinkMessage);
+                    if (isStabilized || state == State.inDive) {
+                        temperatureReceived(timestamp, (msg_scaled_pressure3) mavLinkMessage);
+                    }
                     break; //Temperature
                 default:
                     break;
@@ -256,39 +268,68 @@ public class MessageWorker implements Worker {
 
         private void processGPSData(GPS gps) {
             long timestamp = gps.getTimestamp();
+            updateState(GPS_SENSOR, timestamp);
 
-            if (inDive) {
-                savePosition();
-                currentPos = new Position();
-                currentPos.setGps(gps);
-                inDive = false;
-                currentPos.setTimestamp(timestamp);
-                try {
-                    dive.endDive(currentPos);
-                } catch (ArrayIndexOutOfBoundsException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
-                }
-                dive = null;
-                currentPos = null;
+            if (state == State.inDive) {
+                processLastUnderWater();
+            }
+
+            if (state == State.afterDive) {
+                processGPSAfterDive(gps, timestamp);
                 return;
             }
 
             if (currentPos.hasGPS()) {
-                savePosition();
+                if (isStabilized) {
+                    savePosition();
+                } else {
+                    stabilizer.positions.add(currentPos);
+                    isStabilized = stabilizer.isStabilized();
+                    currentPos = new Position();
+                }
             }
 
             currentPos.setTimestamp(timestamp);
             currentPos.setGps(gps);
-            updateState(GPS_SENSOR, timestamp);
+        }
+
+        private void processLastUnderWater() {
+            //derniere position sous l'eau
+            savePosition();
+            state = State.afterDive;
+            isStabilized = false;
+        }
+
+        private void processGPSAfterDive(GPS gps, long timestamp) {
+            currentPos = new Position();
+            currentPos.setGps(gps);
+            currentPos.setTimestamp(timestamp);
+
+            stabilizer.positions.add(currentPos);
+            isStabilized = stabilizer.isStabilized();
+            if (!isStabilized) {
+                return;
+            }
+            try {
+                // on garde le timestamp de sortie de l'eau
+                currentPos.setTimestamp(stabilizer.positions.get(0).getTimestamp());
+                //position stabilisée
+                dive.endDive(currentPos);
+                state = State.beforeDive;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            }
+            dive = null;
+            currentPos = null;
+            return;
         }
 
         private void savePosition() {
-            if (!currentPos.hasGPS() && !inDive) {
-                inDive = true;
+            if (!currentPos.hasGPS() && state == State.beforeDive) {
+                state = State.inDive;
+                isStabilized = false;
             }
-
             dive.add(currentPos);
-
             if (tracer != null) {
                 try {
                     tracer.addPosition(currentPos);
@@ -320,4 +361,32 @@ public class MessageWorker implements Worker {
 
     }
 
+
+    private enum State {
+        inDive,
+        beforeDive,
+        afterDive
+    }
+
+    private class Stabilizer {
+        List<Position> positions = new ArrayList<>();
+
+        Boolean isStabilized() {
+            int size = positions.size();
+            if (size < 5) {
+                return false;
+            }
+
+            for (int i = size - 5; i < size - 1; i++) {
+                for (int j = size - 5; j < size - 1; j++) {
+                    if (GeoMaths.gpsDistance(
+                            positions.get(i).getGps().getPosition(), positions.get(j).getGps().getPosition())
+                            > 10000) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+    }
 }
