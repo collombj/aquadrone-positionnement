@@ -5,6 +5,7 @@ import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
@@ -67,13 +68,23 @@ public class Logger implements Worker {
             } catch (IOException e) {
                 Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
             }
-            while(!Thread.interrupted()) {
+
+            while (!Thread.interrupted()) {
                 try {
                     fileManager.appendVirtualized(createVirtualizedFromPosition(positions.take()));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
                     Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
+                } finally {
+                    File file = new File(fileManager.getResultsOutputFilePath());
+                    try {
+                        if(file.exists() || fileManager.getLineNumber(file) == 1) {
+                            file.delete();
+                        }
+                    } catch (IOException e1) {
+                        Logger.LOG.log(Level.INFO, e1.getMessage(), e1);
+                    }
                 }
             }
         }
