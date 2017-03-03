@@ -6,8 +6,8 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.sensor.position.Pressure;
+import fr.onema.lib.sensor.position.imu.IMU;
 
 import java.security.InvalidParameterException;
 import java.util.ArrayList;

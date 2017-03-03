@@ -3,14 +3,11 @@ package fr.onema.lib.tools;
 import fr.onema.lib.drone.Dive;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.StringJoiner;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -317,6 +314,7 @@ public class Configuration {
         private final int frequencetestmavlink;
         private final int frequencetestdatabase;
         private final double coefficientRangeIMU;
+        private final int margemouvement;
 
         /**
          * Le constructeur de la classe
