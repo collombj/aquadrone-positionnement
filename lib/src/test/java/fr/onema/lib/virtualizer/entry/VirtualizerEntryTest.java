@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
@@ -132,5 +133,23 @@ public class VirtualizerEntryTest {
     public void hasGPSFalse() throws IOException {
         VirtualizerEntry virtual = new VirtualizerEntry(1, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
         assertFalse(virtual.getHasGPS());
+    }
+
+    @Test
+    public void messagesNull() {
+        VirtualizerEntry virtual = new VirtualizerEntry(null, null, null, new ArrayList<>());
+        assertEquals(0, virtual.getGpsLat());
+        assertEquals(0, virtual.getGpsLon());
+        assertEquals(0, virtual.getGpsAlt());
+        assertEquals(0, virtual.getXacc());
+        assertEquals(0, virtual.getYacc());
+        assertEquals(0, virtual.getZacc());
+        assertEquals(0, virtual.getRoll(),0);
+        assertEquals(0, virtual.getPitch(),0);
+        assertEquals(0, virtual.getYaw(),0);
+        assertEquals(0, virtual.getXmag());
+        assertEquals(0, virtual.getYmag());
+        assertEquals(0, virtual.getZmag());
+        assertEquals(0, virtual.getPressure(),0);
     }
 }

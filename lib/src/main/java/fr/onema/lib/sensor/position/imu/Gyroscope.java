@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 /**
  * Created by strock on 06/02/2017.
