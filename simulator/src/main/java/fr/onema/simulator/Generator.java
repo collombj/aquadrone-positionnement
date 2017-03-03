@@ -59,7 +59,7 @@ public class Generator {
             }
             previous = reference;
             Temperature t = Temperature.build(reference.getTimestamp(), reference.getTemperature());
-            Pressure p = Pressure.build(reference.getTimestamp(), reference.getAlt(), reference.getTemperature());
+            Pressure p = Pressure.build(reference.getTimestamp(), reference.getTemperature());
             fileManager.appendVirtualized(new VirtualizerEntry(reference.getTimestamp(), reference.getLat(), reference.getLon(), reference.getAlt(),
                     imu.getAccelerometer().getxAcceleration(),
                     imu.getAccelerometer().getyAcceleration(),
