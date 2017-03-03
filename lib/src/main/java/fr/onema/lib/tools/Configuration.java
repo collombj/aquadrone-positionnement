@@ -6,8 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.StringJoiner;
+import java.util.logging.Logger;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -16,6 +19,7 @@ import java.util.Properties;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
+    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -23,6 +27,7 @@ public class Configuration {
     private static final String DB_TOKEN = "database.password";
     private static final String DB_NOTIFY_KEY = "database.notify-key";
     private static final String GEO_SRID = "geo.srid";
+    private static final String GEO_MAGNETIC_NORTH_LATITUDE = "geo.magneticnorthlatitude";
     private static final String OFFSET_ACC_X = "offset.acc.x";
     private static final String OFFSET_ACC_Y = "offset.acc.y";
     private static final String OFFSET_ACC_Z = "offset.acc.z";
@@ -32,6 +37,7 @@ public class Configuration {
     private static final String DIVEDATA_DELAI_CAPTEUR_HS = "divedata.delaicapteurhs";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK = "divedata.frequencetestmavlink";
     private static final String DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE = "divedata.frequencetestdatabase";
+    private static final String DIVEDATA_COEFFICIENT_RANGE_IMU = "divedata.coefficientrangeimu";
     private static final String DIVEDATA_MOVEMENT_MARGIN = "divedata.margemouvement";
     private static Configuration instance;
     private String path;
@@ -40,7 +46,7 @@ public class Configuration {
     private AccelerationOffset offset;
     private DiveData diveData;
 
-    private Configuration(String path, Properties properties) throws FileNotFoundException {
+    private Configuration(String path, Properties properties) {
         this.path = path;
         this.database = new Database(
                 properties.getProperty(DB_HOST),
@@ -50,7 +56,7 @@ public class Configuration {
                 properties.getProperty(DB_TOKEN),
                 properties.getProperty(DB_NOTIFY_KEY)
         );
-        this.geo = new Geo(Integer.parseInt(properties.getProperty(GEO_SRID)));
+        this.geo = new Geo(Integer.parseInt(properties.getProperty(GEO_SRID)), Double.parseDouble(properties.getProperty(GEO_MAGNETIC_NORTH_LATITUDE)));
         this.offset = new AccelerationOffset(Double.parseDouble(properties.getProperty(OFFSET_ACC_X)),
                 Double.parseDouble(properties.getProperty(OFFSET_ACC_Y)),
                 Double.parseDouble(properties.getProperty(OFFSET_ACC_Z)));
@@ -61,6 +67,7 @@ public class Configuration {
                 Integer.parseInt(properties.getProperty(DIVEDATA_DELAI_CAPTEUR_HS)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK)),
                 Integer.parseInt(properties.getProperty(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE)),
+                Double.parseDouble(properties.getProperty(DIVEDATA_COEFFICIENT_RANGE_IMU)));
                 Integer.parseInt(properties.getProperty(DIVEDATA_MOVEMENT_MARGIN)));
     }
 
@@ -69,9 +76,8 @@ public class Configuration {
      *
      * @param path Chemin d'accès au fichier de configuration
      * @return La représentation du fichier de configuration
-     * @throws FileNotFoundException En cas d'absence de fichier de configuration
      */
-    public static Configuration build(String path) throws FileNotFoundException {
+    public static Configuration build(String path) {
         Objects.requireNonNull(path, "A non null path is required for the settings");
 
         try (FileInputStream input = new FileInputStream(path)) {
@@ -88,7 +94,7 @@ public class Configuration {
     }
 
 
-    public static Configuration getInstance() throws FileNotFoundException {
+    public static Configuration getInstance() {
         if (instance == null) {
             build("settings.properties");
         }
@@ -123,6 +129,7 @@ public class Configuration {
         properties.put(DB_TOKEN, database.getPassword());
         properties.put(DB_NOTIFY_KEY, database.getNotifyKey());
         properties.put(GEO_SRID, Integer.toString(geo.getSrid()));
+        properties.put(GEO_MAGNETIC_NORTH_LATITUDE, Double.toString(geo.getMagneticNorthLatitude()));
         properties.put(OFFSET_ACC_X, Double.toString(offset.getAccelerationOffsetX()));
         properties.put(OFFSET_ACC_Y, Double.toString(offset.getAccelerationOffsetY()));
         properties.put(OFFSET_ACC_Z, Double.toString(offset.getAccelerationOffsetZ()));
@@ -132,6 +139,7 @@ public class Configuration {
         properties.put(DIVEDATA_DELAI_CAPTEUR_HS, Integer.toString(diveData.getDelaicapteurhs()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_MAVLINK, Integer.toString(diveData.getFrequencetestmavlink()));
         properties.put(DIVEDATA_FREQUENCE_TEST_FLUX_DATABASE, Integer.toString(diveData.getFrequencetestdatabase()));
+        properties.put(DIVEDATA_COEFFICIENT_RANGE_IMU, Double.toString(diveData.getCoefficientRangeIMU()));
         PrintStream output = new PrintStream(path);
         properties.store(output, null);
     }
@@ -309,6 +317,7 @@ public class Configuration {
         private final int delaicapteurhs;
         private final int frequencetestmavlink;
         private final int frequencetestdatabase;
+        private final double coefficientRangeIMU;
 
         /**
          * Le constructeur de la classe
@@ -320,8 +329,7 @@ public class Configuration {
          * @param frequencetestmavlink  la fréquence de test du flux mavlink
          * @param frequencetestdatabase la fréquence de test du flux mavlink
          */
-        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink,
-                        int frequencetestdatabase, int margemouvement) {
+        public DiveData(double precision, int dureemax, int mouvementsmax, int delaicapteurhs, int frequencetestmavlink, int frequencetestdatabase, double coefficientRangeIMU, int margemouvement) {
             this.precision = precision;
             this.dureemax = dureemax;
             this.mouvementsmax = mouvementsmax;
@@ -329,6 +337,7 @@ public class Configuration {
             this.delaicapteurhs = delaicapteurhs;
             this.frequencetestmavlink = frequencetestmavlink;
             this.frequencetestdatabase = frequencetestdatabase;
+            this.coefficientRangeIMU = coefficientRangeIMU;
         }
 
         /**
@@ -385,6 +394,10 @@ public class Configuration {
             return frequencetestdatabase;
         }
 
+        public double getCoefficientRangeIMU() {
+            return coefficientRangeIMU;
+        }
+
         public int getMargeMouvement() {
             return margemouvement;
         }
@@ -395,9 +408,11 @@ public class Configuration {
      */
     public final class Geo {
         private final int srid;
+        private final double magneticNorthLatitude;
 
-        Geo(int srid) {
+        Geo(int srid, double magneticNorthLatitude) {
             this.srid = srid;
+            this.magneticNorthLatitude = magneticNorthLatitude;
         }
 
         /**
@@ -407,6 +422,15 @@ public class Configuration {
          */
         public int getSrid() {
             return srid;
+        }
+
+        /**
+         * Permet d'obtenir la latitude du nord magnetique
+         *
+         * @return la latitude du nord magnetique
+         */
+        public double getMagneticNorthLatitude() {
+            return magneticNorthLatitude;
         }
     }
 }

@@ -28,6 +28,7 @@ public class ConfigurationTest {
             "database.password=pwd\n" +
             "database.notify-key=test_key\n" +
             "geo.srid=2154\n" +
+            "geo.magneticnorthlatitude=86.5\n" +
             "divedata.precision=0.5\n" +
             "divedata.dureemax=5\n" +
             "divedata.mouvementsmax=4\n" +

@@ -2,7 +2,8 @@ package fr.onema.lib.geo;
 
 
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.sensor.position.imu.Accelerometer;
+import fr.onema.lib.sensor.position.IMU.Accelerometer;
+import fr.onema.lib.tools.Configuration;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -135,7 +136,7 @@ public class GeoMaths {
      * La coordonnée équivaut au vecteur vitesse dans le cas recherché
      *
      * @param coordinate la coordonnée qui est le vecteur vitesse
-     * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourrant - timestampPrecedent)
+     * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourant - timestampPrecedent)
      * @return La vitesse en m/s sur chaque axe {@link CartesianVelocity}
      */
     public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate prevCoordinate, CartesianCoordinate coordinate, long timestamp) {
@@ -256,7 +257,8 @@ public class GeoMaths {
     /**
      * Calcule la position cartésienne selon les données des capteurs IMU
      *
-     * @param last             coordonnée cartésienne precedente
+     * @param last             position cartésienne precedente
+     * @param lastAcc          accelerometre precedent
      * @param yaw              le yaw courant
      * @param pitch            le pitch courant
      * @param roll             le roll courant
@@ -265,19 +267,20 @@ public class GeoMaths {
      * @param accelerometer    les données d'accelerometre
      * @return la nouvelle position estimée du drone
      */
-    public static MovementWrapper computeNewPosition(CartesianCoordinate last, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
+    public static MovementWrapper computeNewPosition(CartesianCoordinate last, Accelerometer lastAcc, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
         Objects.requireNonNull(last);
+        Objects.requireNonNull(lastAcc);
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
 
         CartesianVelocity velocity = new CartesianVelocity(
-                (((accelerometer.getxAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
-                (((accelerometer.getyAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
-                (((accelerometer.getzAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
+                ((((accelerometer.getxAcceleration() - lastAcc.getxAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
+                ((((accelerometer.getyAcceleration() - lastAcc.getyAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
+                ((((accelerometer.getzAcceleration() - lastAcc.getzAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
 
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
 
-        CartesianCoordinate velocityRotated = doRotation(velocityVector, -yaw, -pitch, -roll);
+        CartesianCoordinate velocityRotated = doRotation(velocityVector, (yaw-(deg2rad(Configuration.getInstance().getGeo().getMagneticNorthLatitude()))), pitch, roll);
 
         CartesianCoordinate computedCoords = new CartesianCoordinate(
                 last.x + (velocityRotated.x * (time / 1000.)),
@@ -347,7 +350,7 @@ public class GeoMaths {
 
         for (int i = rawPositions.size() - 1; i > 0; i--) {
 
-            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
+            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, previousPos.getImu().getAccelerometer(), -previousPos.getImu().getGyroscope().getYaw(),
                     -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(), previousWrapper.velocity,
                     previousPos.getTimestamp() - rawPositions.get(i).getTimestamp(), previousPos.getImu().getAccelerometer());
 

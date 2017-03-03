@@ -7,13 +7,15 @@ import fr.onema.lib.geo.CartesianCoordinate;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
-import fr.onema.lib.sensor.position.imu.IMU;
+import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -78,10 +80,11 @@ public class Dive {
             if (position.hasGPS()) {
                 position.setPositionBrute(position.getGps().getPosition());
                 position.setCartesianBrute(GeoMaths.computeCartesianPosition(reference, position.getPositionBrute()));
-                lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
+                /*lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
                         lastPos.getCartesianBrute(),
                         position.getCartesianBrute(),
-                        position.getTimestamp() - lastPos.getTimestamp());
+                        position.getTimestamp() - lastPos.getTimestamp());*/
+
                 movementPatterns = new ArrayDeque<>();//on vide la liste de movements
             } else if (position.hasIMU()) {
                 lastVitesse = position.calculate(lastPos, lastVitesse);
