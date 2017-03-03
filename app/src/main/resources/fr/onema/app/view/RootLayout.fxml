@@ -20,7 +20,7 @@
     <children>
         <VBox>
             <children>
-                <TitledPane fx:id="stateTitledPane" animated="false" onMouseClicked="#resizeParent" text="Etat">
+                <TitledPane fx:id="stateTitledPane" animated="false" onMouseClicked="#resizeParent" text="État">
                     <content>
                         <AnchorPane>
                             <children>
@@ -28,7 +28,7 @@
                                     <children>
                                         <VBox>
                                             <children>
-                                                <Label text="Etat des connexions">
+                                                <Label text="État des connexions">
                                                     <font>
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
@@ -45,7 +45,7 @@
                                                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                                                     </VBox.margin>
                                                 </Label>
-                                                <Label fx:id="mavlinkLabel" text="Flux MavLink">
+                                                <Label fx:id="mavlinkLabel" text="Flux messages MavLink">
                                                     <font>
                                                         <Font name="System Bold" size="12.0" />
                                                     </font>
@@ -148,12 +148,15 @@
                 </TitledPane>
                 <TitledPane fx:id="sensorsTitledPane" animated="false" onMouseClicked="#resizeParent" text="Capteurs">
                     <content>
-                        <AnchorPane prefWidth="300.0">
+                        <AnchorPane>
                             <children>
                                 <TableView fx:id="sensorsTableView" maxHeight="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                    <placeholder>
+                                        <Label text="" />
+                                    </placeholder>
                                     <columns>
-                                        <TableColumn fx:id="type" maxWidth="175.0" minWidth="175.0" prefWidth="175.0" text="Type" />
-                                        <TableColumn fx:id="state" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" text="Etat" />
+                                        <TableColumn fx:id="type" maxWidth="175.0" minWidth="175.0" prefWidth="175.0" resizable="false" text="Type" />
+                                        <TableColumn fx:id="state" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" resizable="false" text="État" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

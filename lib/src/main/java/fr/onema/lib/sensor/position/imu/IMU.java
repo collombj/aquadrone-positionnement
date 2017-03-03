@@ -1,4 +1,4 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GeoMaths;
@@ -17,6 +17,7 @@ public class IMU extends Sensor {
     private final Accelerometer accelerometer;
     private final Gyroscope gyroscope;
     private final Compass compass;
+    private static final String HEADER = "AccelerometerX,AccelerometerY,AccelerometerZ,GyroscopeRoll,GyroscopePitch,GyroscopeYaw,CompassX,CompassY,CompassZ";
 
     /**
      * Constructeur
@@ -93,13 +94,13 @@ public class IMU extends Sensor {
 
     @Override
     public String toCSV() {
-        // TODO to be implemented
-        return null;
+        return accelerometer.getxAcceleration()+","+accelerometer.getyAcceleration()+","+accelerometer.getzAcceleration()+","+
+                gyroscope.getRoll()+","+gyroscope.getPitch()+","+gyroscope.getYaw()+","+
+                compass.getxMagnetic()+","+compass.getyMagnetic()+","+compass.getzMagnetic();
     }
 
     @Override
     public String getCSVHeader() {
-        // TODO to be implemented
-        return null;
+        return HEADER;
     }
 }
