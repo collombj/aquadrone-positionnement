@@ -27,7 +27,6 @@ public class ServerListener implements Worker {
 
     /**
      * Constructeur de la classe ServerListener
-     *
      * @param port le port d'écoute du server
      */
     public ServerListener(int port) {
@@ -69,7 +68,11 @@ public class ServerListener implements Worker {
         datagramSocket.close();
     }
 
-
+    /**
+     * Compare les timestamps et déduit l'état du flux Mavlink
+     * @param msg Un message Mavlink
+     * @return Le résultat du test
+     */
     boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
@@ -80,11 +83,10 @@ public class ServerListener implements Worker {
     }
 
     /**
-     * Retourne le timestamp à associer à un message
-     * @param msg
-     * @return
+     * Retourne le timestamp à associé à un message
+     * @param msg Un message Mavlink
+     * @return Le timestamp du message Mavlink
      */
-    // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             if (((msg_gps_raw_int) msg).time_usec != 0) {
@@ -96,7 +98,6 @@ public class ServerListener implements Worker {
         return getBootTime(msg);
     }
 
-    // Public access to test
     long getBootTime(MAVLinkMessage msg) {
         if (msg instanceof msg_raw_imu) {
             return ((msg_raw_imu) msg).time_usec / 1_000;
@@ -137,7 +138,6 @@ public class ServerListener implements Worker {
 
     /**
      * Initialise les variables nécessaires à la reception des données
-     *
      * @throws SocketException en cas de problème lors de l'écoute du port spécifié
      */
     private void openConnexion() throws SocketException {
@@ -152,6 +152,10 @@ public class ServerListener implements Worker {
         return datagramSocket;
     }
 
+    /**
+     * Getter du MessageWorker
+     * @return Le MessageWorker associé à l'instance du serveur d'écoute
+     */
     public MessageWorker getMessageWorker() {
         return messageWorker;
     }

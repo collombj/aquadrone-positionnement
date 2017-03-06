@@ -7,14 +7,10 @@ import fr.onema.lib.file.CSV;
  * lui sont propre.
  */
 public abstract class Sensor implements CSV {
-    /**
-     * Champ représentant le timestamp d'une mesure issue d'un capteur.
-     */
     long timestamp;
 
     /**
      * Construit un objet de type sensor.
-     *
      * @param timestamp Indicateur temporel d'une mesure réalisé par un capteur à un temps T.
      */
     public Sensor(long timestamp) {
@@ -23,7 +19,6 @@ public abstract class Sensor implements CSV {
 
     /**
      * Retourne l'heure de la mesure
-     *
      * @return Le timestamp de la mesure
      */
     public long getTimestamp() {

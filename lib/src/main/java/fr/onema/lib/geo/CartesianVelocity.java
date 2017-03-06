@@ -9,7 +9,7 @@ public class CartesianVelocity {
     public final double vz;
 
     /***
-     * Constructeur
+     * Constructeur par défaut
      * @param vx Accélération sur l'axe x
      * @param vy Accélération sur l'axe y
      * @param vz Accélération sur l'axe z
@@ -22,6 +22,6 @@ public class CartesianVelocity {
 
     @Override
     public String toString() {
-        return "[vx: " + vx + ", vy: " + vy + ", vz: " + vz +"]";
+        return "[vx: " + vx + ", vy: " + vy + ", vz: " + vz + "]";
     }
 }

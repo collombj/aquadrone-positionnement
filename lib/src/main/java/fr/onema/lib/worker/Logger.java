@@ -12,10 +12,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.logging.Level;
 
 /**
- * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur.
- *
- * @author loics
- * @since 15-02-2017
+ * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur
  */
 public class Logger implements Worker {
 
@@ -26,9 +23,8 @@ public class Logger implements Worker {
     private final Thread loggerThread = new Thread(new LoggerWorker());
 
     /**
-     * Créer un Logger.
-     *
-     * @param fileManager Le FileManager qui va servir à écrire les données issues du logger..
+     * Créer un Logger
+     * @param fileManager Le FileManager qui va servir à écrire les données issues du logger
      */
     Logger(FileManager fileManager) {
         this.fileManager = Objects.requireNonNull(fileManager);
@@ -45,16 +41,15 @@ public class Logger implements Worker {
     }
 
     /**
-     * Ajoute une position à la file des positions.
-     *
-     * @param currentPos La position à tracer.
-     * @return Vrai si la position à été ajoutée avec succès. Sinon faux.
+     * Ajoute une position à la file des positions
+     * @param currentPos La position à tracer
+     * @return Vrai si la position à été ajoutée avec succès. Sinon faux
      */
     boolean addPosition(Position currentPos) {
         return this.positions.offer(Objects.requireNonNull(currentPos));
     }
 
-    private class LoggerWorker implements Runnable{
+    private class LoggerWorker implements Runnable {
 
         private VirtualizerEntry createVirtualizedFromPosition(Position position) {
             return new VirtualizerEntry(position.getGps(), position.getImu(), position.getPressure(), position.getMeasures());
@@ -67,7 +62,7 @@ public class Logger implements Worker {
             } catch (IOException e) {
                 Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
             }
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
                 try {
                     fileManager.appendVirtualized(createVirtualizedFromPosition(positions.take()));
                 } catch (InterruptedException e) {

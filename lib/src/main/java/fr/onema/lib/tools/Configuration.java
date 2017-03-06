@@ -3,14 +3,11 @@ package fr.onema.lib.tools;
 import fr.onema.lib.drone.Dive;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
 import java.util.logging.Logger;
-import java.util.StringJoiner;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -19,7 +16,6 @@ import java.util.StringJoiner;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -71,7 +67,6 @@ public class Configuration {
 
     /**
      * Builder permettant de créer une représentation des paramètres
-     *
      * @param path Chemin d'accès au fichier de configuration
      * @return La représentation du fichier de configuration
      */
@@ -91,20 +86,23 @@ public class Configuration {
         return instance;
     }
 
-
+    /***
+     * Getter de la configuration actuelle
+     * @return La configuration associée
+     */
     public static Configuration getInstance() {
         if (instance == null) {
-                build("settings.properties");
+            build("settings.properties");
         }
         return instance;
 
     }
 
     /**
+     * Setter de la valeur de correction des axes x, y, z
      * On entre une latitude, une longitude et une altitude. Ces valeurs sont comparées
      * à celles présentes dans notre fichier de configuration. En cas de différence on remplace, à l'intérieur
      * du fichier, l'ancienne valeur par la nouvelle valeur
-     *
      * @param accelerationOffsetX Offset de l'accélération sur l'axe x
      * @param accelerationOffsetY Offset de l'accélération sur l'axe y
      * @param accelerationOffsetZ Offset de l'accélération sur l'axe z
@@ -145,7 +143,6 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer la configuration de la base de données.
      * Pour plus de détails se référer à {@link Database}.
-     *
      * @return La configuration de la base de données
      */
     public Database getDatabaseInformation() {
@@ -155,7 +152,6 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer les informations relatives à la géographie de l'application.
      * Pour plus de détails se référer à {@link Geo}.
-     *
      * @return La configuration géographique de l'application
      */
     public Geo getGeo() {
@@ -165,7 +161,6 @@ public class Configuration {
     /**
      * Méthode permettant de récupérer la configuration de l'accélération (pour la correction de position.
      * Pour plus de détails se référer à {@link AccelerationOffset} et {@link Dive}.
-     *
      * @return La configuration géographique de l'application
      */
     public AccelerationOffset getOffset() {
@@ -174,7 +169,6 @@ public class Configuration {
 
     /**
      * Méthode permettant de récupérer la configuration des données de plongée
-     *
      * @return la configuration d'une plongée
      */
     public DiveData getDiveData() {
@@ -182,13 +176,19 @@ public class Configuration {
     }
 
     /**
-     * Class représentant le décalage de l'accélération sur les axes x, y, z
+     * Classe représentant le décalage de l'accélération sur les axes x, y, z
      */
     public static final class AccelerationOffset {
         private double accelerationOffsetX;
         private double accelerationOffsetY;
         private double accelerationOffsetZ;
 
+        /***
+         * Constructeur par défaut
+         * @param accelerationOffsetX Offset de la valeur d'accélération en X
+         * @param accelerationOffsetY Offset de la valeur d'accélération en Y
+         * @param accelerationOffsetZ Offset de la valeur d'accélération en Z
+         */
         public AccelerationOffset(double accelerationOffsetX, double accelerationOffsetY, double accelerationOffsetZ) {
             this.accelerationOffsetX = accelerationOffsetX;
             this.accelerationOffsetY = accelerationOffsetY;
@@ -216,21 +216,33 @@ public class Configuration {
             return edited;
         }
 
+        /***
+         * Getter de la valeur d'accélération en X
+         * @return La valeur de l'accélération en X
+         */
         public double getAccelerationOffsetX() {
             return accelerationOffsetX;
         }
 
+        /***
+         * Getter de la valeur d'accélération en Y
+         * @return La valeur de l'accélération en Y
+         */
         public double getAccelerationOffsetY() {
             return accelerationOffsetY;
         }
 
+        /***
+         * Getter de la valeur d'accélération en Z
+         * @return La valeur de l'accélération en Z
+         */
         public double getAccelerationOffsetZ() {
             return accelerationOffsetZ;
         }
     }
 
     /**
-     * Class représentant la configuration de la base de données
+     * Classe représentant la configuration de la base de données
      */
     public static final class Database {
         private final String hostname;
@@ -251,7 +263,6 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom d'hôte de la BDD
-         *
          * @return Nom d'hôte de la BDD
          */
         public String getHostname() {
@@ -260,8 +271,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le port de la BDD
-         *
-         * @return Port de la BDD
+         * @return Le numéro de port de la BDD
          */
         public int getPort() {
             return port;
@@ -269,8 +279,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom de la base relatif à l'application
-         *
-         * @return Le nom de la base
+         * @return Le nom de la base de données
          */
         public String getBase() {
             return base;
@@ -278,8 +287,7 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le nom d'utilisateur pour la connexion à la BDD
-         *
-         * @return Le nom d'utilisateur
+         * @return Le nom de l'utilisateur
          */
         public String getUsername() {
             return username;
@@ -287,7 +295,6 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le mot de passe pour la connexion à la BDD
-         *
          * @return Le mot de passe
          */
         public String getPassword() {
@@ -296,7 +303,6 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir la clé de notification pour la BDD
-         *
          * @return La clé de notification
          */
         public String getNotifyKey() {
@@ -317,8 +323,7 @@ public class Configuration {
         private final double coefficientRangeIMU;
 
         /**
-         * Le constructeur de la classe
-         *
+         * Constructeur par défaut
          * @param precision             la précision en mètres
          * @param dureemax              la durée en secondes de la plognée
          * @param mouvementsmax         le nombre max de mouvements avant de perdre trop de précision
@@ -338,8 +343,7 @@ public class Configuration {
 
         /**
          * Retourne la précision
-         *
-         * @return la précision en mètres
+         * @return La valeur de la précision en mètres
          */
         public double getPrecision() {
             return precision;
@@ -347,8 +351,7 @@ public class Configuration {
 
         /**
          * Retourne la durée max conseillée d'une plongée
-         *
-         * @return la durée max conseillée d'une plongée
+         * @return La durée max conseillée d'une plongée
          */
         public int getDureemax() {
             return dureemax;
@@ -356,8 +359,7 @@ public class Configuration {
 
         /**
          * Retourne le nombre de mouvements max conseillés avant de perdre trop de précision
-         *
-         * @return le nombre de mouvements max conseillé
+         * @return Le nombre de mouvements max conseillé
          */
         public int getMouvementsmax() {
             return mouvementsmax;
@@ -365,8 +367,7 @@ public class Configuration {
 
         /**
          * Retourne le délai avant de considerer un capteur HS
-         *
-         * @return le délai avant de considérer un capteur HS en secondes
+         * @return Le délai avant de considérer un capteur HS en secondes
          */
         public int getDelaicapteurhs() {
             return delaicapteurhs;
@@ -374,8 +375,7 @@ public class Configuration {
 
         /**
          * Retourne la fréquence de test du flux mavlink
-         *
-         * @return la fréquence de test du flux mavlink
+         * @return La fréquence de test du flux mavlink
          */
         public int getFrequencetestmavlink() {
             return frequencetestmavlink;
@@ -383,8 +383,7 @@ public class Configuration {
 
         /**
          * Retourne la fréquence de test du flux database
-         *
-         * @return la fréquence de test du flux database
+         * @return La fréquence de test du flux database
          */
         public int getFrequencetestdatabase() {
             return frequencetestdatabase;
@@ -396,7 +395,7 @@ public class Configuration {
     }
 
     /**
-     * Class représentant la configuration des données géographiques
+     * Classe représentant la configuration des données géographiques
      */
     public final class Geo {
         private final int srid;
@@ -409,7 +408,6 @@ public class Configuration {
 
         /**
          * Méthode permettant d'obtenir le SRID des données à stocker en base
-         *
          * @return Le SRID souhaité
          */
         public int getSrid() {
@@ -418,8 +416,7 @@ public class Configuration {
 
         /**
          * Permet d'obtenir la latitude du nord magnetique
-         *
-         * @return la latitude du nord magnetique
+         * @return La latitude du nord magnetique
          */
         public double getMagneticNorthLatitude() {
             return magneticNorthLatitude;

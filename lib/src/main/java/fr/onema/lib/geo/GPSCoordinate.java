@@ -10,10 +10,9 @@ public class GPSCoordinate {
 
     /**
      * Construit une coordonnée GPS (lat, lon, alt)
-     *
-     * @param lat la latitude
-     * @param lon la longitude
-     * @param alt l'altitude
+     * @param lat La latitude du relevé GPS
+     * @param lon La longitude du relevé GPS
+     * @param alt L'altitude du relevé GPS
      */
     public GPSCoordinate(long lat, long lon, long alt) {
         this.lat = lat;
@@ -44,7 +43,6 @@ public class GPSCoordinate {
         if (lon != that.lon)
             return false;
         return alt == that.alt;
-
     }
 
     @Override

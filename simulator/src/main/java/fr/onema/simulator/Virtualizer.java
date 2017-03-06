@@ -65,7 +65,7 @@ public class Virtualizer {
 
         long previousTimestamp = entries.get(0).getTimestamp();
 
-        for(int i = 0; i < entries.size(); i++) {
+        for (int i = 0; i < entries.size(); i++) {
             final int count = i;
             ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(entries.get(count)), entries.get(count).getTimestamp() - previousTimestamp, TimeUnit.MILLISECONDS);
             try {
@@ -83,12 +83,19 @@ public class Virtualizer {
 
     /**
      * Récupère la durée de la simulation en millisecondes
+     *
      * @return la durée de la simulation
      */
     public long getDuration() {
         return getStop() - getStart();
     }
 
+    /**
+     * Fonction permettant la comparaison des entrées
+     * @param config La configuration associée
+     * @param errorAllowed Le taux d'erreur acceptable
+     * @throws ComparisonException En cas d'échec de comparaison
+     */
     public void compare(Configuration config, double errorAllowed) throws ComparisonException {
         Objects.requireNonNull(config);
 
@@ -117,8 +124,8 @@ public class Virtualizer {
     }
 
     /**
-     * Récupère le vitesse d'obtention de données
-     * @return speed
+     * Récupère la vitesse d'obtention de données
+     * @return La vitesse d'obtention de données
      */
     public int getSpeed() {
         return speed;
@@ -126,7 +133,7 @@ public class Virtualizer {
 
     /**
      * Récupère le nom de la simulation
-     * @return simulationName
+     * @return Le nom de la simulation
      */
     public String getSimulationName() {
         return simulationName;
@@ -134,7 +141,7 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de départ
-     * @return start
+     * @return La valeur du temps de départ
      */
     private long getStart() {
         return start;
@@ -142,23 +149,23 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de fin
-     * @return stop
+     * @return La valeur du temps de fin
      */
     private long getStop() {
         return stop;
     }
 
     /**
-     * Récupère le port vers la base
-     * @return port
+     * Récupère le port vers la base de données
+     * @return Le numéro de port de la base de données
      */
     public int getPort() {
         return port;
     }
 
     /**
-     * Récupère le host de la base
-     * @return host
+     * Récupère le host de la base de donnéesÒ
+     * @return Le hostname de la base de données
      */
     public String getHost() {
         return host;

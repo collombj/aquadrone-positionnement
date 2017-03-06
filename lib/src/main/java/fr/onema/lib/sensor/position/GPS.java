@@ -14,7 +14,6 @@ public class GPS extends Sensor {
     private GPSCoordinate position;
     private float direction;
 
-    // TODO : maybe a single constructor is better
     public GPS(long timestamp, long lat, long lon, long alt) {
         super(timestamp);
         this.position = new GPSCoordinate(lat, lon, alt);
@@ -27,7 +26,7 @@ public class GPS extends Sensor {
 
     /***
      * Builder de l'objet GPS_SENSOR
-     * @param timestamp
+     * @param timestamp Le timestamp de la mesure GPS
      * @param msg Message correspondant à la mesure GPS_SENSOR en protocole MavLink
      */
     public static GPS build(long timestamp, msg_gps_raw_int msg) {

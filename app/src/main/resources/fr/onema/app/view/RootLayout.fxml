@@ -150,13 +150,13 @@
                     <content>
                         <AnchorPane>
                             <children>
-                                <TableView fx:id="sensorsTableView" maxHeight="150.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <TableView fx:id="sensorsTableView" prefWidth="400" fixedCellSize="25.0" maxHeight="175.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                     <placeholder>
                                         <Label text="" />
                                     </placeholder>
                                     <columns>
-                                        <TableColumn fx:id="type" maxWidth="175.0" minWidth="175.0" prefWidth="175.0" resizable="false" text="Type" />
-                                        <TableColumn fx:id="state" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" resizable="false" text="État" />
+                                        <TableColumn fx:id="type" resizable="false" text="Type" />
+                                        <TableColumn fx:id="state" resizable="false" text="État" />
                                     </columns>
                                     <columnResizePolicy>
                                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />

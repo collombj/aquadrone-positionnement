@@ -4,7 +4,7 @@ package fr.onema.lib.file;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
-/***
+/**
  * Classe utilitaire permettant de transformer une ligne CSV en entités
  */
 public class Parser {

@@ -14,16 +14,16 @@ import java.util.Objects;
  * Classe qui représente la centrale inertielle embarquée
  */
 public class IMU extends Sensor {
+    private static final String HEADER = "AccelerometerX,AccelerometerY,AccelerometerZ,GyroscopeRoll,GyroscopePitch,GyroscopeYaw,CompassX,CompassY,CompassZ";
     private final Accelerometer accelerometer;
     private final Gyroscope gyroscope;
     private final Compass compass;
-    private static final String HEADER = "AccelerometerX,AccelerometerY,AccelerometerZ,GyroscopeRoll,GyroscopePitch,GyroscopeYaw,CompassX,CompassY,CompassZ";
 
     /**
-     * Constructeur
-     * @param accelerometer capteur
-     * @param gyroscope     capteur
-     * @param compass       capteur
+     * Constructeur par défaut
+     * @param accelerometer instance du capteur accéléromètre
+     * @param gyroscope     instance du capteur gyroscope
+     * @param compass       instance du capteur compass
      */
     public IMU(long timestamp, Accelerometer accelerometer, Gyroscope gyroscope, Compass compass) {
         super(timestamp);
@@ -33,7 +33,7 @@ public class IMU extends Sensor {
     }
 
     /**
-     * Builder de l'imu a apartir du flux mavlink
+     * Builder de l'imu à partir du flux mavlink
      * @param msg recuperation du flux mavlink
      * @return Un IMU instancié en fonction de messages MAVLink
      */
@@ -42,9 +42,9 @@ public class IMU extends Sensor {
         Objects.requireNonNull(msgAttitude);
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
         double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
-        Accelerometer accelerometer = new Accelerometer((int)Math.round((msg.xacc - offset.getAccelerationOffsetX())*coefficientRangeIMU),
-                (int)Math.round((msg.yacc - offset.getAccelerationOffsetY())*coefficientRangeIMU),
-                (int)Math.round((msg.zacc - offset.getAccelerationOffsetZ())*coefficientRangeIMU));
+        Accelerometer accelerometer = new Accelerometer((int) Math.round((msg.xacc - offset.getAccelerationOffsetX()) * coefficientRangeIMU),
+                (int) Math.round((msg.yacc - offset.getAccelerationOffsetY()) * coefficientRangeIMU),
+                (int) Math.round((msg.zacc - offset.getAccelerationOffsetZ()) * coefficientRangeIMU));
         Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(timestamp, accelerometer, gyroscope, compass);
@@ -61,7 +61,6 @@ public class IMU extends Sensor {
     public static IMU build(CartesianVelocity previousVelocity, CartesianVelocity velocity, long prevTimestamp, long timestamp) {
         Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(velocity);
-
         Accelerometer accelerometer = GeoMaths.computeAccelerometerData(previousVelocity, velocity, timestamp - prevTimestamp);
         Gyroscope gyroscope = new Gyroscope(0, 0, 0);
         Compass compass = new Compass(0, 0, 0);
@@ -94,9 +93,9 @@ public class IMU extends Sensor {
 
     @Override
     public String toCSV() {
-        return accelerometer.getxAcceleration()+","+accelerometer.getyAcceleration()+","+accelerometer.getzAcceleration()+","+
-                gyroscope.getRoll()+","+gyroscope.getPitch()+","+gyroscope.getYaw()+","+
-                compass.getxMagnetic()+","+compass.getyMagnetic()+","+compass.getzMagnetic();
+        return accelerometer.getxAcceleration() + "," + accelerometer.getyAcceleration() + "," + accelerometer.getzAcceleration() + "," +
+                gyroscope.getRoll() + "," + gyroscope.getPitch() + "," + gyroscope.getYaw() + "," +
+                compass.getxMagnetic() + "," + compass.getyMagnetic() + "," + compass.getzMagnetic();
     }
 
     @Override

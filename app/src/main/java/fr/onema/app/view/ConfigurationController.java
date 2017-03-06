@@ -155,7 +155,7 @@ public class ConfigurationController {
         try {
             main.getConfiguration().setCorrection(xOffsetSpinner.getValue(), yOffsetSpinner.getValue(), zOffsetSpinner.getValue());
         } catch (IOException e) {
-            // TODO : complete
+            // TODO : handle exception
         }
         Stage stage = (Stage) applyButton.getScene().getWindow();
         stage.close();

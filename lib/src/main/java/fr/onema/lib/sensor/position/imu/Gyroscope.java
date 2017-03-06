@@ -1,9 +1,6 @@
 package fr.onema.lib.sensor.position.imu;
 
 /**
- * Created by strock on 06/02/2017.
- * Edit jroussel on 14/02/2017.
- * <p>
  * Classe représentant les éléments d'attitude du drone
  */
 public class Gyroscope {
@@ -12,6 +9,7 @@ public class Gyroscope {
     private final double yaw;
 
     /**
+     * Constructeur par défaut
      * @param roll  le roll du drone
      * @param pitch le pitch du drone
      * @param yaw   le yaw du drone
@@ -23,27 +21,24 @@ public class Gyroscope {
     }
 
     /**
-     * Retourne le roll
-     *
-     * @return le roll
+     * Getter de la valeur roll
+     * @return La valeur roll
      */
     public double getRoll() {
         return roll;
     }
 
     /**
-     * Retourne le pitch
-     *
-     * @return le ptich
+     * Getter de la valeur pitch
+     * @return La valeur du ptich
      */
     public double getPitch() {
         return pitch;
     }
 
     /**
-     * Retourne le yaw
-     *
-     * @return le yaw
+     * Getter de la valeur du yaw
+     * @return La valeur du yaw
      */
     public double getYaw() {
         return yaw;

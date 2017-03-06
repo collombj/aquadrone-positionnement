@@ -9,8 +9,7 @@ public class CartesianCoordinate {
     public final double z;
 
     /**
-     * Construit une coordonnée cartésienne
-     *
+     * Constructeur par défaut
      * @param x la valeur sur x
      * @param y la valeur sur y
      * @param z la valeur sur z
@@ -23,6 +22,6 @@ public class CartesianCoordinate {
 
     @Override
     public String toString() {
-        return "[x: " + x + ", y: " + y + ", v: " + z +"]";
+        return "[x: " + x + ", y: " + y + ", v: " + z + "]";
     }
 }

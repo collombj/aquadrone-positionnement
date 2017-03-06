@@ -9,6 +9,7 @@ public class Accelerometer {
     private final int zAcceleration;
 
     /**
+     * Constructeur par défaut
      * @param xAcceleration coordonnée acceleration x
      * @param yAcceleration coordonnée acceleration y
      * @param zAcceleration coordonnée acceleration z
@@ -45,6 +46,6 @@ public class Accelerometer {
 
     @Override
     public String toString() {
-        return "[accX: " + xAcceleration +", accY: " + yAcceleration + ", accZ: " + zAcceleration + "]";
+        return "[accX: " + xAcceleration + ", accY: " + yAcceleration + ", accZ: " + zAcceleration + "]";
     }
 }

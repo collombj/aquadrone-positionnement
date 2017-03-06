@@ -167,9 +167,8 @@ public class FileManager {
 
     /**
      * Méthode permettant d'obtenir une lecture reformattée du fichier de comparaison
-     *
      * @param replacement Caractère remplacant "," [virgule] dans le csv d'entrée
-     * @return Le fichier de résultat dans une liste de ligne. Chaque élément est séparé par le caractère de remplacement spécifié.
+     * @return Le fichier de résultat dans une liste de ligne. Chaque élément est séparé par le caractère de remplacement spécifié
      * @throws IOException En cas d'erreur du à la manipulation du fichier
      */
     public List<String> getResults(String replacement) throws IOException {
@@ -177,7 +176,6 @@ public class FileManager {
         try (Stream<String> s = Files.lines(Paths.get(resultsOutputFilePath))) {
             s.filter(e -> !e.isEmpty()).forEach(e -> results.add(e.replaceAll(",", replacement)));
         }
-
         return results;
     }
 }

@@ -11,11 +11,15 @@ import java.util.Objects;
 import java.util.TimerTask;
 
 /***
- * Classe permettant la déclaration du scheduler chargé de requêter les dépendances
+ * Classe permettant la déclaration du scheduler chargé de requêter l'état des dépendances
  */
 public class CheckDependenciesAvailabilityTask extends TimerTask {
     private final Main main;
 
+    /***
+     * Constructeur du scheduler
+     * @param main L'instance de la classe main lançant le scheduler
+     */
     public CheckDependenciesAvailabilityTask(Main main) {
         this.main = Objects.requireNonNull(main);
     }
@@ -36,6 +40,7 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
             dd.initAsReadable();
             dd.closeConnection();
         } catch (Exception e) {
+            // TODO : handle exception
             // FileManager.LOGGER.log(Level.FINE, e.getMessage());
             return false;
         }

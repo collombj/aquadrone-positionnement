@@ -123,10 +123,11 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'obtenir la seule instance de databaseworker
+     *
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
-        if (INSTANCE == null){
+        if (INSTANCE == null) {
             try {
                 init();
             } catch (FileNotFoundException e) {
@@ -181,7 +182,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une nouvelle Dive en base de données
-     * @param dive une DiveEntity
+     * @param dive L'entité à insérer
      */
     public void newDive(DiveEntity dive) {
         if (!actionQueue.offer(new DatabaseAction(newDiveAux, dive))) {
@@ -191,6 +192,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une MeasureEntity
+     *
      * @param measureEntity   la MeasureEntity à insérer en base
      * @param diveID          l'identifiant de la plongée de la mesure
      * @param measureInfoName l'identifiant du type de mesure
@@ -203,6 +205,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet de mettre à jour une MeasureEntity dans la base de données
+     *
      * @param measureId         L'identifiant de la MeasureId à modifier
      * @param positionCorrected Les nouvelles coordonnées
      * @param precisionCm       La precision estimée de la mesure en cm
@@ -215,6 +218,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour l'heure de début d'une DiveEntity
+     *
      * @param timestamp L'heure de début de plongée
      * @param diveID    L'identifiant de la DiveEntity
      */
@@ -226,6 +230,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Cette méthode permet de mettre à jour la date de fin d'une DiveEntity
+     *
      * @param timestamp L'heure de fin de plongée
      * @param diveID    L'identifiant de la diveEntity
      */

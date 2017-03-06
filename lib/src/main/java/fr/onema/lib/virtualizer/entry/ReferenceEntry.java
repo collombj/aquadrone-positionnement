@@ -16,7 +16,7 @@ public class ReferenceEntry implements CSV {
     private final int temperature;
 
     /**
-     * Le constructeur de classe, pour attribuer une valeur aux attributs
+     * Constructeur par défaut
      * @param timestamp   timestamp de la mesure
      * @param lat         la latitude de notre point
      * @param lon         la longitude de notre point
@@ -38,8 +38,8 @@ public class ReferenceEntry implements CSV {
     }
 
     /**
-     * récupère le timestamp
-     * @return timestamp
+     * Récupère le timestamp
+     * @return La valeur du timestamp
      */
     public long getTimestamp() {
         return timestamp;
