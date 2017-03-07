@@ -94,17 +94,21 @@ public class Dive {
             double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
             double yaw = imu == null ? 0 : imu.getGyroscope().getYaw();
+            GPSCoordinate positionBrute = position.getPositionBrute();
+            GPSCoordinate positionRecalculated = position.getPositionRecalculated();
+            int precision = positionBrute != null && positionRecalculated != null ?
+                    (int)(GeoMaths.gpsDistance(positionBrute, positionRecalculated)*100) : -1; //TODO Si c'est bon, enlever le TODO, sinon à modifier
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
-                    position.getPositionBrute(),
-                    position.getPositionRecalculated(),
+                    positionBrute,
+                    positionRecalculated,
                     xAccel,
                     yAccel,
                     zAccel,
                     roll,
                     pitch,
                     yaw,
-                    -1,
+                    precision,
                     measure.getValue());
 
             // l'insérer en base
@@ -160,7 +164,9 @@ public class Dive {
             int zAccel = imu == null ? 0 : imu.getAccelerometer().getzAcceleration();
             double roll = imu == null ? 0 : imu.getGyroscope().getRoll();
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
-            double yaw =imu == null ? 0 : imu.getGyroscope().getYaw();
+            double yaw = imu == null ? 0 : imu.getGyroscope().getYaw();
+            int precision = position.getPositionBrute() != null && position.getPositionRecalculated() != null ?
+                    (int)(GeoMaths.gpsDistance(position.getPositionBrute(), position.getPositionRecalculated())*100) : -1; //TODO Si c'est bon, enlever le TODO, sinon à modifier
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
@@ -171,7 +177,7 @@ public class Dive {
                     roll,
                     pitch,
                     yaw,
-                    -1,
+                    precision,
                     measure.getValue());
             //l insérer à la liste des mesures corrigées
             measuresUpdated.add(entity);

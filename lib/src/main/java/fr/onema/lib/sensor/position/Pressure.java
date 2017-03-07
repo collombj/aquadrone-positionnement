@@ -35,7 +35,8 @@ public class Pressure extends Sensor {
      * @param temperature La valeur de température de la mesure
      * @return L'objet représentant la mesure gps
      */
-     public static Pressure build(long timestamp, int temperature) {
+
+    public static Pressure build(long timestamp, int temperature) {
         return new Pressure(timestamp, 0, 0, temperature);
     }
 

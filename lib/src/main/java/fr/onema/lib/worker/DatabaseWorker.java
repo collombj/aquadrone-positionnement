@@ -17,8 +17,9 @@ import java.util.function.BiConsumer;
  * Cette classe permet de créer un thread qui va gérer les accès à la base de données
  */
 public class DatabaseWorker implements Worker {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DatabaseWorker.class.getName());
-    private static DatabaseWorker INSTANCE;
+    private static DatabaseWorker instance;
     private static Thread dbWorkerThread;
     private static LinkedBlockingQueue<DatabaseAction> actionQueue = new LinkedBlockingQueue<>(10000);
     private static String notificationKey;
@@ -132,7 +133,7 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
-        if (INSTANCE == null){
+        if (instance == null){
             try {
                 init();
             } catch (FileNotFoundException e) {
@@ -141,7 +142,7 @@ public class DatabaseWorker implements Worker {
                 return null;
             }
         }
-        return INSTANCE;
+        return instance;
     }
 
     /**
@@ -149,7 +150,7 @@ public class DatabaseWorker implements Worker {
      * Doit etre appelée avant toute utilisation du databaseworker
      */
     private static void init() throws FileNotFoundException {
-        INSTANCE = new DatabaseWorker();
+        instance = new DatabaseWorker();
         Configuration configuration = Configuration.getInstance();
         notificationKey = configuration.getDatabaseInformation().getNotifyKey();
         dbWorkerThread = new Thread(() -> {
