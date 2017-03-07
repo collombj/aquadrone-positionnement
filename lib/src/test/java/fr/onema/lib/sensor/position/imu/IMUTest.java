@@ -1,10 +1,9 @@
-package fr.onema.lib.sensor.position.IMU;
+package fr.onema.lib.sensor.position.imu;
 
 
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
-import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 import org.mavlink.messages.ardupilotmega.msg_attitude;
 import org.mavlink.messages.ardupilotmega.msg_raw_imu;
@@ -36,9 +35,10 @@ public class IMUTest {
         IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
-        assertEquals(3, imu.getAccelerometer().getxAcceleration() + (int)offset.getAccelerationOffsetX());
-        assertEquals(4, imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY());
-        assertEquals(5, imu.getAccelerometer().getzAcceleration() + (int)offset.getAccelerationOffsetZ());
+        double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
+        assertEquals(1, Math.round((imu.getAccelerometer().getxAcceleration() + (int)offset.getAccelerationOffsetX()) * coefficientRangeIMU), 0);
+        assertEquals(29, Math.round((imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY()) * coefficientRangeIMU), 0);
+        assertEquals(3, Math.round((imu.getAccelerometer().getzAcceleration() + (int)offset.getAccelerationOffsetZ()) * coefficientRangeIMU), 0);
     }
 
     @Test

@@ -55,7 +55,7 @@ public class ServerListener implements Worker {
                 }
 
                 if (testValidityMavlinkMessage(mesg)) {
-                    this.messageWorker.newMessage(messageTimestamp, mesg);
+                    this.messageWorker.newMessage(System.currentTimeMillis(), mesg);
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

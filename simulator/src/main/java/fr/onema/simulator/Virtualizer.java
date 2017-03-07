@@ -63,15 +63,20 @@ public class Virtualizer {
         sender.start();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 
-        entries.forEach(x -> {
-            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(x), 1000 / speed, TimeUnit.MILLISECONDS);
+        long previousTimestamp = entries.get(0).getTimestamp();
+
+        for(int i = 0; i < entries.size(); i++) {
+            final int count = i;
+            ScheduledFuture<?> scheduled = executor.schedule(() -> sender.add(entries.get(count)), entries.get(count).getTimestamp() - previousTimestamp, TimeUnit.MILLISECONDS);
             try {
                 scheduled.get();
             } catch (InterruptedException | ExecutionException e) {
                 LOGGER.error("Interrupted during sending");
                 LOGGER.debug("Interrupted during sending", e);
             }
-        });
+            previousTimestamp = entries.get(count).getTimestamp();
+        }
+
         executor.shutdown();
         sender.closeConnection();
         stop = System.currentTimeMillis(); //Pour avoir un stop en millisecondes

@@ -3,11 +3,12 @@ package fr.onema.lib.virtualizer.entry;
 import fr.onema.lib.drone.Measure;
 import fr.onema.lib.file.CSV;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.ardupilotmega.*;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Classe représentant les entrées du fichier virtualisées
@@ -77,6 +78,8 @@ public class VirtualizerEntry implements CSV {
             this.gpsLat = gps.getPosition().lat;
             this.gpsLon = gps.getPosition().lon;
             this.gpsAlt = gps.getPosition().alt;
+
+            this.hasGPS = true;
         }
         if (imu == null) {
             this.xacc = 0;
@@ -104,24 +107,22 @@ public class VirtualizerEntry implements CSV {
         } else {
             this.pressure = pressure.getAbsolute();
         }
-        if (!measureList.isEmpty()) { // Add here your measure values!
-            if (measureList.stream().anyMatch(measure -> "temperature".equals(measure.getName()))) { // Check is at least one temperature is present
-                this.temperature = Integer.parseInt(
-                        measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst().get().getValue());
-            } else {
-                this.temperature = 0;
-            }
+        Optional<Measure> o = measureList.stream().filter(m -> "temperature".equals(m.getName())).findFirst();
+        if (o.isPresent()) {
+            this.temperature = Integer.parseInt(o.get().getValue());
         } else {
             this.temperature = 0;
         }
+
         if (gps != null) {
             this.timestamp = gps.getTimestamp();
         } else if (pressure != null) {
             this.timestamp = pressure.getTimestamp();
+        } else if(imu != null){
+            this.timestamp = imu.getTimestamp(); //Désolé pour le bout de scotch, ce constructeur est ... concept
         } else {
-            this.timestamp = 0;
+            timestamp = 0; //Encore désolé, constructeur FIXME
         }
-        this.hasGPS = true;
     }
 
     /**

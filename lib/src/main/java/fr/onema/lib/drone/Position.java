@@ -6,7 +6,7 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.IMU.IMU;
+import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 
 import java.security.InvalidParameterException;
@@ -222,6 +222,7 @@ public class Position {
         }
         GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),
+                previousPosition.getImu().getAccelerometer(),
                 imu.getGyroscope().getYaw(),
                 imu.getGyroscope().getPitch(),
                 imu.getGyroscope().getRoll(),

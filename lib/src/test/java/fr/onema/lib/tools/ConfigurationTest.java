@@ -13,27 +13,29 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
- * Created by JÃ©rÃ´me on 06/02/2017.
+ * Created by Jérôme on 06/02/2017.
  */
 public class ConfigurationTest {
     private Configuration config = Configuration.getInstance();
 
-    private final static String content = "offset.acc.x=-1000\n" +
-            "offset.acc.y=1000\n" +
-            "offset.acc.z=500\n" +
-            "database.host=aquadrone.local\n" +
-            "database.port=5432\n" +
+    private final static String content = "divedata.delaicapteurhs=30\n" +
+            "offset.acc.x=0.0\n" +
             "database.base=test\n" +
             "database.user=test\n" +
             "database.password=test\n" +
-            "database.notify-key=siren_key\n" +
-            "geo.srid=2154\n" +
-            "divedata.precision=0.5\n" +
-            "divedata.dureemax=120\n" +
-            "divedata.mouvementsmax=4\n" +
-            "divedata.delaicapteurhs=30\n" +
+            "geo.srid=4326\n" +
             "divedata.frequencetestmavlink=1\n" +
-            "divedata.frequencetestdatabase=1";
+            "database.port=5432\n" +
+            "divedata.precision=0.5\n" +
+            "divedata.mouvementsmax=4\n" +
+            "database.notify-key=siren_key\n" +
+            "divedata.dureemax=120\n" +
+            "divedata.frequencetestdatabase=1\n" +
+            "divedata.coefficientrangeimu=0.732\n" +
+            "offset.acc.z=0.0\n" +
+            "database.host=aquadrone.local\n" +
+            "offset.acc.y=140.0\n" +
+            "geo.magneticnorthlatitude=86.5";
     private File filePath;
 
     public ConfigurationTest() throws FileNotFoundException {
@@ -70,9 +72,9 @@ public class ConfigurationTest {
     public void testRead() throws Exception {
         Configuration.build(filePath.getAbsolutePath());
 
-        assertEquals(-1000, config.getOffset().getAccelerationOffsetX(), 0);
-        assertEquals(1000, config.getOffset().getAccelerationOffsetY(), 0);
-        assertEquals(500, config.getOffset().getAccelerationOffsetZ(), 0);
+        assertEquals(0, config.getOffset().getAccelerationOffsetX(), 0);
+        assertEquals(140, config.getOffset().getAccelerationOffsetY(), 0);
+        assertEquals(0, config.getOffset().getAccelerationOffsetZ(), 0);
 
         assertEquals("aquadrone.local", config.getDatabaseInformation().getHostname());
         assertEquals(5432, config.getDatabaseInformation().getPort());
@@ -81,7 +83,7 @@ public class ConfigurationTest {
         assertEquals("test", config.getDatabaseInformation().getPassword());
         assertEquals("siren_key", config.getDatabaseInformation().getNotifyKey());
 
-        assertEquals(2154, config.getGeo().getSrid());
+        assertEquals(4326, config.getGeo().getSrid());
 
         assertEquals(0.5, config.getDiveData().getPrecision(), 0);
         assertEquals(120, config.getDiveData().getDureemax());

@@ -19,6 +19,7 @@ import java.util.Properties;
  * @since 08-02-2017
  */
 public class DatabaseDriver {
+    public static final String ST_SET_SRID_ST_MAKE_POINT = ",ST_SetSRID(ST_MakePoint(?,?,?),?)";
     private static final String INSERT_MEASURE = "INSERT INTO Measure(" +
             "timestamp," +
             "location_corrected," +
@@ -35,8 +36,8 @@ public class DatabaseDriver {
             "measureinformation_id" +
             ") VALUES (" +
             "?" +
-            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ST_SET_SRID_ST_MAKE_POINT +
+            ST_SET_SRID_ST_MAKE_POINT +
             ",?" +
             ",?" +
             ",?" +
@@ -74,8 +75,8 @@ public class DatabaseDriver {
             "measureinformation_id" +
             ") VALUES (" +
             "?" +
-            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
-            ",ST_SetSRID(ST_MakePoint(?,?,?),?)" +
+            ST_SET_SRID_ST_MAKE_POINT +
+            ST_SET_SRID_ST_MAKE_POINT +
             ",?" +
             ",?" +
             ",?" +
