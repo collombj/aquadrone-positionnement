@@ -4,6 +4,7 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class Tracer implements Worker {
 
-    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MessageWorker.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageWorker.class.getName());
 
     private final VirtualizedOutput virtualizedOutput;
     private final BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
@@ -24,6 +25,7 @@ public class Tracer implements Worker {
 
     /**
      * Créer un Tracer.
+     *
      * @param virtualizedOutput Le FileManager qui va servir à écrire les données issues du tracer..
      */
     Tracer(VirtualizedOutput virtualizedOutput) {
@@ -42,6 +44,7 @@ public class Tracer implements Worker {
 
     /**
      * Ajoute une position à la file des positions
+     *
      * @param currentPos La position à tracer
      * @return Vrai si la position à été ajoutée avec succès. Sinon faux
      */
@@ -57,7 +60,7 @@ public class Tracer implements Worker {
 
         @Override
         public void run() {
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
                 try {
                     virtualizedOutput.appendVirtualized(createVirtualizedFromPosition(positions.take()));
                 } catch (InterruptedException e) {

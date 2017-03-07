@@ -6,8 +6,8 @@ import static org.junit.Assert.*;
 
 /**
  * Created by Francois Vanderperre on 06/02/2017.
- *
- *  Classe de test
+ * <p>
+ * Classe de test
  */
 public class TestMeasureInformationEntity {
 

@@ -32,6 +32,7 @@ public class Position {
 
     /**
      * Constructeur de la mesure de position
+     *
      * @param timestamp     Heure de la mesure
      * @param positionBrute Coordonnées gps (latitude, longitude, altitude)
      * @param direction     Orientation du gps en degrés
@@ -57,6 +58,7 @@ public class Position {
     /**
      * Constructeur de Position seulement avec timestamp
      * Les autres valeurs des capteurs peuvent être associés plus tard grâce aux setters
+     *
      * @param timestamp Le timestamp de la positione actuelle
      */
     public Position(long timestamp) {
@@ -65,6 +67,7 @@ public class Position {
 
     /**
      * Getter de la position brute cartésienne. Utile pour le calcul de la position recalculé
+     *
      * @return La position cartésienne brute
      */
     public CartesianCoordinate getCartesianBrute() {
@@ -73,6 +76,7 @@ public class Position {
 
     /**
      * Met a jour la position brute cartésienne
+     *
      * @param cartesianBrute La position cartésienne brute
      */
     public void setCartesianBrute(CartesianCoordinate cartesianBrute) {
@@ -81,6 +85,7 @@ public class Position {
 
     /**
      * Getter du timestamp de la position
+     *
      * @return Le timestamp de la position
      */
     public long getTimestamp() {
@@ -89,6 +94,7 @@ public class Position {
 
     /**
      * Met à jour le timestamp
+     *
      * @param timestamp l'heure de la mesure
      */
     public void setTimestamp(long timestamp) {
@@ -97,6 +103,7 @@ public class Position {
 
     /**
      * Getter de la position GPS_SENSOR brute de la position
+     *
      * @return La position GPS_SENSOR brute de la position
      */
     public GPSCoordinate getPositionBrute() {
@@ -105,6 +112,7 @@ public class Position {
 
     /**
      * Met a jour la coordonnées brutes
+     *
      * @param positionBrute des coordonnées GPS_SENSOR
      */
     void setPositionBrute(GPSCoordinate positionBrute) {
@@ -114,6 +122,7 @@ public class Position {
 
     /**
      * Getter de la position GPS_SENSOR corrigée de la position
+     *
      * @return La position GPS_SENSOR corrigée de la position
      */
     public GPSCoordinate getPositionRecalculated() {
@@ -122,6 +131,7 @@ public class Position {
 
     /**
      * Met à jour les coordonnées recalculées
+     *
      * @param positionRecalculated des coordonées GPS_SENSOR
      */
     public void setPositionRecalculated(GPSCoordinate positionRecalculated) {
@@ -131,6 +141,7 @@ public class Position {
 
     /**
      * Getter de la direction de la position
+     *
      * @return La direction de la position
      */
     public int getDirection() {
@@ -139,6 +150,7 @@ public class Position {
 
     /**
      * Getter de l'IMU
+     *
      * @return L'IMU associé à la position
      */
     public IMU getImu() {
@@ -147,6 +159,7 @@ public class Position {
 
     /**
      * Définit l'IMU de la position.
+     *
      * @param imu L'IMU de la position.
      */
     public void setImu(IMU imu) {
@@ -159,6 +172,7 @@ public class Position {
 
     /**
      * Définit le GPS_SENSOR de la position
+     *
      * @param gps Le GPS_SENSOR de la position
      */
     public void setGps(GPS gps) {
@@ -171,6 +185,7 @@ public class Position {
 
     /**
      * Ajoute une mesure à cette position
+     *
      * @param newMeasure Nouvelle mesure {@link Measure}
      */
     public void add(Measure newMeasure) {
@@ -180,6 +195,7 @@ public class Position {
 
     /**
      * Vérifie si un GPS_SENSOR est associé à la position
+     *
      * @return Vrai si un GPS_SENSOR est associé. Sinon faux
      */
     public boolean hasGPS() {
@@ -188,6 +204,7 @@ public class Position {
 
     /**
      * Vérifie si un IMU est associé à la position
+     *
      * @return Vrai si un IMU est associé. Sinon faux
      */
     public boolean hasIMU() {
@@ -198,6 +215,7 @@ public class Position {
      * Procède au calcule de la position actuelle grâce à la position précedente
      * Cette position précédente est enregistré en coordonnées cartésienes et en GPS
      * Afin de ce faire, il est nécessaire d'avoir un IMU, la position précédente et la vitesse précedente
+     *
      * @param previousPosition La position précédente.
      * @param previousVelocity La vitesse de la position précédente.
      * @return la vitesse au cours du deplacement
@@ -219,6 +237,7 @@ public class Position {
 
     /**
      * Méthode permettant d'accèder à la pression relative à une position
+     *
      * @return La pression courrante
      */
     public Pressure getPressure() {
@@ -227,6 +246,7 @@ public class Position {
 
     /**
      * Méthode permettant de mettre à jour la pression sur une position
+     *
      * @param pressure La pression relative à la position mise à jour
      */
     public void setPressure(Pressure pressure) {

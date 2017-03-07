@@ -200,22 +200,22 @@ public class GeoMathsTest {
 
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE1() {
-        GeoMaths.computeNewPosition(null, 0,0,0, 12, null);
+        GeoMaths.computeNewPosition(null, 0, 0, 0, 12, null);
 
 
     }
 
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE2() {
-        CartesianCoordinate coordinate = new CartesianCoordinate(0,0,0);
-        GeoMaths.computeNewPosition(coordinate, 0,0,0, 12, null);
+        CartesianCoordinate coordinate = new CartesianCoordinate(0, 0, 0);
+        GeoMaths.computeNewPosition(coordinate, 0, 0, 0, 12, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE3() {
-        CartesianCoordinate coordinate = new CartesianCoordinate(0,0,0);
-        CartesianVelocity velocity = new CartesianVelocity(0,0,0);
-        GeoMaths.computeNewPosition(coordinate, 0,0,0, 12, null);
+        CartesianCoordinate coordinate = new CartesianCoordinate(0, 0, 0);
+        CartesianVelocity velocity = new CartesianVelocity(0, 0, 0);
+        GeoMaths.computeNewPosition(coordinate, 0, 0, 0, 12, null);
 
 
     }
@@ -252,22 +252,24 @@ public class GeoMathsTest {
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull() {
 
-        recalculatePosition(null, new GPSCoordinate(3,3,1), new GPSCoordinate(3,3,3)) ;
+        recalculatePosition(null, new GPSCoordinate(3, 3, 1), new GPSCoordinate(3, 3, 3));
 
     }
+
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull1() {
 
         Position p1 = new Position(5);
         Position p2 = new Position(5);
 
-        List<Position> list= new ArrayList<>();
+        List<Position> list = new ArrayList<>();
         list.add(p1);
         list.add(p2);
 
-        recalculatePosition(list, null, new GPSCoordinate(3,3,3)) ;
+        recalculatePosition(list, null, new GPSCoordinate(3, 3, 3));
 
     }
+
     @Test(expected = NullPointerException.class)
     public void testRecalculaterawpositionNull2() {
         Position p1 = new Position(5);
@@ -277,7 +279,7 @@ public class GeoMathsTest {
         list.add(p1);
         list.add(p2);
 
-        recalculatePosition(list, new GPSCoordinate(3,3,1), null) ;
+        recalculatePosition(list, new GPSCoordinate(3, 3, 1), null);
 
     }
 }

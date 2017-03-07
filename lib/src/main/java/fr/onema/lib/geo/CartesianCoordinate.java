@@ -10,6 +10,7 @@ public class CartesianCoordinate {
 
     /**
      * Constructeur par défaut
+     *
      * @param x la valeur sur x
      * @param y la valeur sur y
      * @param z la valeur sur z

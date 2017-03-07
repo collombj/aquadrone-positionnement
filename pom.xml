@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <artifactId>JOnema</artifactId>
     <description>Maven global du projet</description>
@@ -13,7 +13,9 @@
         <sonar.projectName>${project.artifactId}</sonar.projectName>
         <sonar.projectVersion>${project.version}</sonar.projectVersion>
         <sonar.language>java</sonar.language>
-        <sonar.exclusions>src/main/java/org/mavlink/**,src/main/java/fr/onema/app/**,src/main/java/fr/onema/simulator/Main**</sonar.exclusions>
+        <sonar.exclusions>
+            src/main/java/org/mavlink/**,src/main/java/fr/onema/app/**,src/main/java/fr/onema/simulator/Main**
+        </sonar.exclusions>
         <jacoco.basedir>${project.build.directory}/</jacoco.basedir>
         <sonar.jacoco.reportPath>${jacoco.basedir}/jacoco.exec</sonar.jacoco.reportPath>
         <jacoco.ut.outputdir>${jacoco.basedir}/jacoco-ut-out</jacoco.ut.outputdir>

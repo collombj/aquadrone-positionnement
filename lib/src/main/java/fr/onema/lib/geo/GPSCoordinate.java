@@ -10,6 +10,7 @@ public class GPSCoordinate {
 
     /**
      * Construit une coordonnée GPS (lat, lon, alt)
+     *
      * @param lat La latitude du relevé GPS
      * @param lon La longitude du relevé GPS
      * @param alt L'altitude du relevé GPS

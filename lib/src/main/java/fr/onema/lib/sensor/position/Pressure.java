@@ -41,6 +41,7 @@ public class Pressure extends Sensor {
 
     /**
      * Permet de calculer la profondeur en fonction de la pression absolue et de la pression atmosphérique
+     *
      * @param atmosphericPressure Valeur de la pression atmosphérique
      * @return La valeur de la profondeur du drone
      */
@@ -50,6 +51,7 @@ public class Pressure extends Sensor {
 
     /**
      * Retourne la valeur absolue de la pression
+     *
      * @return La valeur absolue de la pression
      */
     public float getAbsolute() {
@@ -58,6 +60,7 @@ public class Pressure extends Sensor {
 
     /**
      * Retourne la valeur différentielle de la pression
+     *
      * @return La valeur différentielle de la pression
      */
     public float getDifferential() {
@@ -66,6 +69,7 @@ public class Pressure extends Sensor {
 
     /**
      * Retourne la valeur de température
+     *
      * @return La valeur de temperature
      */
     public int getTemperature() {

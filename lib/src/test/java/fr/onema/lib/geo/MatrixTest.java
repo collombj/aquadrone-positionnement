@@ -66,7 +66,7 @@ public class MatrixTest {
 
         b.set(0, 0, 2);
         b.set(1, 0, -4);
-        b.set(2,0, -1);
+        b.set(2, 0, -1);
 
         Matrix result = a.mult(b);
 

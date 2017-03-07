@@ -109,6 +109,7 @@ public class DatabaseDriver {
 
     /**
      * Constructeur de DatabaseDriver, se base sur un fichier de configuration
+     *
      * @param config Le fichier de configuration souhaité
      * @return Un DatabaseDriver
      */
@@ -143,6 +144,7 @@ public class DatabaseDriver {
 
     /**
      * Initialise une connexion à la base de données
+     *
      * @param props Le fichier de configuration à utiliser pour la connexion
      */
     private void initConnection(Properties props) {
@@ -159,6 +161,7 @@ public class DatabaseDriver {
 
     /**
      * Ferme une connexion à la base de données
+     *
      * @throws SQLException Dans le cas ou une erreur de connexion est détectée
      */
     public void closeConnection() throws SQLException {
@@ -167,6 +170,7 @@ public class DatabaseDriver {
 
     /**
      * Permet de récupérer les mesures associées à une plongée
+     *
      * @param dive La plongée recherchée
      * @return Un liste comportant toutes les mesures associés à la plongée
      */
@@ -202,6 +206,7 @@ public class DatabaseDriver {
 
     /**
      * Récupère la dernière plongée en base
+     *
      * @return La dernière plongée en base
      * @throws SQLException Dans le cas ou une erreur de connexion est détectée
      */
@@ -220,6 +225,7 @@ public class DatabaseDriver {
 
     /**
      * Insert une nouvelle Dive dans la base de données
+     *
      * @param diveEntity L'objet représentant une plongée dans le programme
      * @return L'ID de la nouvelle plongée et -1 en cas d'erreur lors de la récupération de l'ID
      * @throws SQLException Cette exception est levée si un problème de connexion à la base de données est trouvé
@@ -245,6 +251,7 @@ public class DatabaseDriver {
 
     /**
      * Méthode permettant d'insérer des mesures dans la base de données
+     *
      * @param measureEntity L'objet entité de représentant une mesure réalisée
      * @param diveID        L'identifiant de la plongée associée
      * @param measureInfoID L'objet MeasureInformationEntity représenant une information de mesure
@@ -331,6 +338,7 @@ public class DatabaseDriver {
 
     /**
      * Mets à jour la position d'une mesure.
+     *
      * @param measureId L'ID de la mesure.
      * @param lat       La nouvelle latitude de la mesure.
      * @param lon       La nouvelle longitude de la mesure.
@@ -352,6 +360,7 @@ public class DatabaseDriver {
 
     /**
      * Démarre un enregistrement en remplissant la valeur de début de plongée en base.
+     *
      * @param timestamp Le timestamp correspondant au début de la plongée.
      * @param diveId    L'ID de la plongée.
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
@@ -366,6 +375,7 @@ public class DatabaseDriver {
 
     /**
      * Envoie une notification.
+     *
      * @param message Le message à envoyer via la notification.
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
      */
@@ -378,6 +388,7 @@ public class DatabaseDriver {
 
     /**
      * Arrête un enregistrement en remplissant la valeur de fin de plongée en base.
+     *
      * @param timestamp Le timestamp correspondant à la fin de la plongée.
      * @param diveId    L'ID de la plongée.
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
@@ -393,6 +404,7 @@ public class DatabaseDriver {
 
     /**
      * Retourne les informations relatives à un type de mesures dans la base de données
+     *
      * @param measureInfoId l'identifiant de la mesure en base de données
      * @return La MeasureInformationEntity representant l'entité en base
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.
@@ -416,6 +428,7 @@ public class DatabaseDriver {
 
     /**
      * Retourne les informations relatives à un type de mesures dans la base de données
+     *
      * @param name le nom de l'entité en base
      * @return La MeasureInformationEntity representant l'entité en base
      * @throws SQLException Dans le cas ou une erreur de connexion est détéctée.

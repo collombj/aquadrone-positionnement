@@ -1,7 +1,6 @@
 package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import fr.onema.lib.worker.MessageWorker;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -39,7 +38,6 @@ public class NetworkSenderTest {
         networkSender.start();
         networkSender.closeConnection();
         Thread.sleep(100);
-        //assertTrue(networkSender.getDsocket().isClosed()); FIXME
         server.close();
     }
 
@@ -81,7 +79,7 @@ public class NetworkSenderTest {
     public void getPortTest() throws IOException {
         NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
         sender.start();
-        assertEquals(1239,sender.getPort());
+        assertEquals(1239, sender.getPort());
         sender.closeConnection();
     }
 
@@ -89,7 +87,7 @@ public class NetworkSenderTest {
     public void getHostTest() throws IOException {
         NetworkSender sender = new NetworkSender(1239, "127.0.0.1");
         sender.start();
-        assertEquals("127.0.0.1",sender.getHost());
+        assertEquals("127.0.0.1", sender.getHost());
         sender.closeConnection();
     }
 }

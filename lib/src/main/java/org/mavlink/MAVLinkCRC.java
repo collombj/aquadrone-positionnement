@@ -24,14 +24,15 @@ package org.mavlink;
 
 /**
  * MAVLink CRC computation
+ *
  * @author ghelle
  * @version $Rev: 3 $
- *
  */
 public class MAVLinkCRC {
 
     /**
      * Convert a String in byte array
+     *
      * @param data
      * @return
      */
@@ -46,8 +47,9 @@ public class MAVLinkCRC {
     /**
      * Accumulate the X.25 CRC by adding one char at a time.
      * The checksum function adds the hash of one char at a time to the 16 bit checksum
+     *
      * @param data new char to hash
-     * @param crc the already accumulated checksum
+     * @param crc  the already accumulated checksum
      * @return the new accumulated checksum
      */
     public static int crc_accumulate(byte data, int crc) {
@@ -84,6 +86,7 @@ public class MAVLinkCRC {
 
     /**
      * Initialize the buffer for the X.25 CRC
+     *
      * @return the 16 bit X.25 CRC
      */
     public static int crc_init() {
@@ -92,7 +95,8 @@ public class MAVLinkCRC {
 
     /**
      * Calculates the X.25 checksum to decode a MAVLink message stored in a byte buffer and begins after the MAVLink Packet start
-     * @param buffer buffer containing the byte array to hash
+     *
+     * @param buffer     buffer containing the byte array to hash
      * @param dataLength length of the payload so the buffer size is 1 + payload + 5
      * @return the accumulated checksum
      */
@@ -106,7 +110,8 @@ public class MAVLinkCRC {
 
     /**
      * Calculates the X.25 checksum to encode a MAVLink message stored in a byte buffer and begins after the MAVLink Packet start
-     * @param buffer buffer containing the byte array to hash
+     *
+     * @param buffer     buffer containing the byte array to hash
      * @param dataLength total length of the MAVLink message so CRC is calculate between 1 and length - 2
      * @return the accumulated checksum
      */
@@ -120,6 +125,7 @@ public class MAVLinkCRC {
 
     /**
      * Calculates the X.25 checksum on a byte buffer
+     *
      * @param buffer buffer containing the byte array to hash
      * @return the accumulated checksum
      */

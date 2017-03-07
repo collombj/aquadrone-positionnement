@@ -5,8 +5,8 @@ import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.tools.Configuration;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -134,7 +134,7 @@ public class DatabaseWorker implements Worker {
      * @return l'instance de databaseworker
      */
     public static DatabaseWorker getInstance() {
-        if (instance == null){
+        if (instance == null) {
             try {
                 init();
             } catch (FileNotFoundException e) {
@@ -191,6 +191,7 @@ public class DatabaseWorker implements Worker {
 
     /**
      * Permet d'inserer une nouvelle Dive en base de données
+     *
      * @param dive L'entité à insérer
      */
     public void newDive(DiveEntity dive) {

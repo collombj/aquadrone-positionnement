@@ -8,7 +8,6 @@ import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -281,7 +280,8 @@ public class RootLayoutController {
 
     /**
      * Met à jour la progression de la barre de chargement associée à la précision
-     * @param worker Le worker chargé d'écouter le trafic MavLink
+     *
+     * @param worker        Le worker chargé d'écouter le trafic MavLink
      * @param configuration La configuration correspondant à l'exécution de l'application
      */
     public void updatePrecisionProgress(MessageWorker worker, Configuration configuration) {
@@ -297,6 +297,7 @@ public class RootLayoutController {
 
     /**
      * Méthode permettant de mettre à jour l'état des capteurs dans la vue en fonction de leur état MavLink
+     *
      * @param sensorsMap La map contenant les états des capteurs récupérés depuis un flux MavLink
      */
     public void updateSensors(Map<String, Long> sensorsMap) {
@@ -325,6 +326,7 @@ public class RootLayoutController {
 
     /**
      * Permet de calculer le changement d'état des capteurs
+     *
      * @param lastSensorTimestamp Le timestamp de la dernière mesure effectuée par un capteur
      * @return La chaîne correspondant pour affichage dans la table
      */

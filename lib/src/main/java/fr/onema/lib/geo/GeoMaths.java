@@ -30,6 +30,7 @@ public class GeoMaths {
 
     /**
      * Cette méthode calcule la distance cartésienne entre deux points
+     *
      * @param pos1 un point {@link CartesianCoordinate}
      * @param pos2 un point {@link CartesianCoordinate}
      * @return la distance entre les deux points
@@ -42,6 +43,7 @@ public class GeoMaths {
 
     /**
      * Calcul la distance de deux coordonnées gps
+     *
      * @param a premiere coordonnée GPS {@link GPSCoordinate}
      * @param b seconde coordonnée GPS {@link GPSCoordinate}
      * @return la distance double en m
@@ -58,6 +60,7 @@ public class GeoMaths {
 
     /**
      * Convertis des degrés décimaux en radians
+     *
      * @param deg l'angle en degrés décimaux
      * @return l'angle équivalent exprimé en radians
      */
@@ -67,6 +70,7 @@ public class GeoMaths {
 
     /**
      * Convertis des radians en degrés decimaux
+     *
      * @param rad l'angle en radians
      * @return l'agnel équivalent exprimé en degrés décimaux
      */
@@ -77,6 +81,7 @@ public class GeoMaths {
     /**
      * Calcule les XYZ à partir d'une lat/lon/alt (Earth centered reference)
      * Cette méthode a très peu d'usage HORS méthodes de GeoMath, soyez sur que c'est bien ce dont vous avez besoin
+     *
      * @param lat la latitude en radians
      * @param lon la longitude en radians
      * @param alt l'altitude
@@ -98,6 +103,7 @@ public class GeoMaths {
 
     /**
      * Calcule la position cartésienne d'un point GPS_SENSOR dans le référentiel GPS_SENSOR demandé
+     *
      * @param refPoint (exprimé en deg*1e7)
      * @param point    (exprimé en deg*1e7)
      * @return la position cartésienne courante selon le point de référence demandé {@link CartesianCoordinate}
@@ -120,17 +126,17 @@ public class GeoMaths {
 
 
         //ECEF to ENU
-        Matrix matrix = Matrix.getInstance(3,3);
+        Matrix matrix = Matrix.getInstance(3, 3);
         matrix.set(0, 0, -sin(lonRefRad));
         matrix.set(0, 1, cos(lonRefRad));
         matrix.set(0, 2, 0);
 
-        matrix.set(1, 0, (-sin(latRefRad))*cos(lonRefRad));
-        matrix.set(1, 1, (-sin(latRefRad))*sin(lonRefRad));
+        matrix.set(1, 0, (-sin(latRefRad)) * cos(lonRefRad));
+        matrix.set(1, 1, (-sin(latRefRad)) * sin(lonRefRad));
         matrix.set(1, 2, cos(latRefRad));
 
-        matrix.set(2, 0, cos(latRefRad)*cos(lonRefRad));
-        matrix.set(2, 1, cos(latRefRad)*sin(lonRefRad));
+        matrix.set(2, 0, cos(latRefRad) * cos(lonRefRad));
+        matrix.set(2, 1, cos(latRefRad) * sin(lonRefRad));
         matrix.set(2, 2, sin(latRefRad));
 
 
@@ -149,6 +155,7 @@ public class GeoMaths {
     /**
      * Retourne la vitesse en m/s d'une coordonnée (par rapport à sa référence)
      * La coordonnée équivaut au vecteur vitesse dans le cas recherché
+     *
      * @param coordinate la coordonnée qui est le vecteur vitesse
      * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourant - timestampPrecedent)
      * @return La vitesse en m/s sur chaque axe {@link CartesianVelocity}
@@ -166,6 +173,7 @@ public class GeoMaths {
 
     /**
      * Calcule l'acceleration courante a partir de la vitesse courante et de la vitesse précédente
+     *
      * @param velocityRef     vitesse précédente
      * @param velocityCurrent vitesse courante
      * @param timestamp       temps entre les deux valeurs de vitesse (en ms)
@@ -188,6 +196,7 @@ public class GeoMaths {
 
     /**
      * Calcule les coordonnées GPS_SENSOR d'un point cartésien (qui utilise le point GPS_SENSOR de référence comme origine)
+     *
      * @param refPoint le point GPS de référence
      * @param point    le point cartésien
      * @return les coordonnées GPS du point cartésien
@@ -207,12 +216,12 @@ public class GeoMaths {
         //ENU to ECEF
         Matrix enuToECEF = Matrix.getInstance(3, 3);
         enuToECEF.set(0, 0, -sin(lonRefRad));
-        enuToECEF.set(0, 1, (-sin(latRefRad))*cos(lonRefRad));
+        enuToECEF.set(0, 1, (-sin(latRefRad)) * cos(lonRefRad));
         enuToECEF.set(0, 2, cos(lonRefRad) * cos(latRefRad));
 
         enuToECEF.set(1, 0, cos(lonRefRad));
-        enuToECEF.set(1, 1, (-sin(latRefRad))*sin(lonRefRad));
-        enuToECEF.set(1, 2, cos(latRefRad)*sin(lonRefRad));
+        enuToECEF.set(1, 1, (-sin(latRefRad)) * sin(lonRefRad));
+        enuToECEF.set(1, 2, cos(latRefRad) * sin(lonRefRad));
 
         enuToECEF.set(2, 0, 0);
         enuToECEF.set(2, 1, cos(latRefRad));
@@ -301,7 +310,7 @@ public class GeoMaths {
 
         Matrix rotation = Matrix.getInstance(3, 3);
         rotation.set(0, 0, cos(a));
-        rotation.set(0, 1,  -sin(a));
+        rotation.set(0, 1, -sin(a));
         rotation.set(0, 2, 0);
 
         rotation.set(1, 0, sin(a));
@@ -325,12 +334,12 @@ public class GeoMaths {
     /**
      * Calcule la position cartésienne selon les données des capteurs IMU
      *
-     * @param last             position cartésienne precedente
-     * @param yaw              le yaw courant
-     * @param pitch            le pitch courant
-     * @param roll             le roll courant
-     * @param time             le temps entre les deux coordonnées(en ms)
-     * @param accelerometer    les données d'accelerometre
+     * @param last          position cartésienne precedente
+     * @param yaw           le yaw courant
+     * @param pitch         le pitch courant
+     * @param roll          le roll courant
+     * @param time          le temps entre les deux coordonnées(en ms)
+     * @param accelerometer les données d'accelerometre
      * @return la nouvelle position estimée du drone
      */
     public static MovementWrapper computeNewPosition(CartesianCoordinate last, double yaw, double pitch, double roll, long time, Accelerometer accelerometer) {
@@ -356,9 +365,10 @@ public class GeoMaths {
 
     /**
      * Recalcule les positions entre deux coordonnées
+     *
      * @param rawPositions La liste des positions brutes
-     * @param ref La coordonnée de référence
-     * @param resurface La coordonnée acquise lors de la remontée en surface
+     * @param ref          La coordonnée de référence
+     * @param resurface    La coordonnée acquise lors de la remontée en surface
      */
     public static void recalculatePosition(List<Position> rawPositions, GPSCoordinate ref, GPSCoordinate resurface) {
         Objects.requireNonNull(rawPositions);
@@ -403,7 +413,7 @@ public class GeoMaths {
         Position previousPos = resurfacePosition;
         passTwo.add(passOne.get(passOne.size() - 2));
 
-        for(int i = rawPositions.size()-1; i > 0; i--) {
+        for (int i = rawPositions.size() - 1; i > 0; i--) {
 
             MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
                     -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(),
@@ -459,6 +469,7 @@ public class GeoMaths {
 
         /**
          * Constructeur par défaut
+         *
          * @param coordinate les coordonnees calculees
          * @param velocity   la vitesse calculée
          */
@@ -469,6 +480,7 @@ public class GeoMaths {
 
         /**
          * Permet d'obtenir les coordonnées
+         *
          * @return Les coordonnées cartésiennes
          */
         public CartesianCoordinate getCoordinate() {
@@ -477,6 +489,7 @@ public class GeoMaths {
 
         /**
          * Permet d'obtenir la velocité
+         *
          * @return Les coordonnées gps
          */
         public CartesianVelocity getVelocity() {

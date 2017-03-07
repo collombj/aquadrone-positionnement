@@ -21,6 +21,7 @@ public class IMU extends Sensor {
 
     /**
      * Constructeur par défaut
+     *
      * @param accelerometer instance du capteur accéléromètre
      * @param gyroscope     instance du capteur gyroscope
      * @param compass       instance du capteur compass
@@ -34,6 +35,7 @@ public class IMU extends Sensor {
 
     /**
      * Builder de l'imu à partir du flux mavlink
+     *
      * @param msg recuperation du flux mavlink
      * @return Un IMU instancié en fonction de messages MAVLink
      */
@@ -42,9 +44,9 @@ public class IMU extends Sensor {
         Objects.requireNonNull(msgAttitude);
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
         double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
-        Accelerometer accelerometer = new Accelerometer((int)Math.round((msg.xacc - offset.getAccelerationOffsetX())/coefficientRangeIMU),
-                (int)Math.round((msg.yacc - offset.getAccelerationOffsetY())/coefficientRangeIMU),
-                (int)Math.round((msg.zacc - offset.getAccelerationOffsetZ())/coefficientRangeIMU));
+        Accelerometer accelerometer = new Accelerometer((int) Math.round((msg.xacc - offset.getAccelerationOffsetX()) / coefficientRangeIMU),
+                (int) Math.round((msg.yacc - offset.getAccelerationOffsetY()) / coefficientRangeIMU),
+                (int) Math.round((msg.zacc - offset.getAccelerationOffsetZ()) / coefficientRangeIMU));
         Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(timestamp, accelerometer, gyroscope, compass);
@@ -52,6 +54,7 @@ public class IMU extends Sensor {
 
     /**
      * Creation de l'imu de simulation à partir de la classe  {@link GeoMaths}
+     *
      * @param previousVelocity vitesse précédente du drone
      * @param velocity         vitesse actuelle du drone
      * @param prevTimestamp    timestamp de l'avant dernière mesure (ms)

@@ -22,7 +22,7 @@ import java.util.Objects;
 import static fr.onema.lib.drone.Dive.State.ON;
 import static fr.onema.lib.drone.Dive.State.RECORD;
 
-/***
+/**
  * Classe servant à la matérialisation d'une plongée
  */
 public class Dive {
@@ -52,6 +52,7 @@ public class Dive {
 
     /**
      * Ajoute une position à la plongée
+     *
      * @param position Une position
      */
     public void add(Position position) {
@@ -94,7 +95,7 @@ public class Dive {
             GPSCoordinate positionBrute = position.getPositionBrute();
             GPSCoordinate positionRecalculated = position.getPositionRecalculated();
             int precision = positionBrute != null && positionRecalculated != null ?
-                    (int)(GeoMaths.gpsDistance(positionBrute, positionRecalculated)*100) : -1; //TODO Si c'est bon, enlever le TODO, sinon à modifier
+                    (int) (GeoMaths.gpsDistance(positionBrute, positionRecalculated) * 100) : -1;
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     positionBrute,
@@ -117,6 +118,7 @@ public class Dive {
 
     /**
      * Termine la plongée
+     *
      * @param position La dernière position enregistrée
      */
     public void endDive(Position position) {
@@ -125,7 +127,7 @@ public class Dive {
             throw new IllegalArgumentException("La dernière position d'une plongée doit être localisée en GPS_SENSOR");
         }
 
-        if(positions.isEmpty()) {
+        if (positions.isEmpty()) {
             LOGGER.info("An empty dive has been ignored");
             return;
         }
@@ -158,7 +160,7 @@ public class Dive {
             double pitch = imu == null ? 0 : imu.getGyroscope().getPitch();
             double yaw = imu == null ? 0 : imu.getGyroscope().getYaw();
             int precision = position.getPositionBrute() != null && position.getPositionRecalculated() != null ?
-                    (int)(GeoMaths.gpsDistance(position.getPositionBrute(), position.getPositionRecalculated())*100) : -1; //TODO Si c'est bon, enlever le TODO, sinon à modifier
+                    (int) (GeoMaths.gpsDistance(position.getPositionBrute(), position.getPositionRecalculated()) * 100) : -1;
             MeasureEntity entity = new MeasureEntity(
                     position.getTimestamp(),
                     position.getPositionBrute(),
@@ -193,6 +195,7 @@ public class Dive {
 
     /**
      * Termine l enregistrement de la plongée
+     *
      * @param timestamp le debut de l enregistrement
      */
     public void startRecording(long timestamp) {
@@ -219,6 +222,7 @@ public class Dive {
 
     /**
      * Getter du nombre de mouvements
+     *
      * @return Le nombre de mouvements
      */
     public int getNumberOfmovement() {

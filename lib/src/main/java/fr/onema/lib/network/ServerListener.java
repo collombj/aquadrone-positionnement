@@ -5,8 +5,8 @@ import fr.onema.lib.worker.Worker;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -27,6 +27,7 @@ public class ServerListener implements Worker {
 
     /**
      * Constructeur de la classe ServerListener
+     *
      * @param port le port d'écoute du server
      */
     public ServerListener(int port) {
@@ -71,6 +72,7 @@ public class ServerListener implements Worker {
 
     /**
      * Compare les timestamps et déduit l'état du flux Mavlink
+     *
      * @param msg Un message Mavlink
      * @return Le résultat du test
      */
@@ -85,6 +87,7 @@ public class ServerListener implements Worker {
 
     /**
      * Retourne le timestamp à associé à un message
+     *
      * @param msg Un message Mavlink
      * @return Le timestamp du message Mavlink
      */
@@ -139,6 +142,7 @@ public class ServerListener implements Worker {
 
     /**
      * Initialise les variables nécessaires à la reception des données
+     *
      * @throws SocketException en cas de problème lors de l'écoute du port spécifié
      */
     private void openConnexion() throws SocketException {
@@ -155,6 +159,7 @@ public class ServerListener implements Worker {
 
     /**
      * Getter du MessageWorker
+     *
      * @return Le MessageWorker associé à l'instance du serveur d'écoute
      */
     public MessageWorker getMessageWorker() {

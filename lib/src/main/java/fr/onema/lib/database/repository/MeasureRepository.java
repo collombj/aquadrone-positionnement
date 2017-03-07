@@ -39,6 +39,7 @@ public class MeasureRepository {
 
     /**
      * Cette méthode insère une Dive dans la base de données
+     *
      * @param dive La Dive à insérer
      * @return La Dive dont l'identifiant a été mis à jour avec son index en base de données
      */
@@ -49,6 +50,7 @@ public class MeasureRepository {
 
     /**
      * Cette méthode renvoie la dernière Dive qui a été insérée en base de données
+     *
      * @return La dernière Dive qui a été insérée dans la base de données
      */
     public DiveEntity getLastDive() throws SQLException {
@@ -57,6 +59,7 @@ public class MeasureRepository {
 
     /**
      * Cette méthode permet de mettre a jour l'instant auquel a démarré une Dive
+     *
      * @param diveId    l'indentifiant de la Dive à modifier
      * @param timestamp la nouvelle heure de début
      */
@@ -66,6 +69,7 @@ public class MeasureRepository {
 
     /**
      * Cette méthode permet de mettre à jour l'instant auquel s'est terminée une Dive
+     *
      * @param diveId    l'identifiant de la dive
      * @param timestamp la nouvelle heure de fin
      */
@@ -75,6 +79,7 @@ public class MeasureRepository {
 
     /**
      * Permet d'insérer en base une Measure
+     *
      * @param mesure La Measure a mettre en base
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
@@ -85,6 +90,7 @@ public class MeasureRepository {
 
     /**
      * Permet d'insérer en base une Measure
+     *
      * @param mesure La Measure a mettre en base
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
@@ -95,6 +101,7 @@ public class MeasureRepository {
 
     /**
      * Permet de modifier le champ correspondant à la position recalculée d'une Measure en base de données
+     *
      * @param measureId         L'identifiant de la Measure à modifier
      * @param positionCorrected Les nouvelles coordonnées
      * @param precisionCm       La précision de la nouvelle mesure
@@ -107,6 +114,7 @@ public class MeasureRepository {
 
     /**
      * Récupère les mesures d'une plongée donnée.
+     *
      * @param dive La plongée.
      * @return La liste de mesures.
      * @throws SQLException En cas d'erreur de connexion à la base.
@@ -117,6 +125,7 @@ public class MeasureRepository {
 
     /**
      * Envoie une notification sous forme de chaine de caractère.
+     *
      * @param message Le message à envoyer via la notification.
      * @throws SQLException En cas d'erreur de connexion à la base.
      */
@@ -135,6 +144,7 @@ public class MeasureRepository {
 
     /**
      * Retourne les informations relatives à un type de mesures dans la base de données
+     *
      * @param measureInfosId l'identifiant de la mesure en base de données
      * @return La MeasureInformationEntity representant l'entité en base
      * @throws SQLException En cas d'erreur d'accès à la base.
@@ -145,6 +155,7 @@ public class MeasureRepository {
 
     /**
      * Retourne les informations relatives à un type de mesures dans la base de données
+     *
      * @param name le nom de l'entité en base
      * @return La MeasureInformationEntity representant l'entité en base
      * @throws SQLException En cas d'erreur d'accès à la base.

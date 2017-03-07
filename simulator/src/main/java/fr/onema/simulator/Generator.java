@@ -27,7 +27,8 @@ public class Generator {
 
     /**
      * Constructeur par défaut
-     * @param inputFilePath Chemin d'accès du fichier d'entrées brutes
+     *
+     * @param inputFilePath       Chemin d'accès du fichier d'entrées brutes
      * @param virtualizedFilePath Chemin d'accès du fichier d'entrées virtualisées
      * @throws IOException En cas de soucis concernant les chemins d'accès
      */

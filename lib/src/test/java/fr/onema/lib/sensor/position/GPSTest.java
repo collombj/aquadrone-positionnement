@@ -10,7 +10,7 @@ import static org.junit.Assert.assertNotNull;
  * Created by you on 11/02/2017.
  */
 public class GPSTest {
-    private final GPS gps = GPS.build(0, 1, 2, 3, (float)4);
+    private final GPS gps = GPS.build(0, 1, 2, 3, (float) 4);
 
     @Test
     public void build() throws Exception {
@@ -30,7 +30,7 @@ public class GPSTest {
         msg.cog = 10;
         GPS gps = GPS.build(27091994, msg);
         assertNotNull(gps.getDirection());
-        assertEquals(10.0, gps.getDirection(),0);
+        assertEquals(10.0, gps.getDirection(), 0);
     }
 
     @Test

@@ -15,6 +15,7 @@ public class Matrix {
 
     /**
      * Retourne l'instance de la matrice
+     *
      * @param n Nombre de lignes
      * @param m Nombre de colonnes
      * @return La matrice associée
@@ -51,6 +52,7 @@ public class Matrix {
 
     /**
      * Insère une valeur dans la matrice
+     *
      * @param n     la ligne désirée
      * @param m     la colonne désirée
      * @param value la valeur à insérer
@@ -62,6 +64,7 @@ public class Matrix {
 
     /**
      * Retourne une valeur contenue dans la matrice
+     *
      * @param n la ligne de la valeur désirée
      * @param m la colonne de la valeur désirée
      * @return la valeur désirée
@@ -73,6 +76,7 @@ public class Matrix {
 
     /**
      * Effectue une multiplication matricielle et retourne le resultat dans une nouvelle matrice
+     *
      * @param b la matrice par laquelle la matrice courante va être multipliée
      * @return une matrice contenant le resultat
      */

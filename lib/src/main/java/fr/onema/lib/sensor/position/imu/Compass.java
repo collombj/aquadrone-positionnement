@@ -10,6 +10,7 @@ public class Compass {
 
     /**
      * Constructeur par défaut
+     *
      * @param xMagnetic coordonnée magnétique x
      * @param yMagnetic coordonnée magnétique y
      * @param zMagnetic coordonnée magnétique z

@@ -10,7 +10,8 @@ import java.util.HashMap;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class MessageWorkerTest {
 
@@ -23,23 +24,23 @@ public class MessageWorkerTest {
         long lastTime;
         BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList = new LinkedBlockingDeque<>(250);
         VirtualizerEntry simulatedValue;
-        for (int i = 0; i < 10000; i = i+200) {
-            lastTime = System.currentTimeMillis()+i;
+        for (int i = 0; i < 10000; i = i + 200) {
+            lastTime = System.currentTimeMillis() + i;
             simulatedValue = new VirtualizerEntry(
                     lastTime,
-                    i+3777,
-                    i+467,
-                    i+88,
-                    (short) i+3778,
-                    (short) i+23,
-                    (short) i+33,
-                    (short) i+234,
-                    (short) i+555,
-                    (short) i+7778,
-                    (short) i+999,
-                    (short) i+866,
-                    (short) i+123,
-                    i+1443,
+                    i + 3777,
+                    i + 467,
+                    i + 88,
+                    (short) i + 3778,
+                    (short) i + 23,
+                    (short) i + 33,
+                    (short) i + 234,
+                    (short) i + 555,
+                    (short) i + 7778,
+                    (short) i + 999,
+                    (short) i + 866,
+                    (short) i + 123,
+                    i + 1443,
                     (short) i
             );
             mavLinkMessageList.offer(new HashMap.SimpleEntry<>(lastTime, simulatedValue.getGPSMessage()));

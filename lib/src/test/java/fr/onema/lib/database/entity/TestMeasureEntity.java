@@ -7,8 +7,8 @@ import static org.junit.Assert.*;
 
 /**
  * Created by Francois Vanderperre on 06/02/2017.
- *
- *  Classe de test
+ * <p>
+ * Classe de test
  */
 public class TestMeasureEntity {
     private GPSCoordinate brut = new GPSCoordinate(1, 1, 1);
@@ -18,17 +18,17 @@ public class TestMeasureEntity {
 
     @Test
     public void testCreateAndGet() {
-        MeasureEntity e = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
-        MeasureEntity e2 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
-        MeasureEntity e3 = new MeasureEntity(2, 300, brut2, correct2, 2, 4, 5, 6, 7 ,8, 9, "uneMesazda");
-        MeasureEntity e4 = new MeasureEntity(1, 230, brut, correct, 2, 2, 3, 1, 2 ,3, 2, "uneMes");
-        MeasureEntity e5 = new MeasureEntity(1, 230, brut, correct, 1, 3, 3, 1, 2 ,3, 2, "uneMes");
-        MeasureEntity e6 = new MeasureEntity(1, 230, brut, correct, 1, 2, 4, 1, 2 ,3, 2, "uneMes");
-        MeasureEntity e7 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 5, 2 ,3, 2, "uneMes");
-        MeasureEntity e8 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 6 ,3, 2, "uneMes");
-        MeasureEntity e9 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,7, 2, "uneMes");
-        MeasureEntity e10 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 8, "uneMes");
-        MeasureEntity e11 = new MeasureEntity(4, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, "uneMes");
+        MeasureEntity e = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
+        MeasureEntity e2 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
+        MeasureEntity e3 = new MeasureEntity(2, 300, brut2, correct2, 2, 4, 5, 6, 7, 8, 9, "uneMesazda");
+        MeasureEntity e4 = new MeasureEntity(1, 230, brut, correct, 2, 2, 3, 1, 2, 3, 2, "uneMes");
+        MeasureEntity e5 = new MeasureEntity(1, 230, brut, correct, 1, 3, 3, 1, 2, 3, 2, "uneMes");
+        MeasureEntity e6 = new MeasureEntity(1, 230, brut, correct, 1, 2, 4, 1, 2, 3, 2, "uneMes");
+        MeasureEntity e7 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 5, 2, 3, 2, "uneMes");
+        MeasureEntity e8 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 6, 3, 2, "uneMes");
+        MeasureEntity e9 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 7, 2, "uneMes");
+        MeasureEntity e10 = new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 3, 8, "uneMes");
+        MeasureEntity e11 = new MeasureEntity(4, 230, brut, correct, 1, 2, 3, 1, 2, 3, 2, "uneMes");
         assertNotNull(e);
         assertTrue(e.getId() == 1);
         assertTrue(e.getLocationBrute().equals(brut));
@@ -61,12 +61,12 @@ public class TestMeasureEntity {
 
     @Test(expected = IllegalArgumentException.class)
     public void testCreateNegativeId() {
-        new MeasureEntity(-1, 230, brut, correct, 1, 2, 1, 2 ,3, 3, 2, "uneMes");
+        new MeasureEntity(-1, 230, brut, correct, 1, 2, 1, 2, 3, 3, 2, "uneMes");
     }
 
     @Test(expected = NullPointerException.class)
     public void testCreateNullMeasure() {
-        new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2 ,3, 2, null);
+        new MeasureEntity(1, 230, brut, correct, 1, 2, 3, 1, 2, 3, 2, null);
     }
 
 }

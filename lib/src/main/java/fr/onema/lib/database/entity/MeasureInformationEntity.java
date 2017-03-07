@@ -14,6 +14,7 @@ public class MeasureInformationEntity {
 
     /**
      * Constructeur par défaut
+     *
      * @param id      L'identifiant de la mesure en base
      * @param name    Le nom de la mesure en base
      * @param unit    L'unité de la mesure
@@ -44,6 +45,7 @@ public class MeasureInformationEntity {
 
     /**
      * Getter du nom de la mesure
+     *
      * @return Le nom de la mesure en base
      */
     public String getName() {
@@ -52,6 +54,7 @@ public class MeasureInformationEntity {
 
     /**
      * Getter de l'unité de la mesure
+     *
      * @return L'unité de la mesure
      */
     String getUnit() {
@@ -60,6 +63,7 @@ public class MeasureInformationEntity {
 
     /**
      * Getter du type de mesure
+     *
      * @return Le type de mesure
      */
     public String getType() {
@@ -69,6 +73,7 @@ public class MeasureInformationEntity {
 
     /**
      * Getter de l'affichage de la mesure
+     *
      * @return L'affichage de la mesure
      */
     String getDisplay() {

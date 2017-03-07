@@ -11,6 +11,7 @@ public abstract class Sensor implements CSV {
 
     /**
      * Construit un objet de type sensor.
+     *
      * @param timestamp Indicateur temporel d'une mesure réalisé par un capteur à un temps T.
      */
     public Sensor(long timestamp) {
@@ -19,6 +20,7 @@ public abstract class Sensor implements CSV {
 
     /**
      * Retourne l'heure de la mesure
+     *
      * @return Le timestamp de la mesure
      */
     public long getTimestamp() {

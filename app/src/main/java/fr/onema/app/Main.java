@@ -34,7 +34,7 @@ public class Main extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
     private static final String SETTINGS_ARGUMENT_SHORT = "D";
     private static final String PORT_PROPERTIES = "port";
-    private static String PORT = "14550";
+    private static String PORT = "14555";
     private static String LOG_FILE = null;
     private Stage parent;
     private ServerListener server;
@@ -68,6 +68,7 @@ public class Main extends Application {
 
     /**
      * Initialisation des options pour l'interface ligne de commande
+     *
      * @return Options instanciées
      */
     private static Options initOptions() {
@@ -94,6 +95,7 @@ public class Main extends Application {
 
     /**
      * Affichage de l'aide sur [System.out]
+     *
      * @param options liste des options à afficher
      */
     private static void printHelp(Options options) {

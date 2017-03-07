@@ -30,6 +30,7 @@ public class NetworkSender {
 
     /**
      * Constructeur de la classe NetworkSender
+     *
      * @param port le port de l'hôte
      * @param host l'adresse de l'hôte
      */
@@ -50,6 +51,7 @@ public class NetworkSender {
 
     /**
      * Permet d'ajouter une virtualizerEntry
+     *
      * @param entry Un champ de type VirtualizerEntry
      */
     public void add(VirtualizerEntry entry) {
@@ -112,6 +114,7 @@ public class NetworkSender {
 
     /**
      * Permet de récupérer le port
+     *
      * @return Le numéro de port
      */
     public int getPort() {
@@ -152,6 +155,7 @@ public class NetworkSender {
 
     /**
      * Getter pour la thread sender
+     *
      * @return La thread correspondant au Sendere
      */
     Thread getSender() {
@@ -160,6 +164,7 @@ public class NetworkSender {
 
     /**
      * Getter de la blocking queue
+     *
      * @return La queue contenant les messages
      */
     ArrayBlockingQueue getQueue() {
@@ -168,6 +173,7 @@ public class NetworkSender {
 
     /**
      * Getter de la DatagramSocket
+     *
      * @return La datagram socket
      */
     DatagramSocket getDsocket() {

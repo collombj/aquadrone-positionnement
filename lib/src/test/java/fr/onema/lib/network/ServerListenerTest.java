@@ -24,10 +24,10 @@ public class ServerListenerTest {
         msg_gps_raw_int msg = new msg_gps_raw_int();
         msg.time_usec = 2;
         assertEquals(true, serverListener.testValidityMavlinkMessage(msg));
-        assertEquals(serverListener.getTimestamp(msg), serverListener.getTimestamp(msg)); // FIXME System.currentTime
+        assertEquals(serverListener.getTimestamp(msg), serverListener.getTimestamp(msg));
         msg_scaled_imu msg2 = new msg_scaled_imu();
         msg2.time_boot_ms = 3;
-        assertEquals(serverListener.getBootTime(msg2), serverListener.getBootTime(msg2)); // FIXME System.currentTime
+        assertEquals(serverListener.getBootTime(msg2), serverListener.getBootTime(msg2));
         assertNotNull(serverListener.getMessageWorker());
         serverListener.stop();
     }

@@ -6,7 +6,7 @@ import static org.junit.Assert.*;
 
 /**
  * Created by Francois Vanderperre on 06/02/2017.
- *
+ * <p>
  * Classe de test
  */
 public class TestDiveEntity {

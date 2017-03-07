@@ -10,6 +10,7 @@ public class Gyroscope {
 
     /**
      * Constructeur par défaut
+     *
      * @param roll  le roll du drone
      * @param pitch le pitch du drone
      * @param yaw   le yaw du drone
@@ -22,6 +23,7 @@ public class Gyroscope {
 
     /**
      * Getter de la valeur roll
+     *
      * @return La valeur roll
      */
     public double getRoll() {
@@ -30,6 +32,7 @@ public class Gyroscope {
 
     /**
      * Getter de la valeur pitch
+     *
      * @return La valeur du ptich
      */
     public double getPitch() {
@@ -38,6 +41,7 @@ public class Gyroscope {
 
     /**
      * Getter de la valeur du yaw
+     *
      * @return La valeur du yaw
      */
     public double getYaw() {

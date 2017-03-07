@@ -6,7 +6,6 @@ import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.Pressure;
-
 import fr.onema.lib.sensor.position.imu.IMU;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
@@ -65,6 +64,7 @@ public class MessageWorker implements Worker {
     /**
      * Paramètre le FileManager qui doit êtra associé au MessageWorker. Ce FileManager servira uniquement à remplir le
      * fichier de trace.
+     *
      * @param virtualizedOutput Le FileManager enregistrant dans le traceur.
      */
     public void setTracer(VirtualizedOutput virtualizedOutput) {
@@ -73,6 +73,7 @@ public class MessageWorker implements Worker {
 
     /**
      * Ajoute un message MavLink à la liste des messages à traiter
+     *
      * @param message Le message MavLink à traiter
      * @throws InterruptedException En cas d'intérruption du thread courant
      */
@@ -117,6 +118,7 @@ public class MessageWorker implements Worker {
 
     /**
      * Donne l'information de connexion MavLink
+     *
      * @return Timestamp du dernier message reçus
      */
     public long getMavLinkConnection() {
@@ -178,7 +180,6 @@ public class MessageWorker implements Worker {
         }
 
         private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
-            LOGGER.info(TIMESTAMP + timestamp + TIME + pressureMessage.time_boot_ms + "]");
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
             currentPos.setPressure(pressure);
             currentPos.setTimestamp(timestamp);
@@ -186,7 +187,6 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
-            LOGGER.info(TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
             currentPos.add(temperature);
             currentPos.setTimestamp(timestamp);
@@ -194,14 +194,12 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure2 temperatureMessage) {
-            LOGGER.info(TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
             currentPos.add(temperature);
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) throws FileNotFoundException {
-            LOGGER.info(TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
@@ -218,7 +216,6 @@ public class MessageWorker implements Worker {
         }
 
         private void imuReceived(long timestamp, msg_raw_imu imuMessage) throws FileNotFoundException {
-            LOGGER.info(TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -247,8 +244,6 @@ public class MessageWorker implements Worker {
         }
 
         private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
-            LOGGER.info("GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]" +
-                    " / FIX TYPE : " + gpsMessage.fix_type);
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return;
             }

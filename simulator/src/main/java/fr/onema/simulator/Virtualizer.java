@@ -37,11 +37,11 @@ public class Virtualizer {
     /**
      * Constructeur qui initialise un FileManager, un entier de vitesse et un nom de simulation
      *
-     * @param virtualizedOutput  FileManager
-     * @param speed          valeur de la vitesse
-     * @param simulationName Nom de la simulation
-     * @param host           Adresse de l'hôte
-     * @param port           Port sur lequel on se connecte à l'hôte
+     * @param virtualizedOutput FileManager
+     * @param speed             valeur de la vitesse
+     * @param simulationName    Nom de la simulation
+     * @param host              Adresse de l'hôte
+     * @param port              Port sur lequel on se connecte à l'hôte
      */
     public Virtualizer(VirtualizedOutput virtualizedOutput, int speed, String simulationName, String host, int port) {
         if (speed < 1 || port < 1) {
@@ -126,6 +126,7 @@ public class Virtualizer {
 
     /**
      * Récupère la vitesse d'obtention de données
+     *
      * @return La vitesse d'obtention de données
      */
     public int getSpeed() {
@@ -134,6 +135,7 @@ public class Virtualizer {
 
     /**
      * Récupère le nom de la simulation
+     *
      * @return Le nom de la simulation
      */
     public String getSimulationName() {
@@ -142,6 +144,7 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de départ
+     *
      * @return La valeur du temps de départ
      */
     private long getStart() {
@@ -150,6 +153,7 @@ public class Virtualizer {
 
     /**
      * Récupère le temps de fin
+     *
      * @return La valeur du temps de fin
      */
     private long getStop() {
@@ -158,6 +162,7 @@ public class Virtualizer {
 
     /**
      * Récupère le port vers la base de données
+     *
      * @return Le numéro de port de la base de données
      */
     public int getPort() {
@@ -166,6 +171,7 @@ public class Virtualizer {
 
     /**
      * Récupère le host de la base de donnéesÒ
+     *
      * @return Le hostname de la base de données
      */
     public String getHost() {

@@ -39,6 +39,7 @@ class MissingPointsGenerator {
      * Builder de la classe. Il s'occupe d'instancier un générateur de points manquants, de récupérer les lignes
      * du fichier passé en argument dans une liste et d'en extraire les informations présentes pour faire une
      * liste de points
+     *
      * @param filePath chemin du fichier CSV d'entrée
      * @return un objet MissingPointsGenerator
      * @throws IOException Quand une erreur se produit
