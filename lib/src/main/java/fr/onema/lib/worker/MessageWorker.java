@@ -7,6 +7,7 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.Pressure;
 
+import fr.onema.lib.sensor.position.imu.IMU;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 import org.slf4j.Logger;

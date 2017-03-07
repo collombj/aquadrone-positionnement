@@ -4,20 +4,19 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur
  */
 public class Tracer implements Worker {
 
-    private static final Logger LOG = Logger.getLogger(Logger.class.getName());
+    private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(MessageWorker.class.getName());
 
     private final VirtualizedOutput virtualizedOutput;
     private final BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
@@ -64,8 +63,8 @@ public class Tracer implements Worker {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    LOG.error(e.getMessage());
-                    LOG.debug(e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
         }
