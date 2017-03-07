@@ -9,6 +9,8 @@ import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
@@ -18,8 +20,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Classe worker de messages. Récupère les messages depuis le ServerListerner.
@@ -32,7 +32,7 @@ public class MessageWorker implements Worker {
     private static final String GPS_SENSOR = "GPS";
     private static final String TEMPERATURE_SENSOR = "Temperature";
     private static final String PRESSURE_SENSOR = "Pressure";
-    private static final Logger LOGGER = Logger.getLogger(MessageWorker.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageWorker.class.getName());
     private static final String TIMESTAMP = "Attitude [timestamp: ";
     private static final String TIME = ", time: ";
     // Represents the current states of the sensors. This map is updated each time a sensor produces data
@@ -175,7 +175,7 @@ public class MessageWorker implements Worker {
         }
 
         private void pressureReceived(long timestamp, msg_scaled_pressure2 pressureMessage) {
-            LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + pressureMessage.time_boot_ms + "]");
+            LOGGER.info(TIMESTAMP + timestamp + TIME + pressureMessage.time_boot_ms + "]");
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
@@ -184,7 +184,7 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure3 temperatureMessage) {
-            LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
+            LOGGER.info(TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
@@ -193,7 +193,7 @@ public class MessageWorker implements Worker {
         }
 
         private void temperatureReceived(long timestamp, msg_scaled_pressure2 temperatureMessage) {
-            LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
+            LOGGER.info(TIMESTAMP + timestamp + TIME + temperatureMessage.time_boot_ms + "]");
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
@@ -201,7 +201,7 @@ public class MessageWorker implements Worker {
         }
 
         private void attitudeReceived(long timestamp, msg_attitude attitudeMessage) throws FileNotFoundException {
-            LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
+            LOGGER.info(TIMESTAMP + timestamp + TIME + attitudeMessage.time_boot_ms + "]");
             if (imuBuffer == null) {
                 imuBuffer = attitudeMessage;
                 return;
@@ -219,7 +219,7 @@ public class MessageWorker implements Worker {
         }
 
         private void imuReceived(long timestamp, msg_raw_imu imuMessage) throws FileNotFoundException {
-            LOGGER.log(Level.INFO, () -> TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
+            LOGGER.info(TIMESTAMP + timestamp + TIME + imuMessage.time_usec + "]");
             if (imuBuffer == null) {
                 imuBuffer = imuMessage;
                 return;
@@ -248,7 +248,7 @@ public class MessageWorker implements Worker {
         }
 
         private void gpsReceived(long timestamp, msg_gps_raw_int gpsMessage) {
-            LOGGER.log(Level.INFO, () -> "GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]" +
+            LOGGER.info("GPS [timestamp: " + timestamp + TIME + gpsMessage.time_usec + "]" +
                     " / FIX TYPE : " + gpsMessage.fix_type);
             if (gpsMessage.fix_type < FIX_THRESHOLD) {
                 return; // IGNORE the value : lack of precision.
@@ -268,7 +268,8 @@ public class MessageWorker implements Worker {
                 try {
                     dive.endDive(currentPos);
                 } catch (ArrayIndexOutOfBoundsException e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
                 dive = null;
                 currentPos = null;
@@ -295,7 +296,8 @@ public class MessageWorker implements Worker {
                 try {
                     tracer.addPosition(currentPos);
                 } catch (Exception e) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
             currentPos = new Position();
@@ -315,7 +317,8 @@ public class MessageWorker implements Worker {
                     Thread.currentThread().interrupt();
                 } catch (Exception e) {
                     Thread.currentThread().interrupt();
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
         }

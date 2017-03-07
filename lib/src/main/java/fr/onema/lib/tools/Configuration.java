@@ -3,14 +3,10 @@ package fr.onema.lib.tools;
 import fr.onema.lib.drone.Dive;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Logger;
-import java.util.StringJoiner;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -19,7 +15,6 @@ import java.util.StringJoiner;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -47,6 +42,7 @@ public class Configuration {
 
     private Configuration(String path, Properties properties) {
         this.path = path;
+
         this.database = new Database(
                 properties.getProperty(DB_HOST),
                 Integer.parseInt(properties.getProperty(DB_PORT)),
@@ -94,10 +90,9 @@ public class Configuration {
 
     public static Configuration getInstance() {
         if (instance == null) {
-                build("settings.properties");
+            build("settings.properties");
         }
         return instance;
-
     }
 
     /**

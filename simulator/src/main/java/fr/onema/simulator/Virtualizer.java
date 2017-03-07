@@ -10,6 +10,8 @@ import fr.onema.lib.network.NetworkSender;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,14 +20,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Point d'entrée du simulateur
  */
 public class Virtualizer {
-    private static final Logger LOGGER = Logger.getLogger(Virtualizer.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Virtualizer.class.getName());
     private VirtualizedOutput virtualizedOutput;
     private int speed;
     private String simulationName;
@@ -102,7 +102,8 @@ public class Virtualizer {
             try {
                 scheduled.get();
             } catch (InterruptedException | ExecutionException e) {
-                LOGGER.log(Level.SEVERE, "Interrupted during sending", e);
+                LOGGER.error("Interrupted during sending");
+                LOGGER.debug("Interrupted during sending", e);
             }
             previousTimestamp = entries.get(count).getTimestamp();
         }

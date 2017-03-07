@@ -19,6 +19,7 @@
         <jacoco.ut.outputdir>${jacoco.basedir}/jacoco-ut-out</jacoco.ut.outputdir>
         <sonar.sources>src/main/java</sonar.sources>
         <sonar.tests>src/test/java</sonar.tests>
+        <slf4jVersion>1.7.24</slf4jVersion>
     </properties>
 
     <dependencies>
@@ -37,6 +38,16 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>9.4.1212</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.24</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>1.7.24</version>
         </dependency>
     </dependencies>
 

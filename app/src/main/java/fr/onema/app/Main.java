@@ -11,10 +11,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.apache.commons.cli.*;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /***
  * Classe Main de l'application graphique
@@ -30,7 +31,7 @@ public class Main extends Application {
     private static final String USAGE = "\t" + JAR_NAME +
             "\t" + JAR_NAME + " --" + DEBUG_ARGUMENT + " log.csv" +
             "\n\n\n";
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
     private static final String SETTINGS_ARGUMENT_SHORT = "D";
     private static final String PORT_PROPERTIES = "port";
     private static String PORT = "14550";
@@ -43,6 +44,7 @@ public class Main extends Application {
     private RootLayoutController rlc;
 
     public static void main(String[] args) {
+        PropertyConfigurator.configure("settings.properties");
         CommandLineParser parser = new DefaultParser();
         Options options = initOptions();
 
@@ -53,7 +55,8 @@ public class Main extends Application {
         } catch (ParseException e) {
             printHelp(options);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         } finally {
             System.exit(0);
         }
@@ -133,7 +136,8 @@ public class Main extends Application {
             primaryStage.setAlwaysOnTop(true);
             primaryStage.show();
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 

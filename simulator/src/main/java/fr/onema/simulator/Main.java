@@ -11,8 +11,9 @@ import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Point d'entrée du Simulateur
@@ -95,19 +96,22 @@ public class Main {
      * port par défaut de la cible de la simulation
      */
 
-
     private static final String LONG_ARGUMENT_SIGN = "\t" + JAR_NAME + " --";
+
+    /**
+     * Niveau ERROR des logs
+     */
 
     /**
      * Exemple d'utilisation de l'application avec différents paramètres
      */
-    private static final String USAGE = LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv" +
+    private static final String USAGE = LONG_ARGUMENT_SIGN + PREPARE_ARGUMENT + " reference.csv reference50cm.csv" +
+            LONG_ARGUMENT_SIGN + GENERATION_ARGUMENT + " reference.csv simulation.csv" +
             LONG_ARGUMENT_SIGN + RUN_ARGUMENT + " simulation.csv [hostname]" +
             LONG_ARGUMENT_SIGN + COMPARE_ARGUMENT + " fusion.csv resultat.csv [configuration.properties]" +
-            LONG_ARGUMENT_SIGN + PREPARE_ARGUMENT + " reference.csv reference50cm.csv" +
             "\n\n\n";
 
-    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
     private static final String SETTINGS_ARGUMENT_SHORT = "D";
     private static final String NAME_PROPERTIES = "name";
     private static final String DEFAULT_NAME_PROPERTIES = Date.from(Instant.now()).toString();
@@ -128,6 +132,7 @@ public class Main {
      * @param args Arguments passés au moment de l'exécution de l'application (le simulateur)
      */
     public static void main(String[] args) {
+        PropertyConfigurator.configure("settings.properties");
         CommandLineParser parser = new DefaultParser();
         Options options = initOptions();
 
@@ -137,7 +142,8 @@ public class Main {
         } catch (ParseException e) {
             printHelp(options);
         } catch (Exception e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -208,7 +214,8 @@ public class Main {
             MissingPointsGenerator missingPoints = MissingPointsGenerator.build(input);
             missingPoints.generateOutput(output);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
         }
     }
 
@@ -229,22 +236,23 @@ public class Main {
         RawInput rawInput = new RawInput(referenceFilePath);
         ResultsOutput resultsOutput = new ResultsOutput(resultFilePath);
 
-        //FileManager fileManager = new FileManager(referenceFilePath, "", resultFilePath);
-        //Virtualizer virtualizer = new Virtualizer(fileManager, Integer.parseInt(DEFAULT_SPEED_PROPERTIES), DEFAULT_NAME_PROPERTIES, HOST, Integer.parseInt(DEFAULT_PORT_PROPERTIES)); // argument inutile, mais constructeur les requierts
-
         try {
             Configuration configuration = Configuration.build(propertiesFilePath);
             Virtualizer.compare(configuration, rawInput, resultsOutput, Integer.parseInt(properties.getProperty(ERROR_PROPERTIES, DEFAULT_ERROR_PROPERTIES)) / 100.);
             String list = resultsOutput.getResults("\t").stream().reduce("", (a, b) -> a + "\n" + b);
-            LOGGER.log(Level.INFO, list);
+            LOGGER.info(list);
         } catch (FileNotFoundException e) {
-            LOGGER.log(Level.SEVERE, "Unable to load the properties file", e);
+            LOGGER.error("Unable to load the properties file");
+            LOGGER.debug("Unable to load the properties file", e);
         } catch (ComparisonException e) {
-            LOGGER.log(Level.SEVERE, "Error during the comparison", e);
+            LOGGER.error("Error during the comparison");
+            LOGGER.debug("Error during the comparison", e);
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.SEVERE, "Please specify an integer for the error value", e);
+            LOGGER.error("Please specify an integer for the error value");
+            LOGGER.debug("Please specify an integer for the error value", e);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Unable to read in the result file", e);
+            LOGGER.error("Unable to read in the result file");
+            LOGGER.debug("Unable to read in the result file", e);
         }
     }
 
@@ -263,7 +271,6 @@ public class Main {
             host = HOST;
         }
 
-        //FileManager fileManager = new FileManager("", virtualizedFilePath, "");
         VirtualizedOutput virtualizedOutput = new VirtualizedOutput(virtualizedFilePath);
         Virtualizer virtualizer = new Virtualizer(virtualizedOutput,
                 Integer.parseInt(properties.getProperty(SPEED_PROPERTIES, DEFAULT_SPEED_PROPERTIES)),
@@ -273,11 +280,12 @@ public class Main {
         );
 
         try {
-            LOGGER.log(Level.INFO, "Sending in progress");
+            LOGGER.info("Sending in progress");
             virtualizer.start();
-            LOGGER.log(Level.INFO, "Sending is over");
+            LOGGER.info("Sending is over");
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Error during the simulation", e);
+            LOGGER.error("Error during the simulation");
+            LOGGER.debug("Error during the simulation", e);
         }
     }
 
@@ -294,7 +302,8 @@ public class Main {
             Generator g = new Generator(referenceFilePath, virtualizedFilePath);
             g.convert();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Problem with the conversion in the generator", e);
+            LOGGER.error("Problem with the conversion in the generator");
+            LOGGER.debug("Problem with the conversion in the generator", e);
         }
     }
 
