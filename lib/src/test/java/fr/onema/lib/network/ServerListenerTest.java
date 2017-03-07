@@ -13,13 +13,13 @@ public class ServerListenerTest {
 
     @Test
     public void testConstructorNotNull() {
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1502);
         assertNotNull(serverListener);
     }
 
     @Test
     public void missingTests() {
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1502);
         serverListener.start();
         msg_gps_raw_int msg = new msg_gps_raw_int();
         msg.time_usec = 2;
@@ -34,7 +34,7 @@ public class ServerListenerTest {
 
     @Test
     public void testStartThread() throws InterruptedException {
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1503);
         serverListener.start();
         Thread.sleep(100);
         assertNotNull(serverListener.getListener());
@@ -43,7 +43,7 @@ public class ServerListenerTest {
 
     @Test
     public void testStartDatagramChannel() {
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1502);
         serverListener.start();
         assertFalse(serverListener.getDatagramSocket().isClosed());
         serverListener.stop();
@@ -51,7 +51,7 @@ public class ServerListenerTest {
 
     @Test
     public void testStopDatagramChannel() {
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1502);
         serverListener.start();
         serverListener.stop();
         assertTrue(serverListener.getDatagramSocket().isClosed());
@@ -59,9 +59,9 @@ public class ServerListenerTest {
 
     @Test
     public void testReceiveMessage() throws IOException, InterruptedException {
-        NetworkSender sender = new NetworkSender(1501, "127.0.0.1");
+        NetworkSender sender = new NetworkSender(1502, "127.0.0.1");
         sender.openConnection();
-        ServerListener serverListener = new ServerListener(1501);
+        ServerListener serverListener = new ServerListener(1502);
         sender.start();
         serverListener.start();
         VirtualizerEntry virtual = new VirtualizerEntry(System.currentTimeMillis(), 2, 3, 4, (short) 5000, (short) 6, (short) 7, (short) 8, (short) 9, (short) 10, (short) 11, (short) 12, (short) 13, 14, (short) 15);
@@ -72,7 +72,7 @@ public class ServerListenerTest {
 
     @Test
     public void getBootTimeTest() {
-        ServerListener serverListener = new ServerListener(1500);
+        ServerListener serverListener = new ServerListener(1502);
         assertEquals(serverListener.getBootTime(null), 0);
     }
 }

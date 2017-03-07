@@ -4,7 +4,9 @@ import fr.onema.DatabaseTools;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.RawInput;
+import fr.onema.lib.file.manager.ResultsOutput;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
@@ -57,17 +59,17 @@ public class VirtualizerTest {
             "1487061133,8,8,8,20607,5385,5616,0,0,0,0,0,0,0.0,8\n" +
             "1487061143,9,9,9,15433,28903,-10733,0,0,0,0,0,0,0.0,9";
     private static File virtualizedPath;
-    private static FileManager fm;
+    private static VirtualizedOutput virtualizedOutput;
     private static File resultPath;
     private static ServerListener srv;
 
     @BeforeClass
     public static void init() throws Exception {
-        referencePath = initFile("reference", refContent);
+        //referencePath = initFile("reference", refContent);
         virtualizedPath = initFile("virtualized", virtContent);
-        resultPath = initFile("result", "");
-        fm = new FileManager(referencePath.getCanonicalPath(), virtualizedPath.getCanonicalPath(), resultPath.getCanonicalPath());
-        initDB(fm);
+        //resultPath = initFile("result", "");
+        virtualizedOutput = new VirtualizedOutput(virtualizedPath.getCanonicalPath());
+        initDB(virtualizedOutput);
         initServer();
     }
 
@@ -81,8 +83,8 @@ public class VirtualizerTest {
         srv.start();
     }
 
-    private static void initDB(FileManager fm) throws Exception {
-        List<VirtualizerEntry> list = fm.readVirtualizedEntries();
+    private static void initDB(VirtualizedOutput virtualizedOutput) throws Exception {
+        List<VirtualizerEntry> list = virtualizedOutput.readVirtualizedEntries();
         Configuration config = Configuration.getInstance();
         Configuration.Database db = config.getDatabaseInformation();
 
@@ -141,31 +143,31 @@ public class VirtualizerTest {
 
     @Test(expected = NullPointerException.class)
     public void testNoSimulationName() {
-        FileManager fm = new FileManager("rawInput.csv", "virtualizedOutput.csv", "computedOutput.csv");
+        VirtualizedOutput fm = new VirtualizedOutput("virtualizedOutput.csv");
         Virtualizer v = new Virtualizer(fm, 100, null, "test", 5432);
     }
 
     @Test(expected = NullPointerException.class)
     public void testNoHost() {
-        FileManager fm = new FileManager("rawInput.csv", "virtualizedOutput.csv", "computedOutput.csv");
+        VirtualizedOutput fm = new VirtualizedOutput("virtualizedOutput.csv");
         Virtualizer v = new Virtualizer(fm, 100, "aaa", null, 5432);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNoSpeed() {
-        FileManager fm = new FileManager("rawInput.csv", "virtualizedOutput.csv", "computedOutput.csv");
+        VirtualizedOutput fm = new VirtualizedOutput("virtualizedOutput.csv");
         Virtualizer v = new Virtualizer(fm, 0, "aaa", "test", 5432);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testNoPort() {
-        FileManager fm = new FileManager("rawInput.csv", "virtualizedOutput.csv", "computedOutput.csv");
+        VirtualizedOutput fm = new VirtualizedOutput("virtualizedOutput.csv");
         Virtualizer v = new Virtualizer(fm, 100, "aaa", "test", 0);
     }
 
     @Test
     public void testGetters() throws IOException {
-        Virtualizer v = new Virtualizer(fm, 100, "aaa", "localhost", 1234);
+        Virtualizer v = new Virtualizer(virtualizedOutput, 100, "aaa", "localhost", 1234);
         v.start();
         assertEquals(v.getSimulationName(), "aaa");
         assertEquals(v.getSpeed(), 100);
@@ -175,12 +177,17 @@ public class VirtualizerTest {
 
     @Test
     public void testCompare() throws Exception {
+        referencePath = initFile("reference", refContent);
+        RawInput rawInput = new RawInput(referencePath.getCanonicalPath());
+        resultPath = initFile("result", "");
+        ResultsOutput resultsOutput = new ResultsOutput(resultPath.getCanonicalPath());
 
         String workingSourceDir = System.getProperty("user.dir").replace("simulator", "lib");
-        Virtualizer v = new Virtualizer(fm, 100, "aaa", "localhost", 1234);
+        Virtualizer v = new Virtualizer(virtualizedOutput, 100, "aaa", "localhost", 1234);
         Configuration config = Configuration.getInstance();
         v.start();
         assertNotEquals(v.getDuration(), 0);
-        v.compare(config, 0);
+
+        Virtualizer.compare(config, rawInput, resultsOutput, 0);
     }
 }

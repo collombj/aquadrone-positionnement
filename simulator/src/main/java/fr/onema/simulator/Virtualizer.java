@@ -3,7 +3,9 @@ package fr.onema.simulator;
 import fr.onema.lib.database.entity.DiveEntity;
 import fr.onema.lib.database.entity.MeasureEntity;
 import fr.onema.lib.database.repository.MeasureRepository;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.RawInput;
+import fr.onema.lib.file.manager.ResultsOutput;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.network.NetworkSender;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
@@ -24,7 +26,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class Virtualizer {
     private static final Logger LOGGER = LoggerFactory.getLogger(Virtualizer.class.getName());
-    private FileManager fileManager;
+    private VirtualizedOutput virtualizedOutput;
     private int speed;
     private String simulationName;
     private int port;
@@ -35,22 +37,53 @@ public class Virtualizer {
     /**
      * Constructeur qui initialise un FileManager, un entier de vitesse et un nom de simulation
      *
-     * @param filePathInput  FileManager
+     * @param virtualizedOutput  FileManager
      * @param speed          valeur de la vitesse
      * @param simulationName Nom de la simulation
      * @param host           Adresse de l'hôte
      * @param port           Port sur lequel on se connecte à l'hôte
      */
-    public Virtualizer(FileManager filePathInput, int speed, String simulationName, String host, int port) {
+    public Virtualizer(VirtualizedOutput virtualizedOutput, int speed, String simulationName, String host, int port) {
         if (speed < 1 || port < 1) {
             throw new IllegalArgumentException("Speed and port cannot be negative");
         } else {
             this.port = port;
             this.speed = speed;
         }
-        this.fileManager = Objects.requireNonNull(filePathInput);
+        this.virtualizedOutput = Objects.requireNonNull(virtualizedOutput);
         this.simulationName = Objects.requireNonNull(simulationName);
         this.host = Objects.requireNonNull(host);
+    }
+
+    public static void compare(Configuration config, RawInput rawInput, ResultsOutput resultsOutput, double errorAllowed) throws ComparisonException {
+        Objects.requireNonNull(config);
+
+        try {
+            List<ReferenceEntry> listRefEntry = rawInput.readReferenceEntries();
+            MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
+            DiveEntity dive = repository.getLastDive();
+            List<MeasureEntity> listMeasures = repository.getMeasureFrom(dive);
+            int minimum = Math.min(listMeasures.size(), listRefEntry.size());
+            if (minimum != 0) {
+                resultsOutput.openFileForResults();
+                for (int i = 0; i < minimum; i++) {
+                    writeIntoFile(listRefEntry.get(i), resultsOutput, listMeasures.get(i), errorAllowed);
+                }
+            }
+        } catch (Exception e) {
+            throw new ComparisonException(e);
+        }
+    }
+
+    private static void writeIntoFile(ReferenceEntry ref, ResultsOutput resultsOutput, MeasureEntity measure, double errVal) throws IOException {
+        try {
+            resultsOutput.appendResults(ref, measure, errVal);
+        } catch (IOException e) {
+            LOGGER.error("Couldn't write error in the error file");
+            LOGGER.debug("Couldn't write error in the error file", e);
+
+            throw e;
+        }
     }
 
     /**
@@ -58,7 +91,7 @@ public class Virtualizer {
      */
     public void start() throws IOException {
         start = System.currentTimeMillis(); //Pour avoir un start en millisecondes
-        List<VirtualizerEntry> entries = fileManager.readVirtualizedEntries();
+        List<VirtualizerEntry> entries = virtualizedOutput.readVirtualizedEntries();
         NetworkSender sender = new NetworkSender(port, host);
         sender.start();
         ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
@@ -89,43 +122,6 @@ public class Virtualizer {
      */
     public long getDuration() {
         return getStop() - getStart();
-    }
-
-    /**
-     * Fonction permettant la comparaison des entrées
-     * @param config La configuration associée
-     * @param errorAllowed Le taux d'erreur acceptable
-     * @throws ComparisonException En cas d'échec de comparaison
-     */
-    public void compare(Configuration config, double errorAllowed) throws ComparisonException {
-        Objects.requireNonNull(config);
-
-        try {
-            List<ReferenceEntry> listRefEntry = fileManager.readReferenceEntries();
-            MeasureRepository repository = MeasureRepository.MeasureRepositoryBuilder.getRepositoryReadable(config);
-            DiveEntity dive = repository.getLastDive();
-            List<MeasureEntity> listMeasures = repository.getMeasureFrom(dive);
-            int minimum = Math.min(listMeasures.size(), listRefEntry.size());
-
-            if (minimum != 0) {
-                fileManager.openFileForResults();
-                for (int i = 0; i < minimum; i++) {
-                    writeIntoFile(listRefEntry.get(i), listMeasures.get(i), errorAllowed);
-                }
-            }
-        } catch (Exception e) {
-            throw new ComparisonException(e);
-        }
-    }
-
-    private void writeIntoFile(ReferenceEntry ref, MeasureEntity measure, double errVal) throws IOException {
-        try {
-            fileManager.appendResults(ref, measure, errVal);
-        } catch (IOException e) {
-            LOGGER.error("Couldn't write error in the error file");
-            LOGGER.debug("Couldn't write error in the error file", e);
-            throw e;
-        }
     }
 
     /**
