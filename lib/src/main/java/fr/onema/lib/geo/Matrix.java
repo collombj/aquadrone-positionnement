@@ -7,13 +7,19 @@ import java.util.Objects;
  * de base sur cette matrice
  */
 public class Matrix {
-
     private final double[][] tab;
 
     private Matrix(int n, int m) {
         this.tab = new double[n][m];
     }
 
+    /**
+     * Retourne l'instance de la matrice
+     *
+     * @param n Nombre de lignes
+     * @param m Nombre de colonnes
+     * @return La matrice associée
+     */
     public static Matrix getInstance(int n, int m) {
         if (n < 1 || m < 1) {
             throw new IllegalArgumentException("Numbers must be positive");
@@ -22,10 +28,18 @@ public class Matrix {
         return new Matrix(n, m);
     }
 
+    /***
+     * Getter du nombre de lignes de la matrice
+     * @return Le nombre de lignes de la matrice
+     */
     public int lines() {
         return tab.length;
     }
 
+    /***
+     * Getter du nombre de colonnes de la matrice
+     * @return Le nombre de colonnes de la matrice
+     */
     public int columns() {
         return tab[0].length;
     }
@@ -37,7 +51,7 @@ public class Matrix {
     }
 
     /**
-     * Insere une valeur dans la matrice
+     * Insère une valeur dans la matrice
      *
      * @param n     la ligne désirée
      * @param m     la colonne désirée
@@ -60,7 +74,6 @@ public class Matrix {
         return tab[n][m];
     }
 
-
     /**
      * Effectue une multiplication matricielle et retourne le resultat dans une nouvelle matrice
      *
@@ -75,7 +88,6 @@ public class Matrix {
         }
 
         Matrix result = Matrix.getInstance(this.lines(), b.columns());
-
         for (int i = 0; i < this.lines(); i++) {
             for (int j = 0; j < b.columns(); j++) {
                 for (int k = 0; k < this.columns(); k++) {
@@ -83,7 +95,6 @@ public class Matrix {
                 }
             }
         }
-
         return result;
     }
 }

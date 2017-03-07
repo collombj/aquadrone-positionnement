@@ -4,23 +4,20 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur.
- *
- * @author loics
- * @since 15-02-2017
+ * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur
  */
 public class Tracer implements Worker {
 
-    private static final Logger LOG = Logger.getLogger(Logger.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(MessageWorker.class.getName());
 
     private final VirtualizedOutput virtualizedOutput;
     private final BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
@@ -46,10 +43,10 @@ public class Tracer implements Worker {
     }
 
     /**
-     * Ajoute une position à la file des positions.
+     * Ajoute une position à la file des positions
      *
-     * @param currentPos La position à tracer.
-     * @return Vrai si la position à été ajoutée avec succès. Sinon faux.
+     * @param currentPos La position à tracer
+     * @return Vrai si la position à été ajoutée avec succès. Sinon faux
      */
     boolean addPosition(Position currentPos) {
         return this.positions.offer(Objects.requireNonNull(currentPos));
@@ -63,13 +60,14 @@ public class Tracer implements Worker {
 
         @Override
         public void run() {
-            while(!Thread.interrupted()) {
+            while (!Thread.interrupted()) {
                 try {
                     virtualizedOutput.appendVirtualized(createVirtualizedFromPosition(positions.take()));
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    LOG.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
         }

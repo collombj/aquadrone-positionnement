@@ -7,9 +7,6 @@ import fr.onema.lib.file.CSV;
  * lui sont propre.
  */
 public abstract class Sensor implements CSV {
-    /**
-     * Champ représentant le timestamp d'une mesure issue d'un capteur.
-     */
     long timestamp;
 
     /**

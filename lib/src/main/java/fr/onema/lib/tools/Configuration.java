@@ -42,7 +42,6 @@ public class Configuration {
 
     private Configuration(String path, Properties properties) {
         this.path = path;
-
         this.database = new Database(
                 properties.getProperty(DB_HOST),
                 Integer.parseInt(properties.getProperty(DB_PORT)),
@@ -87,7 +86,10 @@ public class Configuration {
         return instance;
     }
 
-
+    /***
+     * Getter de la configuration actuelle
+     * @return La configuration associée
+     */
     public static Configuration getInstance() {
         if (instance == null) {
             build("settings.properties");
@@ -96,6 +98,7 @@ public class Configuration {
     }
 
     /**
+     * Setter de la valeur de correction des axes x, y, z
      * On entre une latitude, une longitude et une altitude. Ces valeurs sont comparées
      * à celles présentes dans notre fichier de configuration. En cas de différence on remplace, à l'intérieur
      * du fichier, l'ancienne valeur par la nouvelle valeur
@@ -177,13 +180,19 @@ public class Configuration {
     }
 
     /**
-     * Class représentant le décalage de l'accélération sur les axes x, y, z
+     * Classe représentant le décalage de l'accélération sur les axes x, y, z
      */
     public static final class AccelerationOffset {
         private double accelerationOffsetX;
         private double accelerationOffsetY;
         private double accelerationOffsetZ;
 
+        /***
+         * Constructeur par défaut
+         * @param accelerationOffsetX Offset de la valeur d'accélération en X
+         * @param accelerationOffsetY Offset de la valeur d'accélération en Y
+         * @param accelerationOffsetZ Offset de la valeur d'accélération en Z
+         */
         public AccelerationOffset(double accelerationOffsetX, double accelerationOffsetY, double accelerationOffsetZ) {
             this.accelerationOffsetX = accelerationOffsetX;
             this.accelerationOffsetY = accelerationOffsetY;
@@ -211,21 +220,33 @@ public class Configuration {
             return edited;
         }
 
+        /***
+         * Getter de la valeur d'accélération en X
+         * @return La valeur de l'accélération en X
+         */
         public double getAccelerationOffsetX() {
             return accelerationOffsetX;
         }
 
+        /***
+         * Getter de la valeur d'accélération en Y
+         * @return La valeur de l'accélération en Y
+         */
         public double getAccelerationOffsetY() {
             return accelerationOffsetY;
         }
 
+        /***
+         * Getter de la valeur d'accélération en Z
+         * @return La valeur de l'accélération en Z
+         */
         public double getAccelerationOffsetZ() {
             return accelerationOffsetZ;
         }
     }
 
     /**
-     * Class représentant la configuration de la base de données
+     * Classe représentant la configuration de la base de données
      */
     public static final class Database {
         private final String hostname;
@@ -256,7 +277,7 @@ public class Configuration {
         /**
          * Méthode permettant d'obtenir le port de la BDD
          *
-         * @return Port de la BDD
+         * @return Le numéro de port de la BDD
          */
         public int getPort() {
             return port;
@@ -265,7 +286,7 @@ public class Configuration {
         /**
          * Méthode permettant d'obtenir le nom de la base relatif à l'application
          *
-         * @return Le nom de la base
+         * @return Le nom de la base de données
          */
         public String getBase() {
             return base;
@@ -274,7 +295,7 @@ public class Configuration {
         /**
          * Méthode permettant d'obtenir le nom d'utilisateur pour la connexion à la BDD
          *
-         * @return Le nom d'utilisateur
+         * @return Le nom de l'utilisateur
          */
         public String getUsername() {
             return username;
@@ -312,7 +333,7 @@ public class Configuration {
         private final double coefficientRangeIMU;
 
         /**
-         * Le constructeur de la classe
+         * Constructeur par défaut
          *
          * @param precision             la précision en mètres
          * @param dureemax              la durée en secondes de la plognée
@@ -334,7 +355,7 @@ public class Configuration {
         /**
          * Retourne la précision
          *
-         * @return la précision en mètres
+         * @return La valeur de la précision en mètres
          */
         public double getPrecision() {
             return precision;
@@ -343,7 +364,7 @@ public class Configuration {
         /**
          * Retourne la durée max conseillée d'une plongée
          *
-         * @return la durée max conseillée d'une plongée
+         * @return La durée max conseillée d'une plongée
          */
         public int getDureemax() {
             return dureemax;
@@ -352,7 +373,7 @@ public class Configuration {
         /**
          * Retourne le nombre de mouvements max conseillés avant de perdre trop de précision
          *
-         * @return le nombre de mouvements max conseillé
+         * @return Le nombre de mouvements max conseillé
          */
         public int getMouvementsmax() {
             return mouvementsmax;
@@ -361,7 +382,7 @@ public class Configuration {
         /**
          * Retourne le délai avant de considerer un capteur HS
          *
-         * @return le délai avant de considérer un capteur HS en secondes
+         * @return Le délai avant de considérer un capteur HS en secondes
          */
         public int getDelaicapteurhs() {
             return delaicapteurhs;
@@ -370,7 +391,7 @@ public class Configuration {
         /**
          * Retourne la fréquence de test du flux mavlink
          *
-         * @return la fréquence de test du flux mavlink
+         * @return La fréquence de test du flux mavlink
          */
         public int getFrequencetestmavlink() {
             return frequencetestmavlink;
@@ -379,7 +400,7 @@ public class Configuration {
         /**
          * Retourne la fréquence de test du flux database
          *
-         * @return la fréquence de test du flux database
+         * @return La fréquence de test du flux database
          */
         public int getFrequencetestdatabase() {
             return frequencetestdatabase;
@@ -391,7 +412,7 @@ public class Configuration {
     }
 
     /**
-     * Class représentant la configuration des données géographiques
+     * Classe représentant la configuration des données géographiques
      */
     public final class Geo {
         private final int srid;
@@ -414,7 +435,7 @@ public class Configuration {
         /**
          * Permet d'obtenir la latitude du nord magnetique
          *
-         * @return la latitude du nord magnetique
+         * @return La latitude du nord magnetique
          */
         public double getMagneticNorthLatitude() {
             return magneticNorthLatitude;

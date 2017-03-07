@@ -54,11 +54,10 @@ public class ResultsOutputTest {
 
     @Test
     public void getResults() throws Exception {
-        appendResults(); // TODO
+        appendResults();
         FileManager fm = new ResultsOutput(resultsFile);
         List<String> results = fm.getResults("||");
         assertEquals("timestamp||corrected.latitude||corrected.longitude||corrected.altitude||brut.latitude||brut.longitude||brut.altitude||ref.latitude||ref.longitude||ref.altitude||ref.direction||ref.temperature||difference.x||difference.y||difference.z||difference.absolute||precision||margin||margin.error", results.get(0));
-//        assertEquals("0||4||5||6||5||6||4||5||6||7.0||8||0.0||0.0||0.0||0.0||13||14.0||false", results.get(1)); FIXME
     }
 
 }

@@ -35,15 +35,15 @@ public class Pressure extends Sensor {
      * @param temperature La valeur de température de la mesure
      * @return L'objet représentant la mesure gps
      */
-
     public static Pressure build(long timestamp, int temperature) {
         return new Pressure(timestamp, 0, 0, temperature);
     }
 
     /**
      * Permet de calculer la profondeur en fonction de la pression absolue et de la pression atmosphérique
-     * @param atmosphericPressure
-     * @return la profondeur du drone
+     *
+     * @param atmosphericPressure Valeur de la pression atmosphérique
+     * @return La valeur de la profondeur du drone
      */
     public double getDepth(float atmosphericPressure) {
         return (this.absolute * atmosphericPressure) / (9.81);
@@ -52,24 +52,25 @@ public class Pressure extends Sensor {
     /**
      * Retourne la valeur absolue de la pression
      *
-     * @return absolute
+     * @return La valeur absolue de la pression
      */
     public float getAbsolute() {
         return absolute;
     }
 
     /**
-     * retourne la valeur differentielle
+     * Retourne la valeur différentielle de la pression
      *
-     * @return differential
+     * @return La valeur différentielle de la pression
      */
     public float getDifferential() {
         return differential;
     }
 
-    /***
+    /**
      * Retourne la valeur de température
-     * @return temperature
+     *
+     * @return La valeur de temperature
      */
     public int getTemperature() {
         return temperature;

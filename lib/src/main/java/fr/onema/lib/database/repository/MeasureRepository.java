@@ -22,7 +22,7 @@ public class MeasureRepository {
     }
 
     /**
-     * Cette methode rend possible l'utilisation de la base pour des opérations de lecture et d'écriture.
+     * Cette méthode rend possible l'utilisation de la base pour des opérations de lecture et d'écriture.
      * A n'utiliser que si la connexion a été fermée préalablement
      */
     void setWritable() {
@@ -30,7 +30,7 @@ public class MeasureRepository {
     }
 
     /**
-     * Cette methode rend possible l'utilisation de la base pour des opérations de lecture  uniquement
+     * Cette méthode rend possible l'utilisation de la base pour des opérations de lecture uniquement
      * A n'utiliser que si la connexion a été fermée préalablement
      */
     void setReadable() {
@@ -38,7 +38,7 @@ public class MeasureRepository {
     }
 
     /**
-     * Cette methode insère une Dive dans la base de données
+     * Cette méthode insère une Dive dans la base de données
      *
      * @param dive La Dive à insérer
      * @return La Dive dont l'identifiant a été mis à jour avec son index en base de données
@@ -54,7 +54,6 @@ public class MeasureRepository {
      * @return La dernière Dive qui a été insérée dans la base de données
      */
     public DiveEntity getLastDive() throws SQLException {
-
         return dbDriver.getLastDive();
     }
 
@@ -85,7 +84,6 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, String measureInfoName) throws SQLException {
-
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoName));
         return mesure;
     }
@@ -97,7 +95,6 @@ public class MeasureRepository {
      * @return La Measure dont l'identifiant a été mis à jour avec son index d'insertion en base
      */
     public MeasureEntity insertMeasure(MeasureEntity mesure, int diveID, int measureInfoId) throws SQLException {
-
         mesure.setId(dbDriver.insertMeasure(mesure, diveID, measureInfoId));
         return mesure;
     }
@@ -110,7 +107,6 @@ public class MeasureRepository {
      * @param precisionCm       La précision de la nouvelle mesure
      */
     public void updateMeasure(int measureId, GPSCoordinate positionCorrected, int precisionCm) throws SQLException {
-
         Objects.requireNonNull(positionCorrected);
         dbDriver.updatePosition(
                 measureId, positionCorrected.lat, positionCorrected.lon, positionCorrected.alt, precisionCm);

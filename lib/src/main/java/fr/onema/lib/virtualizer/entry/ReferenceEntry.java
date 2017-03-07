@@ -16,7 +16,8 @@ public class ReferenceEntry implements CSV {
     private final int temperature;
 
     /**
-     * Le constructeur de classe, pour attribuer une valeur aux attributs
+     * Constructeur par défaut
+     *
      * @param timestamp   timestamp de la mesure
      * @param lat         la latitude de notre point
      * @param lon         la longitude de notre point
@@ -38,8 +39,9 @@ public class ReferenceEntry implements CSV {
     }
 
     /**
-     * récupère le timestamp
-     * @return timestamp
+     * Récupère le timestamp
+     *
+     * @return La valeur du timestamp
      */
     public long getTimestamp() {
         return timestamp;
@@ -47,6 +49,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Getter de la latidude
+     *
      * @return Valeur de la latitude
      */
     public int getLat() {
@@ -55,6 +58,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Getter de la longitude
+     *
      * @return Valeur de la longitude
      */
     public int getLon() {
@@ -63,6 +67,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Getter de l'altitude
+     *
      * @return Valeur de l'altitude
      */
     public int getAlt() {
@@ -71,6 +76,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Getter de la direction
+     *
      * @return Valeur de la direction
      */
     public float getDirection() {
@@ -79,6 +85,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Getter de la température
+     *
      * @return Valeur de la température
      */
     public int getTemperature() {
@@ -87,6 +94,7 @@ public class ReferenceEntry implements CSV {
 
     /**
      * Format CSV modifié pour correspondance avec fichier de sortie computed
+     *
      * @return La représentation CSV pour fichier computed
      */
     String toCSVforComputedFormat() {

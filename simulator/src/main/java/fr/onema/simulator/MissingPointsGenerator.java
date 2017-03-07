@@ -18,16 +18,15 @@ import java.util.stream.Stream;
 /**
  * Classe qui crée les points de relevé manquants dans un fichier CSV
  */
-
 class MissingPointsGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(MissingPointsGenerator.class.getName());
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
     private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
-    private final List<String> entries; //Not supposed to be accessed remotely
-    private final List<Point> pointsInput; //Not supposed to be accessed remotely
-    private final List<Point> pointsOutput; //Not supposed to be accessed remotely
-    private String csvFilePath; //Not supposed to be accessed remotely
+    private final List<String> entries;
+    private final List<Point> pointsInput;
+    private final List<Point> pointsOutput;
+    private String csvFilePath;
 
     private MissingPointsGenerator(String filePath) {
         this.csvFilePath = filePath;

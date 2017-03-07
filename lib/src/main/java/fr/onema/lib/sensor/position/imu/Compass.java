@@ -1,6 +1,6 @@
 package fr.onema.lib.sensor.position.imu;
 
-/***
+/**
  * Classe représentant le compas magnétique sur les axes x, y, z
  */
 public class Compass {
@@ -9,6 +9,8 @@ public class Compass {
     private final int zMagnetic;
 
     /**
+     * Constructeur par défaut
+     *
      * @param xMagnetic coordonnée magnétique x
      * @param yMagnetic coordonnée magnétique y
      * @param zMagnetic coordonnée magnétique z

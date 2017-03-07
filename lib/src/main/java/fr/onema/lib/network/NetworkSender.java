@@ -42,6 +42,9 @@ public class NetworkSender {
         openConnection();
     }
 
+    /***
+     * Méthode de démarrage de la thread du Sender
+     */
     public void start() {
         startThread();
     }
@@ -79,7 +82,7 @@ public class NetworkSender {
     }
 
     /**
-     * Envoi un message MavLink au destinataire
+     * Envoiz un message MavLink au destinataire
      */
     private void send(MAVLinkMessage msg) throws IOException {
         if (msg != null) {
@@ -112,7 +115,7 @@ public class NetworkSender {
     /**
      * Permet de récupérer le port
      *
-     * @return le port
+     * @return Le numéro de port
      */
     public int getPort() {
         return port;
@@ -153,16 +156,16 @@ public class NetworkSender {
     /**
      * Getter pour la thread sender
      *
-     * @return la thread
+     * @return La thread correspondant au Sendere
      */
     Thread getSender() {
         return sender;
     }
 
     /**
-     * getter de la blocking queue
+     * Getter de la blocking queue
      *
-     * @return la blocking queue
+     * @return La queue contenant les messages
      */
     ArrayBlockingQueue getQueue() {
         return queue;
@@ -171,7 +174,7 @@ public class NetworkSender {
     /**
      * Getter de la DatagramSocket
      *
-     * @return la datagram socket
+     * @return La datagram socket
      */
     DatagramSocket getDsocket() {
         return dsocket;

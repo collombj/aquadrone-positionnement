@@ -1,5 +1,8 @@
 package fr.onema.lib.worker;
 
+/***
+ * Interface pour partager des méthodes entre Workers
+ */
 public interface Worker {
     /**
      * Démarre le worker

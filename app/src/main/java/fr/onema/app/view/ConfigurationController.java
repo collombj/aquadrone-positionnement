@@ -8,6 +8,8 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -16,6 +18,7 @@ import java.util.Objects;
  * Controller associé à la vue ConfigurationLayout.fxml
  */
 public class ConfigurationController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationController.class.getName());
     private RootLayoutController parent;
     private Main main;
 
@@ -155,7 +158,9 @@ public class ConfigurationController {
         try {
             main.getConfiguration().setCorrection(xOffsetSpinner.getValue(), yOffsetSpinner.getValue(), zOffsetSpinner.getValue());
         } catch (IOException e) {
-            // TODO : complete
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
+            return;
         }
         Stage stage = (Stage) applyButton.getScene().getWindow();
         stage.close();

@@ -7,6 +7,7 @@ import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -130,7 +131,9 @@ public class RootLayoutController {
                 handleRunningStatus();
             });
         });
-
+        refreshTableView();
+        type.setPrefWidth(sensorsTableView.getPrefWidth() / 3);
+        state.setPrefWidth(sensorsTableView.getPrefWidth() / 3 * 2);
         Timer timer = new Timer(true);
         timer.scheduleAtFixedRate(new CheckDependenciesAvailabilityTask(main), 0, 1_000);
     }
@@ -275,6 +278,12 @@ public class RootLayoutController {
         }
     }
 
+    /**
+     * Met à jour la progression de la barre de chargement associée à la précision
+     *
+     * @param worker        Le worker chargé d'écouter le trafic MavLink
+     * @param configuration La configuration correspondant à l'exécution de l'application
+     */
     public void updatePrecisionProgress(MessageWorker worker, Configuration configuration) {
         Dive currentDive = worker.getDive();
         if (currentDive != null) {
@@ -286,27 +295,44 @@ public class RootLayoutController {
         }
     }
 
-    public void updateSensors(Map<String, Long> map) {
+    /**
+     * Méthode permettant de mettre à jour l'état des capteurs dans la vue en fonction de leur état MavLink
+     *
+     * @param sensorsMap La map contenant les états des capteurs récupérés depuis un flux MavLink
+     */
+    public void updateSensors(Map<String, Long> sensorsMap) {
         type.setCellValueFactory(new PropertyValueFactory<>("type"));
         state.setCellValueFactory(new PropertyValueFactory<>("state"));
         sensors.clear();
 
-        for (Map.Entry<String, Long> e : map.entrySet()) {
+        for (Map.Entry<String, Long> e : sensorsMap.entrySet()) {
             sensors.add(new TableSensor(e.getKey(), checkStateTime(e.getValue())));
         }
 
         sensorsTableView.getItems().setAll(sensors);
-        sensorsTableView.setFixedCellSize(25);
-        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
+        refreshTableView();
+    }
+
+    /**
+     * Méthode permettant d'adapter la table de capteurs et la redimensionner dynamiquement
+     */
+    private void refreshTableView() {
+        DoubleBinding db = Bindings.size(sensorsTableView.getItems()).add(1.05);
+        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(db));
         sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
-        sensorsTableView.refresh();
         Platform.runLater(() -> resizeParent());
     }
 
-    private String checkStateTime(long value) {
+    /**
+     * Permet de calculer le changement d'état des capteurs
+     *
+     * @param lastSensorTimestamp Le timestamp de la dernière mesure effectuée par un capteur
+     * @return La chaîne correspondant pour affichage dans la table
+     */
+    private String checkStateTime(long lastSensorTimestamp) {
         long current = System.currentTimeMillis();
-        double diffSeconds = (current - value) / 1000.0;
+        double diffSeconds = (current - lastSensorTimestamp) / 1000.0;
         if (diffSeconds > main.getConfiguration().getDiveData().getDelaicapteurhs()) {
             return "inactif depuis : " + df.format(diffSeconds) + " s";
         } else {
@@ -315,7 +341,7 @@ public class RootLayoutController {
     }
 
     /***
-     *
+     * Classe représentant un élément de la table
      */
     public class TableSensor {
         private final String type;
@@ -326,10 +352,18 @@ public class RootLayoutController {
             this.state = Objects.requireNonNull(state);
         }
 
+        /***
+         * Retourne le type du capteur ayant effectué la mesure
+         * @return Le type du capteur ayant effectué la mesure
+         */
         public String getType() {
             return type;
         }
 
+        /***
+         * Retourne l'état du capteur ayant effectué la mesure
+         * @return L'état du capteur ayant effectué la mesure
+         */
         public String getState() {
             return state;
         }

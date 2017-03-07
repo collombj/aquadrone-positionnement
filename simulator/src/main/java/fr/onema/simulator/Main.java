@@ -5,15 +5,15 @@ import fr.onema.lib.file.manager.ResultsOutput;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.tools.Configuration;
 import org.apache.commons.cli.*;
+import org.apache.log4j.PropertyConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Date;
 import java.time.Instant;
 import java.util.Properties;
-import org.apache.log4j.PropertyConfigurator;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
 
 /**
  * Point d'entrée du Simulateur
@@ -120,14 +120,14 @@ public class Main {
     private static final String ERROR_PROPERTIES = "error";
     private static final String DEFAULT_ERROR_PROPERTIES = "50";
     private static final String PORT_PROPERTIES = "port";
-    private static final String  DEFAULT_PORT_PROPERTIES = "14550";
+    private static final String DEFAULT_PORT_PROPERTIES = "14555";
 
     private Main() {
         // Avoid instantiation
     }
 
     /**
-     * Methode static représentant le point d'entrée dans l'application.
+     * Methode statique représentant le point d'entrée dans l'application.
      *
      * @param args Arguments passés au moment de l'exécution de l'application (le simulateur)
      */
@@ -359,7 +359,6 @@ public class Main {
                         "\t - " + ERROR_PROPERTIES + " : erreur (en cm) autorisee\n" +
                         "\t - " + PORT_PROPERTIES + " : port sur lequel envoyer les messages MAVLink\n")
                 .build();
-
 
         return new Options()
                 .addOption(generatorOption)

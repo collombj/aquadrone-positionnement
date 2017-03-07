@@ -7,8 +7,8 @@ import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.Temperature;
-import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
+import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
@@ -25,6 +25,13 @@ public class Generator {
     private final List<ReferenceEntry> inputReferencies;
     private ReferenceEntry previous = null;
 
+    /**
+     * Constructeur par défaut
+     *
+     * @param inputFilePath       Chemin d'accès du fichier d'entrées brutes
+     * @param virtualizedFilePath Chemin d'accès du fichier d'entrées virtualisées
+     * @throws IOException En cas de soucis concernant les chemins d'accès
+     */
     public Generator(String rawInputFilePath, String virtualizedFilePath) throws IOException {
         this.fileManager = new VirtualizedOutput(Objects.requireNonNull(virtualizedFilePath));
         this.rawInput = new RawInput(Objects.requireNonNull(rawInputFilePath));

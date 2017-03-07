@@ -9,6 +9,8 @@ public class Accelerometer {
     private final int zAcceleration;
 
     /**
+     * Constructeur par défaut
+     *
      * @param xAcceleration coordonnée acceleration x
      * @param yAcceleration coordonnée acceleration y
      * @param zAcceleration coordonnée acceleration z
@@ -21,6 +23,7 @@ public class Accelerometer {
 
     /**
      * Getter de la valeur de l'accélération sur l'axe x
+     *
      * @return L'accélération sur l'axe x
      */
     public int getxAcceleration() {
@@ -29,6 +32,7 @@ public class Accelerometer {
 
     /**
      * Getter de la valeur de l'accélération sur l'axe y
+     *
      * @return L'accélération sur l'axe y
      */
     public int getyAcceleration() {
@@ -37,6 +41,7 @@ public class Accelerometer {
 
     /**
      * Getter de la valeur de l'accélération sur l'axe z
+     *
      * @return L'accélération sur l'axe z
      */
     public int getzAcceleration() {
@@ -45,6 +50,6 @@ public class Accelerometer {
 
     @Override
     public String toString() {
-        return "[accX: " + xAcceleration +", accY: " + yAcceleration + ", accZ: " + zAcceleration + "]";
+        return "[accX: " + xAcceleration + ", accY: " + yAcceleration + ", accZ: " + zAcceleration + "]";
     }
 }

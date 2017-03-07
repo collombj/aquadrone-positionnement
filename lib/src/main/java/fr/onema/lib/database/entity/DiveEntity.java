@@ -53,6 +53,8 @@ public class DiveEntity {
     }
 
     /**
+     * Permet d'entrer l'identifiant de la plongée
+     *
      * @param id l'identifiant de la plongée
      */
     public void setId(int id) {

@@ -13,7 +13,7 @@ public class MeasureInformationEntity {
     private String display;
 
     /**
-     * Le constructeur
+     * Constructeur par défaut
      *
      * @param id      L'identifiant de la mesure en base
      * @param name    Le nom de la mesure en base
@@ -27,7 +27,7 @@ public class MeasureInformationEntity {
         Objects.requireNonNull(type);
         Objects.requireNonNull(display);
         if (id <= 0)
-            throw new IllegalArgumentException("parameter id must be positive but has value " + id);
+            throw new IllegalArgumentException("L'identifiant est censé être positif : " + id);
         this.id = id;
         this.name = name;
         this.unit = unit;
@@ -36,7 +36,7 @@ public class MeasureInformationEntity {
     }
 
     /***
-     *
+     * Getter de l'identifiant de la mesure
      * @return L'identifiant de la mesure en base
      */
     public int getId() {
@@ -44,6 +44,8 @@ public class MeasureInformationEntity {
     }
 
     /**
+     * Getter du nom de la mesure
+     *
      * @return Le nom de la mesure en base
      */
     public String getName() {
@@ -51,6 +53,8 @@ public class MeasureInformationEntity {
     }
 
     /**
+     * Getter de l'unité de la mesure
+     *
      * @return L'unité de la mesure
      */
     String getUnit() {
@@ -58,6 +62,8 @@ public class MeasureInformationEntity {
     }
 
     /**
+     * Getter du type de mesure
+     *
      * @return Le type de mesure
      */
     public String getType() {
@@ -66,7 +72,9 @@ public class MeasureInformationEntity {
 
 
     /**
-     * @return L affichage de la mesure
+     * Getter de l'affichage de la mesure
+     *
+     * @return L'affichage de la mesure
      */
     String getDisplay() {
         return display;

@@ -34,7 +34,7 @@ public class Main extends Application {
     private static final Logger LOGGER = LoggerFactory.getLogger(Main.class.getName());
     private static final String SETTINGS_ARGUMENT_SHORT = "D";
     private static final String PORT_PROPERTIES = "port";
-    private static String PORT = "14550";
+    private static String PORT = "14555";
     private static String LOG_FILE = null;
     private Stage parent;
     private ServerListener server;
@@ -43,6 +43,10 @@ public class Main extends Application {
     private MessageWorker messageWorker;
     private RootLayoutController rlc;
 
+    /***
+     * Constructeur du main (racine de l'application graphique)
+     * @param args Les arguments passés au démarrage de l'application
+     */
     public static void main(String[] args) {
         PropertyConfigurator.configure("settings.properties");
         CommandLineParser parser = new DefaultParser();
@@ -112,10 +116,6 @@ public class Main extends Application {
         }
     }
 
-    public RootLayoutController getRlc() {
-        return rlc;
-    }
-
     /***
      * Méthode start appelée lors de l'initialisation de l'application pour définir les paramètres du conteneur de base
      */
@@ -125,7 +125,7 @@ public class Main extends Application {
             initWorker();
 
             this.parent = primaryStage;
-            this.parent.setTitle("App");
+            this.parent.setTitle("SIREN");
             this.parent.resizableProperty().set(false);
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("view/RootLayout.fxml"));
             rlc = new RootLayoutController(this);
@@ -164,25 +164,43 @@ public class Main extends Application {
         databaseWorker.stop();
     }
 
+    /***
+     * Méthode permettant d'appliquer un flag aux messages traités pour analyses futures
+     */
     public void execute() {
         rlc.setRunning(true);
         messageWorker.startRecording();
     }
 
+    /***
+     * Methode permettant de retirer le flag assigné aux messages traités pour analyses futures
+     */
+    public void stopExecution() {
+        rlc.setRunning(false);
+        messageWorker.stopRecording();
+    }
+
+    /***
+     * Getter du Layout principal de l'application graphique
+     * @return Le layout principal
+     */
+    public RootLayoutController getRlc() {
+        return rlc;
+    }
+
+    /***
+     * Getter de la configuration de l'application associée à l'exécution
+     * @return La configuration de l'application
+     */
     public Configuration getConfiguration() {
         return configuration;
     }
 
+    /***
+     * Getter du worker en charge du traitement des messages Mavlink
+     * @return Le worker traitant le flux Mavlink
+     */
     public MessageWorker getMessageWorker() {
         return messageWorker;
-    }
-
-    public Stage getParent() {
-        return parent;
-    }
-
-    public void stopExecution() {
-        rlc.setRunning(false);
-        messageWorker.stopRecording();
     }
 }

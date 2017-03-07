@@ -22,7 +22,7 @@ public class MeasureEntity {
     private int id;
 
     /**
-     * Constructeur
+     * Constructeur par défaut
      *
      * @param timestamp         La timestamp de la mesure, en millisecondes
      * @param locationBrute     Les coordonnées GPS_SENSOR de la mesure calculées
@@ -54,7 +54,7 @@ public class MeasureEntity {
     }
 
     /**
-     * Constructeur
+     * Constructeur par défaut
      *
      * @param id                L'identifiant de la mesure en base
      * @param timestamp         La timestamp de la mesure, en millisecondes
@@ -98,6 +98,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de l'identifiant de la mesure
+     *
      * @return L'identifiant en base de la mesure
      */
     public int getId() {
@@ -105,7 +107,7 @@ public class MeasureEntity {
     }
 
     /**
-     * Définit l'ID de la mesure.
+     * Setter de l'identifiant de la mesure.
      *
      * @param id La valeur de l'ID.
      */
@@ -114,6 +116,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter du timestamp de la mesure
+     *
      * @return La timestamp de la mesure, en millisecondes
      */
     public long getTimestamp() {
@@ -121,6 +125,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter des coordonnées de la mesure
+     *
      * @return Les coordonnées GPS de la mesure calculées
      */
     public GPSCoordinate getLocationBrute() {
@@ -128,15 +134,17 @@ public class MeasureEntity {
     }
 
     /**
-     * MEt a jour les coordonnées relevées
+     * Setter des coordonnées relevées
      *
-     * @param locationBrute des coordonnées GPS
+     * @param locationBrute Coordonnées GPS brutes de la mesure
      */
     public void setLocationBrute(GPSCoordinate locationBrute) {
         this.locationBrute = locationBrute;
     }
 
     /**
+     * Getter des coordonnées corrigées
+     *
      * @return Les coordonnées GPS de la mesure après correction
      */
     public GPSCoordinate getLocationCorrected() {
@@ -144,7 +152,7 @@ public class MeasureEntity {
     }
 
     /**
-     * Met a jour les coordonnées corrigées
+     * Setter des coordonnées corrigées
      *
      * @param locationCorrected des coordonnées GPS
      */
@@ -153,6 +161,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de l'accélération selon l'axe X du drone
+     *
      * @return L'accélération selon l'axe X du drone
      */
     public int getAccelerationX() {
@@ -160,6 +170,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de l'accélération selon l'axe Y du drone
+     *
      * @return L'accélération selon l'axe Y du drone
      */
     public int getAccelerationY() {
@@ -167,6 +179,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de l'accélération selon l'axe Z du drone
+     *
      * @return L'accélération selon l'axe Z du drone
      */
     public int getAccelerationZ() {
@@ -174,6 +188,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de la rotation autour de l'axe X du drone
+     *
      * @return La rotation autour de l'axe X du drone
      */
     public double getRoll() {
@@ -181,6 +197,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de la rotation autour de l'axe Y du drone
+     *
      * @return La rotation autour de l'axe Y du drone
      */
     public double getPitch() {
@@ -188,6 +206,8 @@ public class MeasureEntity {
     }
 
     /**
+     * Getter de la rotation autour de l'axe Z du drone
+     *
      * @return La rotation autour de l'axe Z du drone
      */
     public double getYaw() {
@@ -202,16 +222,18 @@ public class MeasureEntity {
     }
 
     /**
-     * Met à jour la précision de la mesure
+     * Setter de la précision de la mesure
      *
-     * @param precisionCm La précision en cm
+     * @param precisionCm La précision en cm de la mesure
      */
     public void setPrecisionCm(int precisionCm) {
         this.precisionCm = precisionCm;
     }
 
     /**
-     * @return La valeur de la mesure.
+     * Setter de la valeur de la mesure
+     *
+     * @return La valeur de la mesure
      */
     public String getMeasureValue() {
         return measureValue;
@@ -233,6 +255,11 @@ public class MeasureEntity {
         return diveEquals(o);
     }
 
+    /***
+     * Version customisée du equal ne comparant pas les identifiants
+     * @param o L'objet à comparer (une MeasureEntity)
+     * @return Le résultat du test conditionnel
+     */
     public boolean diveEquals(Object o) {
         if (this == o)
             return true;
@@ -241,12 +268,12 @@ public class MeasureEntity {
         MeasureEntity that = (MeasureEntity) o;
         if (timestamp != that.timestamp)
             return false;
-        if(!areSpatialValuesEquals(that))
+        if (!areSpatialValuesEquals(that))
             return false;
         return measureValue != null ? measureValue.equals(that.measureValue) : that.measureValue == null;
     }
 
-    private boolean areSpatialValuesEquals(MeasureEntity that){
+    private boolean areSpatialValuesEquals(MeasureEntity that) {
         if (accelerationX != that.accelerationX)
             return false;
         if (accelerationY != that.accelerationY)
@@ -259,7 +286,7 @@ public class MeasureEntity {
             return false;
         if (Double.compare(that.yaw, yaw) != 0)
             return false;
-        if(locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
+        if (locationBrute != null ? !locationBrute.equals(that.locationBrute) : that.locationBrute != null)
             return false;
         return true;
     }

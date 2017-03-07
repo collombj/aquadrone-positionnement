@@ -3,8 +3,8 @@ package fr.onema.lib.virtualizer.entry;
 import fr.onema.lib.drone.Measure;
 import fr.onema.lib.file.CSV;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
+import fr.onema.lib.sensor.position.imu.IMU;
 import org.mavlink.messages.ardupilotmega.*;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public class VirtualizerEntry implements CSV {
     private long gpsAlt;
 
     /**
-     * Constructeur de Virtualizer
+     * Constructeur par défaut
      *
      * @param timestamp   Durée depuis 1er janvier 1970 en millisecondes
      * @param gpsLat      Latitude du GPS_SENSOR
@@ -118,10 +118,10 @@ public class VirtualizerEntry implements CSV {
             this.timestamp = gps.getTimestamp();
         } else if (pressure != null) {
             this.timestamp = pressure.getTimestamp();
-        } else if(imu != null){
-            this.timestamp = imu.getTimestamp(); //Désolé pour le bout de scotch, ce constructeur est ... concept
+        } else if (imu != null) {
+            this.timestamp = imu.getTimestamp();
         } else {
-            timestamp = 0; //Encore désolé, constructeur FIXME
+            timestamp = 0;
         }
     }
 
@@ -239,6 +239,10 @@ public class VirtualizerEntry implements CSV {
         return msg;
     }
 
+    /***
+     * Récupère la valeur du timestamp
+     * @return Le timestamp
+     */
     public long getTimestamp() {
         return timestamp;
     }
@@ -300,7 +304,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère la vitesse de rotation en X
      *
-     * @return
+     * @return Valeur de la rotation en X
      */
     public double getRoll() {
         return roll;
@@ -309,7 +313,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère la vitesse de rotation en Y
      *
-     * @return
+     * @return Valeur de la rotation en Y
      */
     public double getPitch() {
         return pitch;
@@ -318,7 +322,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère la vitesse de rotation en Z
      *
-     * @return
+     * @return Valeur de la rotation en Z
      */
     public double getYaw() {
         return yaw;
@@ -327,7 +331,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère l'orientation magnétique en X
      *
-     * @return xmag
+     * @return La valeur de l'orientation magnétique en X
      */
     public int getXmag() {
         return xmag;
@@ -336,7 +340,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère l'orientation magnétique en Y
      *
-     * @return ymag
+     * @return La valeur de l'orientation magnétique en Y
      */
     public int getYmag() {
         return ymag;
@@ -345,7 +349,7 @@ public class VirtualizerEntry implements CSV {
     /**
      * Récupère l'orientation magnétique en Z
      *
-     * @return zmag
+     * @return La valeur de l'orientation magnétique en Z
      */
     public int getZmag() {
         return zmag;

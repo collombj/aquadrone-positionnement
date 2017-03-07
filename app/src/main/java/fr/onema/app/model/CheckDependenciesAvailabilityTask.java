@@ -5,17 +5,24 @@ import fr.onema.lib.database.DatabaseDriver;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.scene.paint.Color;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Objects;
 import java.util.TimerTask;
 
 /***
- * Classe permettant la déclaration du scheduler chargé de requêter les dépendances
+ * Classe permettant la déclaration du scheduler chargé de requêter l'état des dépendances
  */
 public class CheckDependenciesAvailabilityTask extends TimerTask {
+    private final static Logger LOGGER = LoggerFactory.getLogger(CheckDependenciesAvailabilityTask.class.getName());
     private final Main main;
 
+    /***
+     * Constructeur du scheduler
+     * @param main L'instance de la classe main lançant le scheduler
+     */
     public CheckDependenciesAvailabilityTask(Main main) {
         this.main = Objects.requireNonNull(main);
     }
@@ -36,7 +43,8 @@ public class CheckDependenciesAvailabilityTask extends TimerTask {
             dd.initAsReadable();
             dd.closeConnection();
         } catch (Exception e) {
-            // FileManager.LOGGER.log(Level.FINE, e.getMessage());
+            LOGGER.error(e.getMessage());
+            LOGGER.debug(e.getMessage(), e);
             return false;
         }
         return true;

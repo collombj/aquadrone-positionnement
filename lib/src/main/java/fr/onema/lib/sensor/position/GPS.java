@@ -22,7 +22,7 @@ public class GPS extends Sensor {
 
     /***
      * Builder de l'objet GPS_SENSOR
-     * @param timestamp
+     * @param timestamp Le timestamp de la mesure GPS
      * @param msg Message correspondant à la mesure GPS_SENSOR en protocole MavLink
      */
     public static GPS build(long timestamp, msg_gps_raw_int msg) {
@@ -44,6 +44,7 @@ public class GPS extends Sensor {
 
     /**
      * Retourne les coordonnées de la mesure
+     *
      * @return Coordonnées de la mesure
      */
     public GPSCoordinate getPosition() {

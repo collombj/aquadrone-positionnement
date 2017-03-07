@@ -5,8 +5,8 @@ import fr.onema.lib.worker.Worker;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -70,7 +70,12 @@ public class ServerListener implements Worker {
         datagramSocket.close();
     }
 
-
+    /**
+     * Compare les timestamps et déduit l'état du flux Mavlink
+     *
+     * @param msg Un message Mavlink
+     * @return Le résultat du test
+     */
     boolean testValidityMavlinkMessage(MAVLinkMessage msg) {
         long timestamp = getTimestamp(msg);
         if (timestamp >= messageTimestamp) {
@@ -81,11 +86,11 @@ public class ServerListener implements Worker {
     }
 
     /**
-     * Retourne le timestamp à associer à un message
-     * @param msg
-     * @return
+     * Retourne le timestamp à associé à un message
+     *
+     * @param msg Un message Mavlink
+     * @return Le timestamp du message Mavlink
      */
-    // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
             if (((msg_gps_raw_int) msg).time_usec != 0 && messageTimestamp != -1) {
@@ -97,7 +102,6 @@ public class ServerListener implements Worker {
         return getBootTime(msg);
     }
 
-    // Public access to test
     long getBootTime(MAVLinkMessage msg) {
         if (msg instanceof msg_raw_imu) {
             return ((msg_raw_imu) msg).time_usec / 1_000;
@@ -153,6 +157,11 @@ public class ServerListener implements Worker {
         return datagramSocket;
     }
 
+    /**
+     * Getter du MessageWorker
+     *
+     * @return Le MessageWorker associé à l'instance du serveur d'écoute
+     */
     public MessageWorker getMessageWorker() {
         return messageWorker;
     }

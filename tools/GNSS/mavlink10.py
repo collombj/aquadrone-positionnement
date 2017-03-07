@@ -15,7 +15,6 @@ import platform
 import struct
 import sys
 import time
-
 from builtins import object
 from builtins import range
 
@@ -8394,7 +8393,7 @@ class MAVLink_bad_data(MAVLink_message):
     def __str__(self):
         '''Override the __str__ function from MAVLink_messages because non-printable characters are common in to be the reason for this message to exist.'''
         return '%s {%s, data:%s}' % (
-        self._type, self.reason, [('%x' % ord(i) if isinstance(i, str) else '%x' % i) for i in self.data])
+            self._type, self.reason, [('%x' % ord(i) if isinstance(i, str) else '%x' % i) for i in self.data])
 
 
 class MAVLinkSigning(object):
@@ -8659,7 +8658,7 @@ class MAVLink(object):
             raise MAVError("invalid MAVLink prefix '%s'" % magic)
         if mlen != len(msgbuf) - (headerlen + 2 + signature_len):
             raise MAVError('invalid MAVLink message length. Got %u expected %u, msgId=%u headerlen=%u' % (
-            len(msgbuf) - (headerlen + 2 + signature_len), mlen, msgId, headerlen))
+                len(msgbuf) - (headerlen + 2 + signature_len), mlen, msgId, headerlen))
 
         if not mapkey in mavlink_map:
             raise MAVError('unknown MAVLink message ID %s' % str(mapkey))
