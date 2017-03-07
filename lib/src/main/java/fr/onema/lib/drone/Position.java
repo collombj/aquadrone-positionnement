@@ -208,11 +208,9 @@ public class Position {
         }
         GeoMaths.MovementWrapper wrapper = GeoMaths.computeNewPosition(
                 previousPosition.getCartesianBrute(),
-                previousPosition.getImu().getAccelerometer(),
                 imu.getGyroscope().getYaw(),
                 imu.getGyroscope().getPitch(),
                 imu.getGyroscope().getRoll(),
-                previousVelocity,
                 timestamp - previousPosition.getTimestamp(),
                 imu.getAccelerometer());
         this.setCartesianBrute(wrapper.getCoordinate());

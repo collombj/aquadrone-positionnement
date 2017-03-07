@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -95,7 +94,6 @@ public class Configuration {
             build("settings.properties");
         }
         return instance;
-
     }
 
     /**

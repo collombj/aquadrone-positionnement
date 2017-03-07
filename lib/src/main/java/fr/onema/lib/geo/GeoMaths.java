@@ -51,7 +51,9 @@ public class GeoMaths {
         Objects.requireNonNull(b);
         CartesianCoordinate a2 = computeXYZfromLatLonAlt(deg2rad(a.lat / 10_000_000.), deg2rad(a.lon / 10_000_000.), deg2rad(a.alt / 1_000.));
         CartesianCoordinate b2 = computeXYZfromLatLonAlt(deg2rad(b.lat / 10_000_000.), deg2rad(b.lon / 10_000_000.), deg2rad(b.alt / 1_000.));
+
         return cartesianDistance(a2, b2);
+
     }
 
     /**
@@ -90,6 +92,7 @@ public class GeoMaths {
         double x = (R * c + alt) * cosLat * cosLon;
         double y = (R * c + alt) * cosLat * sinLon;
         double z = (R * s + alt) * sinLat;
+
         return new CartesianCoordinate(x, y, z);
     }
 
@@ -102,23 +105,52 @@ public class GeoMaths {
     public static CartesianCoordinate computeCartesianPosition(GPSCoordinate refPoint, GPSCoordinate point) {
         Objects.requireNonNull(refPoint);
         Objects.requireNonNull(point);
+
         double latRefRad = deg2rad(refPoint.lat / 10_000_000.);
         double lonRefRad = deg2rad(refPoint.lon / 10_000_000.);
         double altRefM = refPoint.alt / 1_000.;
+
         CartesianCoordinate refPointCartesian = computeXYZfromLatLonAlt(latRefRad, lonRefRad, altRefM);
+
         double latRad = deg2rad(point.lat / 10_000_000.);
         double lonRad = deg2rad(point.lon / 10_000_000.);
         double altM = point.alt / 1_000.;
+
         CartesianCoordinate pointCartesian = computeXYZfromLatLonAlt(latRad, lonRad, altM);
-        return new CartesianCoordinate(pointCartesian.x - refPointCartesian.x, pointCartesian.y - refPointCartesian.y,
-                pointCartesian.z - refPointCartesian.z);
+
+
+        //ECEF to ENU
+        Matrix matrix = Matrix.getInstance(3,3);
+        matrix.set(0, 0, -sin(lonRefRad));
+        matrix.set(0, 1, cos(lonRefRad));
+        matrix.set(0, 2, 0);
+
+        matrix.set(1, 0, (-sin(latRefRad))*cos(lonRefRad));
+        matrix.set(1, 1, (-sin(latRefRad))*sin(lonRefRad));
+        matrix.set(1, 2, cos(latRefRad));
+
+        matrix.set(2, 0, cos(latRefRad)*cos(lonRefRad));
+        matrix.set(2, 1, cos(latRefRad)*sin(lonRefRad));
+        matrix.set(2, 2, sin(latRefRad));
+
+
+        Matrix vector = Matrix.getInstance(3, 1);
+        vector.set(0, 0, pointCartesian.x - refPointCartesian.x);
+        vector.set(1, 0, pointCartesian.y - refPointCartesian.y);
+        vector.set(2, 0, pointCartesian.z - refPointCartesian.z);
+
+        Matrix result = matrix.mult(vector);
+
+        CartesianCoordinate enuToLocal = new CartesianCoordinate(result.get(0, 0), result.get(1, 0), result.get(2, 0));
+        return doYawRotation(enuToLocal, Math.PI - deg2rad(Configuration.getInstance().getGeo().getMagneticNorthLatitude()));
+
     }
 
     /**
      * Retourne la vitesse en m/s d'une coordonnée (par rapport à sa référence)
      * La coordonnée équivaut au vecteur vitesse dans le cas recherché
      * @param coordinate la coordonnée qui est le vecteur vitesse
-     * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourrant - timestampPrecedent)
+     * @param timestamp  temps écoulé en ms depuis la derniere mesure (timestampCourant - timestampPrecedent)
      * @return La vitesse en m/s sur chaque axe {@link CartesianVelocity}
      */
     public static CartesianVelocity computeVelocityFromCartesianCoordinate(CartesianCoordinate prevCoordinate, CartesianCoordinate coordinate, long timestamp) {
@@ -127,6 +159,7 @@ public class GeoMaths {
         double vx = (coordinate.x - prevCoordinate.x) * frac;
         double vy = (coordinate.y - prevCoordinate.y) * frac;
         double vz = (coordinate.z - prevCoordinate.z) * frac;
+
         return new CartesianVelocity(vx, vy, vz);
     }
 
@@ -149,6 +182,7 @@ public class GeoMaths {
         double accelerationX = (((velocityCurrent.vx - velocityRef.vx) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
         double accelerationY = (((velocityCurrent.vy - velocityRef.vy) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
         double accelerationZ = (((velocityCurrent.vz - velocityRef.vz) / (timestamp / 1000.)) * MS2_TO_G) * 1_000;
+
         return new Accelerometer((int) Math.round(accelerationX), (int) Math.round(accelerationY), (int) Math.round(accelerationZ));
     }
 
@@ -161,12 +195,42 @@ public class GeoMaths {
     public static GPSCoordinate computeGPSCoordinateFromCartesian(GPSCoordinate refPoint, CartesianCoordinate point) {
         Objects.requireNonNull(refPoint);
         Objects.requireNonNull(point);
+
         double latRefRad = deg2rad(refPoint.lat / 10_000_000.);
         double lonRefRad = deg2rad(refPoint.lon / 10_000_000.);
         double altRefM = refPoint.alt / 1_000.;
         CartesianCoordinate refPointCartesian = computeXYZfromLatLonAlt(latRefRad, lonRefRad, altRefM);
-        CartesianCoordinate pointECEF = new CartesianCoordinate(refPointCartesian.x + point.x, refPointCartesian.y + point.y,
-                refPointCartesian.z + point.z);
+
+        //Local to ENU
+        CartesianCoordinate pointENU = doYawRotation(point, -(Math.PI - deg2rad(Configuration.getInstance().getGeo().getMagneticNorthLatitude())));
+
+        //ENU to ECEF
+        Matrix enuToECEF = Matrix.getInstance(3, 3);
+        enuToECEF.set(0, 0, -sin(lonRefRad));
+        enuToECEF.set(0, 1, (-sin(latRefRad))*cos(lonRefRad));
+        enuToECEF.set(0, 2, cos(lonRefRad) * cos(latRefRad));
+
+        enuToECEF.set(1, 0, cos(lonRefRad));
+        enuToECEF.set(1, 1, (-sin(latRefRad))*sin(lonRefRad));
+        enuToECEF.set(1, 2, cos(latRefRad)*sin(lonRefRad));
+
+        enuToECEF.set(2, 0, 0);
+        enuToECEF.set(2, 1, cos(latRefRad));
+        enuToECEF.set(2, 2, sin(latRefRad));
+
+        Matrix vector = Matrix.getInstance(3, 1);
+        vector.set(0, 0, pointENU.x);
+        vector.set(1, 0, pointENU.y);
+        vector.set(2, 0, pointENU.z);
+
+        Matrix result = enuToECEF.mult(vector);
+
+        CartesianCoordinate pointECEF = new CartesianCoordinate(
+                result.get(0, 0) + refPointCartesian.x,
+                result.get(1, 0) + refPointCartesian.y,
+                result.get(2, 0) + refPointCartesian.z);
+
+        //ECEF to WGS
         double p = Math.sqrt((pointECEF.x * pointECEF.x) + (pointECEF.y * pointECEF.y));
         double b = R * (1 - F);
         double theta = Math.atan((pointECEF.z * R) / (p * b));
@@ -179,17 +243,24 @@ public class GeoMaths {
         double e = Math.sqrt(finalOperation.doubleValue());
         BigDecimal finalOperation2 = r2Minusb2.divide(b2, BigDecimal.ROUND_UP);
         double ePrime = Math.sqrt(finalOperation2.doubleValue());
+
+
         double lon = Math.atan(pointECEF.y / pointECEF.x);
         double lat = Math.atan((pointECEF.z + (ePrime * ePrime * b * sin(theta) * sin(theta) * sin(theta))) /
                 (p - (e * e * R * cos(theta) * cos(theta) * cos(theta))));
+
         double n = R / Math.sqrt(1 - (e * e * sin(lat) * sin(lat)));
+
         double alt = (p / cos(lat)) - n;
+
         return new GPSCoordinate(Math.round(rad2deg(lat) * 10_000_000), Math.round(rad2deg(lon) * 10_000_000), Math.round(alt * 1_000));
+
     }
 
 
     /**
      * Calcul les nouvelles cordonnées cartésienne après une rotaion
+     *
      * @param base {@link CartesianCoordinate} coordonnées cartésiennes
      * @param a    angle en radian correspondant au yaw
      * @param b    angle en radian correspondant au pitch
@@ -198,47 +269,83 @@ public class GeoMaths {
      */
     private static CartesianCoordinate doRotation(CartesianCoordinate base, double a, double b, double g) {
         Objects.requireNonNull(base);
+
         Matrix rotation = Matrix.getInstance(3, 3);
         rotation.set(0, 0, cos(a) * cos(b));
         rotation.set(0, 1, (cos(a) * sin(b) * sin(g)) - (sin(a) * cos(g)));
         rotation.set(0, 2, (cos(a) * sin(b) * cos(g)) + (sin(a) * sin(g)));
+
         rotation.set(1, 0, sin(a) * cos(b));
         rotation.set(1, 1, (sin(a) * sin(b) * sin(g)) + (cos(a) * cos(g)));
         rotation.set(1, 2, (sin(a) * sin(b) * cos(g)) - (cos(a) * sin(g)));
+
         rotation.set(2, 0, -(sin(b)));
         rotation.set(2, 1, cos(b) * sin(g));
         rotation.set(2, 2, cos(b) * cos(g));
+
+
         Matrix previousPoint = Matrix.getInstance(3, 1);
         previousPoint.set(0, 0, base.x);
         previousPoint.set(1, 0, base.y);
         previousPoint.set(2, 0, base.z);
+
         Matrix result = rotation.mult(previousPoint);
+
+        return new CartesianCoordinate(result.get(0, 0), result.get(1, 0), result.get(2, 0));
+
+
+    }
+
+    private static CartesianCoordinate doYawRotation(CartesianCoordinate base, double a) {
+        Objects.requireNonNull(base);
+
+        Matrix rotation = Matrix.getInstance(3, 3);
+        rotation.set(0, 0, cos(a));
+        rotation.set(0, 1,  -sin(a));
+        rotation.set(0, 2, 0);
+
+        rotation.set(1, 0, sin(a));
+        rotation.set(1, 1, cos(a));
+        rotation.set(1, 2, 0);
+
+        rotation.set(2, 0, 0);
+        rotation.set(2, 1, 0);
+        rotation.set(2, 2, 1);
+
+        Matrix previousPoint = Matrix.getInstance(3, 1);
+        previousPoint.set(0, 0, base.x);
+        previousPoint.set(1, 0, base.y);
+        previousPoint.set(2, 0, base.z);
+
+        Matrix result = rotation.mult(previousPoint);
+
         return new CartesianCoordinate(result.get(0, 0), result.get(1, 0), result.get(2, 0));
     }
 
     /**
      * Calcule la position cartésienne selon les données des capteurs IMU
+     *
      * @param last             position cartésienne precedente
-     * @param lastAcc          accelerometre precedent
      * @param yaw              le yaw courant
      * @param pitch            le pitch courant
      * @param roll             le roll courant
-     * @param previousVelocity la vitesse précédente (en m/s)
      * @param time             le temps entre les deux coordonnées(en ms)
      * @param accelerometer    les données d'accelerometre
      * @return la nouvelle position estimée du drone
      */
-    public static MovementWrapper computeNewPosition(CartesianCoordinate last, Accelerometer lastAcc, double yaw, double pitch, double roll, CartesianVelocity previousVelocity, long time, Accelerometer accelerometer) {
+    public static MovementWrapper computeNewPosition(CartesianCoordinate last, double yaw, double pitch, double roll, long time, Accelerometer accelerometer) {
         Objects.requireNonNull(last);
-        Objects.requireNonNull(lastAcc);
-        Objects.requireNonNull(previousVelocity);
         Objects.requireNonNull(accelerometer);
+
         CartesianVelocity velocity = new CartesianVelocity(
-                ((((accelerometer.getxAcceleration() - lastAcc.getxAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vx,
-                ((((accelerometer.getyAcceleration() - lastAcc.getyAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vy,
-                ((((accelerometer.getzAcceleration() - lastAcc.getzAcceleration()) / 1000.) * G_TO_MS2) * (time / 1000.)) + previousVelocity.vz);
+                ((accelerometer.getxAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.),
+                ((accelerometer.getyAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.),
+                ((accelerometer.getzAcceleration() / 1000.) * G_TO_MS2) * (time / 1000.));
+
         CartesianCoordinate velocityVector = new CartesianCoordinate(velocity.vx, velocity.vy, velocity.vz);
-        CartesianCoordinate velocityRotated = doRotation(velocityVector, (yaw - (deg2rad(Configuration.getInstance().getGeo().getMagneticNorthLatitude()))), pitch, roll);
+
+        CartesianCoordinate velocityRotated = doRotation(velocityVector, -yaw, -pitch, -roll);
+
         CartesianCoordinate computedCoords = new CartesianCoordinate(
                 last.x + (velocityRotated.x * (time / 1000.)),
                 last.y + (velocityRotated.y * (time / 1000.)),
@@ -296,9 +403,10 @@ public class GeoMaths {
         Position previousPos = resurfacePosition;
         passTwo.add(passOne.get(passOne.size() - 2));
 
-        for (int i = rawPositions.size() - 1; i > 0; i--) {
-            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, previousPos.getImu().getAccelerometer(), -previousPos.getImu().getGyroscope().getYaw(),
-                    -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(), previousWrapper.velocity,
+        for(int i = rawPositions.size()-1; i > 0; i--) {
+
+            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
+                    -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(),
                     previousPos.getTimestamp() - rawPositions.get(i).getTimestamp(), previousPos.getImu().getAccelerometer());
             passTwo.add(wrapper.coordinate);
             previousWrapper = wrapper;

@@ -2,14 +2,14 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.mavlink.messages.MAVLinkMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Classe permettant d'envoyer les messages MavLink par UDP
@@ -17,7 +17,7 @@ import java.util.logging.Logger;
  * puis sont directement envoyés en UDP au destinataire
  */
 public class NetworkSender {
-    private static final Logger LOGGER = Logger.getLogger(NetworkSender.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(NetworkSender.class.getName());
     private final int port;
     private final String host;
     private final ArrayBlockingQueue<MAVLinkMessage> queue;
@@ -34,6 +34,7 @@ public class NetworkSender {
      * @param host l'adresse de l'hôte
      */
     public NetworkSender(int port, String host) throws IOException {
+
         this.port = port;
         this.host = host;
         queue = new ArrayBlockingQueue<>(100);
@@ -84,12 +85,12 @@ public class NetworkSender {
     private void send(MAVLinkMessage msg) throws IOException {
         if (msg != null) {
             String msgFormatted = msg.toString();
-            LOGGER.log(Level.INFO, msgFormatted);
+            LOGGER.info(msgFormatted);
             buffer = msg.encode();
             DatagramPacket out = new DatagramPacket(buffer, buffer.length, hostAddress, port);
             dsocket.send(out);
         } else {
-            LOGGER.log(Level.SEVERE, "Tentative to send a null MAVLinkMessage.");
+            LOGGER.error("Tentative to send a null MAVLinkMessage.");
         }
     }
 
@@ -140,7 +141,8 @@ public class NetworkSender {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
                     Thread.currentThread().interrupt();
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
             dsocket.close();

@@ -7,6 +7,8 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -16,8 +18,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 import static fr.onema.lib.geo.GeoMaths.deg2rad;
@@ -26,12 +26,17 @@ import static fr.onema.lib.geo.GeoMaths.deg2rad;
  * Classe utilitaire permettant la gestion des CSV brut et modifiés de données MavLink
  */
 public class FileManager {
-    private static final Logger LOGGER = Logger.getLogger(FileManager.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(FileManager.class.getName());
     private static final String RESULTS_CSV_HEADER = "timestamp,corrected.latitude,corrected.longitude,corrected.altitude,brut.latitude,brut.longitude,brut.altitude," +
             "ref.latitude,ref.longitude,ref.altitude,ref.direction,ref.temperature,difference.x,difference.y,difference.z," +
             "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
     private final String virtualizedOutputFilePath;
+
+    public String getResultsOutputFilePath() {
+        return resultsOutputFilePath;
+    }
+
     private final String resultsOutputFilePath;
 
     /***
@@ -79,7 +84,7 @@ public class FileManager {
         return virts;
     }
 
-    private int getLineNumber(File f) throws IOException {
+    public int getLineNumber(File f) throws IOException {
         return (int) Files.lines(Paths.get(f.getPath())).count();
     }
 
@@ -92,7 +97,7 @@ public class FileManager {
         File f = new File(rawInputFilePath);
         if (!f.exists() && f.createNewFile()) {
             String out = "Écriture du fichier de référence : " + rawInputFilePath;
-            LOGGER.log(Level.FINE, out);
+            LOGGER.trace(out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -112,7 +117,7 @@ public class FileManager {
         File f = new File(virtualizedOutputFilePath);
         if (!f.exists() && f.createNewFile()) {
             String out = "Écriture du fichier de données virtualisées : " + virtualizedOutputFilePath;
-            LOGGER.log(Level.FINE, out);
+            LOGGER.trace(out);
         }
         try (FileWriter fw = new FileWriter(f, true)) {
             if (getLineNumber(f) == 0) {
@@ -130,7 +135,7 @@ public class FileManager {
         File f = new File(resultsOutputFilePath);
         if (f.delete()) {
             String out = "Fichier précédent de résultats écrasé : " + resultsOutputFilePath;
-            LOGGER.log(Level.FINE, out);
+            LOGGER.trace(out);
         }
         try (FileWriter fw = new FileWriter(f, false)) {
             fw.write(RESULTS_CSV_HEADER);

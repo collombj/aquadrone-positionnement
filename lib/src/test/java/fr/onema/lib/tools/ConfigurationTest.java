@@ -9,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 /**
@@ -16,25 +17,25 @@ import static org.junit.Assert.fail;
  */
 public class ConfigurationTest {
     private Configuration config = Configuration.getInstance();
-
-
-    private final static String content = "flow.lat=1\n" +
-            "flow.lon=2\n" +
-            "flow.alt=3\n" +
-            "database.host=db.local\n" +
-            "database.port=5432\n" +
-            "database.base=base\n" +
-            "database.user=user\n" +
-            "database.password=pwd\n" +
-            "database.notify-key=test_key\n" +
-            "geo.srid=2154\n" +
-            "geo.magneticnorthlatitude=86.5\n" +
-            "divedata.precision=0.5\n" +
-            "divedata.dureemax=5\n" +
-            "divedata.mouvementsmax=4\n" +
-            "divedata.delaicapteurhs=2\n" +
+    
+    private final static String content = "divedata.delaicapteurhs=30\n" +
+            "offset.acc.x=0.0\n" +
+            "database.base=test\n" +
+            "database.user=test\n" +
+            "database.password=test\n" +
+            "geo.srid=4326\n" +
             "divedata.frequencetestmavlink=1\n" +
-            "divedata.frequencetestdatabase=1";
+            "database.port=5432\n" +
+            "divedata.precision=0.5\n" +
+            "divedata.mouvementsmax=4\n" +
+            "database.notify-key=siren_key\n" +
+            "divedata.dureemax=120\n" +
+            "divedata.frequencetestdatabase=1\n" +
+            "divedata.coefficientrangeimu=0.732\n" +
+            "offset.acc.z=0.0\n" +
+            "database.host=aquadrone.local\n" +
+            "offset.acc.y=140.0\n" +
+            "geo.magneticnorthlatitude=86.5";
     private File filePath;
 
     public ConfigurationTest() throws FileNotFoundException {
@@ -56,13 +57,13 @@ public class ConfigurationTest {
     public void tearDown() throws Exception {
         filePath.delete();
     }
-/*
+
     @Test(expected = NullPointerException.class)
     public void testNoPath() throws Exception {
         Configuration.build(null);
     }
 
-    @Test(expected = FileNotFoundException.class)
+    @Test(expected = IllegalStateException.class)
     public void testBadPath() throws Exception {
         Configuration.build("/toto/test/abcd");
     }
@@ -71,27 +72,27 @@ public class ConfigurationTest {
     public void testRead() throws Exception {
         Configuration.build(filePath.getAbsolutePath());
 
-        assertEquals(1, config.getFlow().getLat(), 0);
-        assertEquals(2, config.getFlow().getLon(), 0);
-        assertEquals(3, config.getFlow().getAlt(), 0);
+        assertEquals(0, config.getOffset().getAccelerationOffsetX(), 0);
+        assertEquals(140, config.getOffset().getAccelerationOffsetY(), 0);
+        assertEquals(0, config.getOffset().getAccelerationOffsetZ(), 0);
 
-        assertEquals("db.local", config.getDatabaseInformation().getHostname());
+        assertEquals("aquadrone.local", config.getDatabaseInformation().getHostname());
         assertEquals(5432, config.getDatabaseInformation().getPort());
-        assertEquals("base", config.getDatabaseInformation().getBase());
-        assertEquals("user", config.getDatabaseInformation().getUsername());
-        assertEquals("pwd", config.getDatabaseInformation().getPassword());
-        assertEquals("test_key", config.getDatabaseInformation().getNotifyKey());
+        assertEquals("test", config.getDatabaseInformation().getBase());
+        assertEquals("test", config.getDatabaseInformation().getUsername());
+        assertEquals("test", config.getDatabaseInformation().getPassword());
+        assertEquals("siren_key", config.getDatabaseInformation().getNotifyKey());
 
-        assertEquals(2154, config.getGeo().getSrid());
+        assertEquals(4326, config.getGeo().getSrid());
 
         assertEquals(0.5, config.getDiveData().getPrecision(), 0);
-        assertEquals(5, config.getDiveData().getDureemax());
+        assertEquals(120, config.getDiveData().getDureemax());
         assertEquals(4, config.getDiveData().getMouvementsmax());
-        assertEquals(2, config.getDiveData().getDelaicapteurhs());
+        assertEquals(30, config.getDiveData().getDelaicapteurhs());
         assertEquals(1, config.getDiveData().getFrequencetestmavlink());
         assertEquals(1, config.getDiveData().getFrequencetestdatabase());
     }
-*/
+
     @Test
     public void testEdit() throws Exception {//TODO Configuration est maintenant un singleton
         /*
