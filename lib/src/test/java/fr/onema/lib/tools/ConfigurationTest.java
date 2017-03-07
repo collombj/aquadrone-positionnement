@@ -34,7 +34,8 @@ public class ConfigurationTest {
             "divedata.mouvementsmax=4\n" +
             "divedata.delaicapteurhs=2\n" +
             "divedata.frequencetestmavlink=1\n" +
-            "divedata.frequencetestdatabase=1";
+            "divedata.frequencetestdatabase=1\n" +
+            "divedata.coefficientrangeimu=0.732";
     private File filePath;
 
     public ConfigurationTest() throws FileNotFoundException {
