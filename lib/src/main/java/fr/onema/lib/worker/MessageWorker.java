@@ -2,11 +2,12 @@ package fr.onema.lib.worker;
 
 import fr.onema.lib.drone.Dive;
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.file.FileManager;
+import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
+
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class MessageWorker implements Worker {
 
-    private static final long FIX_THRESHOLD = 1; // FIXME
+    private static final long FIX_THRESHOLD = 5;
     private static final String IMU_SENSOR = "IMU";
     private static final String GPS_SENSOR = "GPS";
     private static final String TEMPERATURE_SENSOR = "Temperature";
@@ -67,10 +68,10 @@ public class MessageWorker implements Worker {
      * Paramètre le FileManager qui doit êtra associé au MessageWorker. Ce FileManager servira uniquement à remplir le
      * fichier de trace.
      *
-     * @param fileManager Le FileManager enregistrant dans le traceur.
+     * @param virtualizedOutput Le FileManager enregistrant dans le traceur.
      */
-    public void setTracer(FileManager fileManager) {
-        this.tracer = new Tracer(fileManager);
+    public void setTracer(VirtualizedOutput virtualizedOutput) {
+        this.tracer = new Tracer(virtualizedOutput);
     }
 
     /**
@@ -179,6 +180,7 @@ public class MessageWorker implements Worker {
             Pressure pressure = Pressure.build(timestamp, pressureMessage);
 
             currentPos.setPressure(pressure);
+            currentPos.setTimestamp(timestamp);
             updateState(PRESSURE_SENSOR, pressure.getTimestamp());
         }
 
@@ -187,6 +189,7 @@ public class MessageWorker implements Worker {
             Temperature temperature = Temperature.build(timestamp, temperatureMessage);
 
             currentPos.add(temperature);
+            currentPos.setTimestamp(timestamp);
             updateState(TEMPERATURE_SENSOR, temperature.getTimestamp());
         }
 

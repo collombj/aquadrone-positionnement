@@ -88,7 +88,7 @@ public class ServerListener implements Worker {
     // Public access to test
     public long getTimestamp(MAVLinkMessage msg) {
         if (msg instanceof msg_gps_raw_int) {
-            if (((msg_gps_raw_int) msg).time_usec != 0) {
+            if (((msg_gps_raw_int) msg).time_usec != 0 && messageTimestamp != -1) {
                 return messageTimestamp;
             } else {
                 return 0;
