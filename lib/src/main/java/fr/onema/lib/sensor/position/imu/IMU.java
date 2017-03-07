@@ -17,6 +17,7 @@ public class IMU extends Sensor {
     private final Accelerometer accelerometer;
     private final Gyroscope gyroscope;
     private final Compass compass;
+    private static final String HEADER = "AccelerometerX,AccelerometerY,AccelerometerZ,GyroscopeRoll,GyroscopePitch,GyroscopeYaw,CompassX,CompassY,CompassZ";
 
     /**
      * Constructeur
@@ -40,9 +41,10 @@ public class IMU extends Sensor {
         Objects.requireNonNull(msg);
         Objects.requireNonNull(msgAttitude);
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
-        Accelerometer accelerometer = new Accelerometer((int)Math.round(msg.xacc - offset.getAccelerationOffsetX()),
-                (int)Math.round(msg.yacc - offset.getAccelerationOffsetY()),
-                (int)Math.round(msg.zacc - offset.getAccelerationOffsetZ()));
+        double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
+        Accelerometer accelerometer = new Accelerometer((int)Math.round((msg.xacc - offset.getAccelerationOffsetX())/coefficientRangeIMU),
+                (int)Math.round((msg.yacc - offset.getAccelerationOffsetY())/coefficientRangeIMU),
+                (int)Math.round((msg.zacc - offset.getAccelerationOffsetZ())/coefficientRangeIMU));
         Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(timestamp, accelerometer, gyroscope, compass);
@@ -92,13 +94,13 @@ public class IMU extends Sensor {
 
     @Override
     public String toCSV() {
-        // TODO to be implemented
-        return null;
+        return accelerometer.getxAcceleration()+","+accelerometer.getyAcceleration()+","+accelerometer.getzAcceleration()+","+
+                gyroscope.getRoll()+","+gyroscope.getPitch()+","+gyroscope.getYaw()+","+
+                compass.getxMagnetic()+","+compass.getyMagnetic()+","+compass.getzMagnetic();
     }
 
     @Override
     public String getCSVHeader() {
-        //TODO to be implemented
-        return null;
+        return HEADER;
     }
 }

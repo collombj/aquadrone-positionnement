@@ -99,9 +99,9 @@ public class GeoMathsTest {
         GPSCoordinate gps2 = new GPSCoordinate(450_000_000, 450_000_000, 130_000);
 
         CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(gps1, gps2);
-        assertEquals(2.77, cartesianCoordinate.x, 0.01);
-        assertEquals(2.77, cartesianCoordinate.y, 0.01);
-        assertEquals(-3.92, cartesianCoordinate.z, 0.01);
+        assertEquals(5.54, cartesianCoordinate.x, 0.01);
+        assertEquals(0.33, cartesianCoordinate.y, 0.01);
+        assertEquals(-0.00000242, cartesianCoordinate.z, 0.000001);
     }
 
     @Test(expected = NullPointerException.class)
@@ -200,7 +200,7 @@ public class GeoMathsTest {
 
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE1() {
-        GeoMaths.computeNewPosition(null, 0,0,0, null, 12, null);
+        GeoMaths.computeNewPosition(null, 0,0,0, 12, null);
 
 
     }
@@ -208,14 +208,14 @@ public class GeoMathsTest {
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE2() {
         CartesianCoordinate coordinate = new CartesianCoordinate(0,0,0);
-        GeoMaths.computeNewPosition(coordinate, 0,0,0, null, 12, null);
+        GeoMaths.computeNewPosition(coordinate, 0,0,0, 12, null);
     }
 
     @Test(expected = NullPointerException.class)
     public void testComputeNewPositionNPE3() {
         CartesianCoordinate coordinate = new CartesianCoordinate(0,0,0);
         CartesianVelocity velocity = new CartesianVelocity(0,0,0);
-        GeoMaths.computeNewPosition(coordinate, 0,0,0, velocity, 12, null);
+        GeoMaths.computeNewPosition(coordinate, 0,0,0, 12, null);
 
 
     }
@@ -227,11 +227,11 @@ public class GeoMathsTest {
 
         CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(ref, test);
 
-        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, -Math.PI / 2, 0, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0)).getCoordinate();
+        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, -Math.PI / 2, 0, 500, new Accelerometer(0, 0, 0)).getCoordinate();
 
         assertEquals(cartesianCoordinate.x, newPo.x, 0.0001);
         assertEquals(cartesianCoordinate.y, newPo.y, 0.0001);
-        assertEquals(cartesianCoordinate.z - 1.5, newPo.z, 0.0001);
+        assertEquals(cartesianCoordinate.z, newPo.z, 0.000001);
     }
 
     @Test
@@ -241,9 +241,9 @@ public class GeoMathsTest {
 
         CartesianCoordinate cartesianCoordinate = GeoMaths.computeCartesianPosition(ref, test);
 
-        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, 0, -Math.PI / 2, new CartesianVelocity(3, 0, 0), 500, new Accelerometer(0, 0, 0)).getCoordinate();
+        CartesianCoordinate newPo = GeoMaths.computeNewPosition(cartesianCoordinate, 0, 0, -Math.PI / 2, 500, new Accelerometer(0, 0, 0)).getCoordinate();
 
-        assertEquals(cartesianCoordinate.x + 1.5, newPo.x, 0.0001);
+        assertEquals(cartesianCoordinate.x, newPo.x, 0.0001);
         assertEquals(cartesianCoordinate.y, newPo.y, 0.0001);
         assertEquals(cartesianCoordinate.z, newPo.z, 0.0001);
     }

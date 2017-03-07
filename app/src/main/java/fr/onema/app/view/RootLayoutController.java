@@ -6,6 +6,7 @@ import fr.onema.lib.drone.Dive;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -41,6 +42,7 @@ public class RootLayoutController {
     private Thread dive = new Thread();
     private List<TableSensor> sensors = new ArrayList<>();
     private DecimalFormat df = new DecimalFormat("#.##");
+    private boolean configFileUsed;
 
     @FXML
     private TitledPane sensorsTitledPane;
@@ -185,7 +187,12 @@ public class RootLayoutController {
             stage.resizableProperty().setValue(false);
             ConfigurationController controller = loader.getController();
             controller.initialize();
-            controller.insertSpinnerValues(main.getConfiguration().getOffset().getAccelerationOffsetX(), main.getConfiguration().getOffset().getAccelerationOffsetY(), main.getConfiguration().getOffset().getAccelerationOffsetZ());
+            if (!configFileUsed) {
+                controller.insertSpinnerValues(main.getConfiguration().getOffset().getAccelerationOffsetX(), main.getConfiguration().getOffset().getAccelerationOffsetY(), main.getConfiguration().getOffset().getAccelerationOffsetZ());
+                configFileUsed = true;
+            } else {
+                controller.insertSpinnerValues(offsetX, offsetY, offsetZ);
+            }
             controller.init(this, main);
             stage.showAndWait();
         } else {
@@ -287,8 +294,14 @@ public class RootLayoutController {
         for (Map.Entry<String, Long> e : map.entrySet()) {
             sensors.add(new TableSensor(e.getKey(), checkStateTime(e.getValue())));
         }
+
         sensorsTableView.getItems().setAll(sensors);
+        sensorsTableView.setFixedCellSize(25);
+        sensorsTableView.prefHeightProperty().bind(sensorsTableView.fixedCellSizeProperty().multiply(Bindings.size(sensorsTableView.getItems()).add(1.01)));
+        sensorsTableView.minHeightProperty().bind(sensorsTableView.prefHeightProperty());
+        sensorsTableView.maxHeightProperty().bind(sensorsTableView.prefHeightProperty());
         sensorsTableView.refresh();
+        Platform.runLater(() -> resizeParent());
     }
 
     private String checkStateTime(long value) {

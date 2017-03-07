@@ -29,12 +29,14 @@ public class ConfigurationTest {
             "database.password=test\n" +
             "database.notify-key=siren_key\n" +
             "geo.srid=2154\n" +
+            "geo.magneticnorthlatitude=86.5\n" +
             "divedata.precision=0.5\n" +
             "divedata.dureemax=120\n" +
             "divedata.mouvementsmax=4\n" +
             "divedata.delaicapteurhs=30\n" +
             "divedata.frequencetestmavlink=1\n" +
-            "divedata.frequencetestdatabase=1";
+            "divedata.frequencetestdatabase=1\n" +
+            "divedata.coefficientrangeimu=0.732";
     private File filePath;
 
     public ConfigurationTest() throws FileNotFoundException {
