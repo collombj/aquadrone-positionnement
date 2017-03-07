@@ -32,6 +32,11 @@ public class FileManager {
             "difference.absolute,precision,margin,margin.error";
     private final String rawInputFilePath;
     private final String virtualizedOutputFilePath;
+
+    public String getResultsOutputFilePath() {
+        return resultsOutputFilePath;
+    }
+
     private final String resultsOutputFilePath;
 
     /***
@@ -79,7 +84,7 @@ public class FileManager {
         return virts;
     }
 
-    private int getLineNumber(File f) throws IOException {
+    public int getLineNumber(File f) throws IOException {
         return (int) Files.lines(Paths.get(f.getPath())).count();
     }
 

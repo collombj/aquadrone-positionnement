@@ -42,9 +42,9 @@ public class IMU extends Sensor {
         Objects.requireNonNull(msgAttitude);
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
         double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
-        Accelerometer accelerometer = new Accelerometer((int)Math.round((msg.xacc - offset.getAccelerationOffsetX())*coefficientRangeIMU),
-                (int)Math.round((msg.yacc - offset.getAccelerationOffsetY())*coefficientRangeIMU),
-                (int)Math.round((msg.zacc - offset.getAccelerationOffsetZ())*coefficientRangeIMU));
+        Accelerometer accelerometer = new Accelerometer((int)Math.round((msg.xacc - offset.getAccelerationOffsetX())/coefficientRangeIMU),
+                (int)Math.round((msg.yacc - offset.getAccelerationOffsetY())/coefficientRangeIMU),
+                (int)Math.round((msg.zacc - offset.getAccelerationOffsetZ())/coefficientRangeIMU));
         Gyroscope gyroscope = new Gyroscope(msgAttitude.roll, msgAttitude.pitch, msgAttitude.yaw);
         Compass compass = new Compass(msg.xmag, msg.ymag, msg.zmag);
         return new IMU(timestamp, accelerometer, gyroscope, compass);
