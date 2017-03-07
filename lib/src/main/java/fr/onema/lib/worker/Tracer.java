@@ -4,13 +4,14 @@ package fr.onema.lib.worker;
 import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.FileManager;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
-import java.util.logging.Level;
 
 /**
  * Classe de logging, affiche les informations relatives à une plongée pour traitement ultérieur.
@@ -18,9 +19,9 @@ import java.util.logging.Level;
  * @author loics
  * @since 15-02-2017
  */
-public class Logger implements Worker {
+public class Tracer implements Worker {
 
-    private static final java.util.logging.Logger LOG = java.util.logging.Logger.getLogger(Logger.class.getName());
+    private static final Logger LOG = LoggerFactory.getLogger(Tracer.class.getName());
 
     private final FileManager fileManager;
     private final BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
@@ -31,7 +32,7 @@ public class Logger implements Worker {
      *
      * @param fileManager Le FileManager qui va servir à écrire les données issues du logger..
      */
-    Logger(FileManager fileManager) {
+    Tracer(FileManager fileManager) {
         this.fileManager = Objects.requireNonNull(fileManager);
     }
 
@@ -66,7 +67,8 @@ public class Logger implements Worker {
             try {
                 fileManager.openFileForResults();
             } catch (IOException e) {
-                Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
+                LOG.error(e.getMessage());
+                LOG.debug(e.getMessage(), e);
             }
 
             while (!Thread.interrupted()) {
@@ -75,7 +77,8 @@ public class Logger implements Worker {
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
-                    Logger.LOG.log(Level.SEVERE, e.getMessage(), e);
+                    LOG.error(e.getMessage());
+                    LOG.debug(e.getMessage(), e);
                 } finally {
                     File file = new File(fileManager.getResultsOutputFilePath());
                     try {
@@ -83,7 +86,8 @@ public class Logger implements Worker {
                             file.delete();
                         }
                     } catch (IOException e1) {
-                        Logger.LOG.log(Level.INFO, e1.getMessage(), e1);
+                        LOG.info(e1.getMessage());
+                        LOG.debug(e1.getMessage(), e1);
                     }
                 }
             }

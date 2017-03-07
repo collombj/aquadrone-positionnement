@@ -17,8 +17,7 @@ import static org.junit.Assert.fail;
  */
 public class ConfigurationTest {
     private Configuration config = Configuration.getInstance();
-
-
+    
     private final static String content = "divedata.delaicapteurhs=30\n" +
             "offset.acc.x=0.0\n" +
             "database.base=test\n" +

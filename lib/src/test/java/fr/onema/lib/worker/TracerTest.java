@@ -5,7 +5,7 @@ import fr.onema.lib.file.FileManager;
 import fr.onema.lib.geo.CartesianVelocity;
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.sensor.position.GPS;
-import fr.onema.lib.sensor.position.imu.IMU;
+import fr.onema.lib.sensor.position.imu.*;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -19,14 +19,14 @@ import java.util.concurrent.LinkedBlockingDeque;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class LoggerTest {
+public class TracerTest {
 
     private final static String refFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/rawInput.csv";
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
     private final static String resultsFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/resultsOutput.csv";
 
     private final static FileManager fileManager = new FileManager(refFile, virtualizedFile, resultsFile);
-    private static Logger logger;
+    private static Tracer logger;
     private static BlockingDeque<Position> positions = new LinkedBlockingDeque<>();
 
     @BeforeClass
@@ -38,7 +38,7 @@ public class LoggerTest {
         File res = new File(resultsFile);
         res.delete();
         populatePositions();
-        logger = new Logger(fileManager);
+        logger = new Tracer(fileManager);
         logger.start();
     }
 
