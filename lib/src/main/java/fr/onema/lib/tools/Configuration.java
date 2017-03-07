@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.logging.Logger;
 
 /**
  * Class permettant de maipuler la configuration de l'application.
@@ -17,7 +16,6 @@ import java.util.logging.Logger;
  * exemple.getDatabaseInformation.getHostname() // Permet de récupérer les informations de connexion de la BDD
  */
 public class Configuration {
-    private static final Logger LOGGER = Logger.getLogger(Configuration.class.getName());
     private static final String DB_HOST = "database.host";
     private static final String DB_PORT = "database.port";
     private static final String DB_BASE = "database.base";
@@ -43,6 +41,7 @@ public class Configuration {
 
     private Configuration(String path, Properties properties) throws FileNotFoundException {
         this.path = path;
+
         this.database = new Database(
                 properties.getProperty(DB_HOST),
                 Integer.parseInt(properties.getProperty(DB_PORT)),
@@ -51,7 +50,9 @@ public class Configuration {
                 properties.getProperty(DB_TOKEN),
                 properties.getProperty(DB_NOTIFY_KEY)
         );
+
         this.geo = new Geo(Integer.parseInt(properties.getProperty(GEO_SRID)));
+
         this.offset = new AccelerationOffset(Double.parseDouble(properties.getProperty(OFFSET_ACC_X)),
                 Double.parseDouble(properties.getProperty(OFFSET_ACC_Y)),
                 Double.parseDouble(properties.getProperty(OFFSET_ACC_Z)));
@@ -90,10 +91,9 @@ public class Configuration {
 
     public static Configuration getInstance() throws FileNotFoundException {
         if (instance == null) {
-                build("settings.properties");
+            build("settings.properties");
         }
         return instance;
-
     }
 
     /**

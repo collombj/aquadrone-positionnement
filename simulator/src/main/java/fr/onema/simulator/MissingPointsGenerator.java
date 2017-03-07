@@ -2,6 +2,8 @@ package fr.onema.simulator;
 
 import fr.onema.lib.geo.GPSCoordinate;
 import fr.onema.lib.geo.GeoMaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -11,8 +13,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -20,17 +20,18 @@ import java.util.stream.Stream;
  */
 
 class MissingPointsGenerator {
-    private static final Logger LOGGER = Logger.getLogger(MissingPointsGenerator.class.getName());
+    private final Logger LOGGER;
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
     private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
-    private final List<String> entries; //Don't supposed to be accessed remotely
-    private final List<Point> pointsInput; //Don't supposed to be accessed remotely
-    private final List<Point> pointsOutput; //Don't supposed to be accessed remotely
-    private String csvFilePath; //Don't supposed to be accessed remotely
+    private final List<String> entries; //Not supposed to be accessed remotely
+    private final List<Point> pointsInput; //Not supposed to be accessed remotely
+    private final List<Point> pointsOutput; //Not supposed to be accessed remotely
+    private String csvFilePath; //Not supposed to be accessed remotely
 
     private MissingPointsGenerator(String filePath) {
         this.csvFilePath = filePath;
+        LOGGER = LoggerFactory.getLogger(MissingPointsGenerator.class.getName());
         entries = new ArrayList<>();
         pointsInput = new ArrayList<>();
         pointsOutput = new ArrayList<>();
@@ -77,7 +78,7 @@ class MissingPointsGenerator {
                 Point point = new Point(new GPSCoordinate(lat, lon, alt), measure, 0, timestamp);
                 pointsInput.add(point);
             } else {
-                LOGGER.log(Level.SEVERE, "The line '" + entry + "' doesn't fit the requirements " +
+                LOGGER.error("The line '" + entry + "' doesn't fit the requirements " +
                         "(number of arguments = " + REQUIRED_LENGTH + ")");
             }
         });

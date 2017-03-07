@@ -2,23 +2,24 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.worker.MessageWorker;
 import fr.onema.lib.worker.Worker;
+import org.apache.log4j.PropertyConfigurator;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Classe permettant de lancer la thread d'écoute
  * Appeler la méthode start pour lancer la connexion et la thread
  */
 public class ServerListener implements Worker {
-    private static final Logger LOGGER = Logger.getLogger(ServerListener.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerListener.class.getName());
     private final int port;
     private DatagramSocket datagramSocket = null;
     private Thread listener;
@@ -62,7 +63,8 @@ public class ServerListener implements Worker {
             } catch (IOException e) {
                 Thread.currentThread().interrupt();
                 if (!datagramSocket.isClosed()) {
-                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    LOGGER.error(e.getMessage());
+                    LOGGER.debug(e.getMessage(), e);
                 }
             }
         }
