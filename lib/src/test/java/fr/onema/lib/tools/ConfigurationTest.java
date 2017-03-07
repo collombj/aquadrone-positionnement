@@ -78,9 +78,9 @@ public class ConfigurationTest {
 
         assertEquals("aquadrone.local", config.getDatabaseInformation().getHostname());
         assertEquals(5432, config.getDatabaseInformation().getPort());
-        assertEquals("test", config.getDatabaseInformation().getBase());
-        assertEquals("test", config.getDatabaseInformation().getUsername());
-        assertEquals("test", config.getDatabaseInformation().getPassword());
+        assertEquals("postgres", config.getDatabaseInformation().getBase());
+        assertEquals("postgres", config.getDatabaseInformation().getUsername());
+        assertEquals("postgres", config.getDatabaseInformation().getPassword());
         assertEquals("siren_key", config.getDatabaseInformation().getNotifyKey());
 
         assertEquals(4326, config.getGeo().getSrid());

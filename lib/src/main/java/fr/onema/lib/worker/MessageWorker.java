@@ -7,6 +7,7 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.sensor.position.Pressure;
+
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;
 import org.slf4j.Logger;
@@ -27,7 +28,7 @@ import java.util.concurrent.BlockingQueue;
  */
 public class MessageWorker implements Worker {
 
-    private static final long FIX_THRESHOLD = 1; // FIXME
+    private static final long FIX_THRESHOLD = 5;
     private static final String IMU_SENSOR = "IMU";
     private static final String GPS_SENSOR = "GPS";
     private static final String TEMPERATURE_SENSOR = "Temperature";

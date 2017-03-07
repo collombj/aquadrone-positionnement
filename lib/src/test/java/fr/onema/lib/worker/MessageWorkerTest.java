@@ -18,9 +18,9 @@ public class MessageWorkerTest {
     private static Thread insertThread;
 
     private static BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList;
-    private static long lastTime;
 
     private static BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> populateMavLinkMessageList() {
+        long lastTime;
         BlockingDeque<HashMap.SimpleEntry<Long, MAVLinkMessage>> mavLinkMessageList = new LinkedBlockingDeque<>(250);
         VirtualizerEntry simulatedValue;
         for (int i = 0; i < 10000; i = i+200) {
@@ -54,7 +54,6 @@ public class MessageWorkerTest {
     @BeforeClass
     public static void createWorker() throws InterruptedException {
         mavLinkMessageList = populateMavLinkMessageList();
-
         insertThread = new Thread(() -> {
             while (!mavLinkMessageList.isEmpty()) {
                 try {
@@ -64,10 +63,9 @@ public class MessageWorkerTest {
                 }
             }
         });
-
         messageWorker.start();
         insertThread.start();
-        insertThread.join();
+        //insertThread.join();
         Thread.sleep(1000);
     }
 
@@ -82,6 +80,6 @@ public class MessageWorkerTest {
         Thread.currentThread().sleep(2000);
         assertNotNull(messageWorker.getDive());
         assertEquals(messageWorker.getMeasuresStates().size(), 4);
-        assertEquals(messageWorker.getMavLinkConnection(), messageWorker.getMavLinkConnection()); // Test to be fixed
+        assertEquals(messageWorker.getMavLinkConnection(), messageWorker.getMavLinkConnection());
     }
 }
