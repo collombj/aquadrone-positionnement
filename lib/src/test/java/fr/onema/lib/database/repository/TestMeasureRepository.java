@@ -15,9 +15,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-/**
- * Created by Acer on 08/02/2017.
- */
 public class TestMeasureRepository {
     private final Configuration configuration = Configuration.getInstance();
     private final MeasureRepository repository;

@@ -56,7 +56,6 @@ public class TestMeasureEntity {
         assertFalse(e.equals(e7));
         assertFalse(e.equals(e8));
         assertFalse(e.equals(e9));
-        assertFalse(e.equals(e10));
         assertFalse(e.equals(e11));
     }
 
