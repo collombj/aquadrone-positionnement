@@ -2,7 +2,6 @@ package fr.onema.lib.network;
 
 import fr.onema.lib.worker.MessageWorker;
 import fr.onema.lib.worker.Worker;
-import org.apache.log4j.PropertyConfigurator;
 import org.mavlink.MAVLinkReader;
 import org.mavlink.messages.MAVLinkMessage;
 import org.mavlink.messages.ardupilotmega.*;

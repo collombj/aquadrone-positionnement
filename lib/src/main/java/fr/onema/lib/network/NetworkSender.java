@@ -1,7 +1,6 @@
 package fr.onema.lib.network;
 
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import org.apache.log4j.PropertyConfigurator;
 import org.mavlink.messages.MAVLinkMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

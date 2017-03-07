@@ -7,7 +7,6 @@ import fr.onema.lib.sensor.Temperature;
 import fr.onema.lib.sensor.position.GPS;
 import fr.onema.lib.virtualizer.entry.ReferenceEntry;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -10,7 +10,6 @@ import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.IMU.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
