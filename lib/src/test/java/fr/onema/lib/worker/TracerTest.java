@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-public class LoggerTest {
+public class TracerTest {
 
     private final static String virtualizedFile = System.getProperty("user.dir") + "/src/test/java/fr/onema/lib/virtualizedOutput.csv";
 

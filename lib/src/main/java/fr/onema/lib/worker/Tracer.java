@@ -5,7 +5,6 @@ import fr.onema.lib.drone.Position;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.virtualizer.entry.VirtualizerEntry;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.BlockingDeque;
@@ -71,15 +70,6 @@ public class Tracer implements Worker {
                     Thread.currentThread().interrupt();
                 } catch (IOException e) {
                     LOG.log(Level.SEVERE, e.getMessage(), e);
-                } finally {
-                    File file = new File(fileManager.getResultsOutputFilePath());
-                    try {
-                        if(file.exists() || fileManager.getLineNumber(file) == 1) {
-                            file.delete();
-                        }
-                    } catch (IOException e1) {
-                        LOG.log(Level.INFO, e1.getMessage(), e1);
-                    }
                 }
             }
         }

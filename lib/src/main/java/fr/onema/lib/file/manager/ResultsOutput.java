@@ -79,6 +79,11 @@ public class ResultsOutput implements FileManager {
     }
 
     @Override
+    public String getFilePath() {
+        return this.resultsOutputFilePath;
+    }
+
+    @Override
     public List<ReferenceEntry> readReferenceEntries() throws IOException {
         throw new UnsupportedOperationException();
     }

@@ -71,6 +71,13 @@ public interface FileManager {
     List<String> getResults(String replacement) throws IOException;
 
     /**
+     * Obtient le chemin du fichier associé à la classe.
+     *
+     * @return Le chemin du fichier représenté par la classe.
+     */
+    String getFilePath();
+
+    /**
      * Donne le nombre de ligne dans un fichier
      *
      * @param f Le fichier à analyser.

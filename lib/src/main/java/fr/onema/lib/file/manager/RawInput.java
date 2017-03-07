@@ -84,4 +84,9 @@ public class RawInput implements FileManager {
     public List<String> getResults(String replacement) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public String getFilePath() {
+        return this.rawInputFilePath;
+    }
 }

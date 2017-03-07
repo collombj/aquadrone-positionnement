@@ -65,9 +65,9 @@ public class Virtualizer {
             List<MeasureEntity> listMeasures = repository.getMeasureFrom(dive);
             int minimum = Math.min(listMeasures.size(), listRefEntry.size());
             if (minimum != 0) {
-                fileManager.openFileForResults();
+                resultsOutput.openFileForResults();
                 for (int i = 0; i < minimum; i++) {
-                    writeIntoFile(listRefEntry.get(i), listMeasures.get(i), errorAllowed);
+                    writeIntoFile(listRefEntry.get(i), resultsOutput, listMeasures.get(i), errorAllowed);
                 }
             }
         } catch (Exception e) {

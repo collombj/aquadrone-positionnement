@@ -73,6 +73,11 @@ public class VirtualizedOutput implements FileManager {
     }
 
     @Override
+    public String getFilePath() {
+        return this.virtualizedOutputFilePath;
+    }
+
+    @Override
     public void appendRaw(GPS gps, Temperature temp) throws IOException {
         throw new UnsupportedOperationException();
     }
