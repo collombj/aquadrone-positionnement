@@ -20,7 +20,7 @@ import java.util.stream.Stream;
  */
 
 class MissingPointsGenerator {
-    private final Logger LOGGER;
+    private static final Logger LOGGER = LoggerFactory.getLogger(MissingPointsGenerator.class.getName());
     private static final String CSV_HEADER = "timestamp,longitude,latitude,altitude,temperature";
     private static final int REQUIRED_LENGTH = 5;
     private static final double DISTANCE_BETWEEN_POINTS = 0.5;
@@ -31,7 +31,6 @@ class MissingPointsGenerator {
 
     private MissingPointsGenerator(String filePath) {
         this.csvFilePath = filePath;
-        LOGGER = LoggerFactory.getLogger(MissingPointsGenerator.class.getName());
         entries = new ArrayList<>();
         pointsInput = new ArrayList<>();
         pointsOutput = new ArrayList<>();
