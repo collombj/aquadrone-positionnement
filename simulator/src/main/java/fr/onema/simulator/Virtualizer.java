@@ -79,7 +79,9 @@ public class Virtualizer {
         try {
             resultsOutput.appendResults(ref, measure, errVal);
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Couldn't write error in the error file", e);
+            LOGGER.error("Couldn't write error in the error file");
+            LOGGER.debug("Couldn't write error in the error file", e);
+
             throw e;
         }
     }
