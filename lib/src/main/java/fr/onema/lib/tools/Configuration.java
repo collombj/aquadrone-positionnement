@@ -9,8 +9,8 @@ import java.io.PrintStream;
 import java.util.DoubleSummaryStatistics;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.StringJoiner;
 import java.util.logging.Logger;
+import java.util.StringJoiner;
 
 /**
  * Class permettant de maipuler la configuration de l'application.

@@ -2,7 +2,7 @@ package fr.onema.lib.geo;
 
 
 import fr.onema.lib.drone.Position;
-import fr.onema.lib.sensor.position.IMU.Accelerometer;
+import fr.onema.lib.sensor.position.imu.Accelerometer;
 import org.junit.Test;
 
 import java.util.ArrayList;
