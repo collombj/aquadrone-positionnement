@@ -10,21 +10,21 @@ import fr.onema.lib.geo.GeoMaths;
 import fr.onema.lib.sensor.position.imu.IMU;
 import fr.onema.lib.tools.Configuration;
 import fr.onema.lib.worker.DatabaseWorker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static fr.onema.lib.drone.Dive.State.ON;
 import static fr.onema.lib.drone.Dive.State.RECORD;
 
 
 public class Dive {
-    private static final Logger LOGGER = Logger.getLogger(Dive.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(Dive.class.getName());
     private final DatabaseWorker dbWorker = DatabaseWorker.getInstance();
     private GPSCoordinate reference;
     private List<Position> positions = new ArrayList<>();
@@ -39,6 +39,7 @@ public class Dive {
      * Crée une nouvelle Dive
      */
     public Dive() throws SQLException, FileNotFoundException {
+
         diveEntity = new DiveEntity();
 
         MeasureRepository repos =
@@ -66,7 +67,7 @@ public class Dive {
             reference = position.getPositionBrute();
         } else {//si ce n'est pas le premier point on calcule
             if (!position.hasIMU() && !position.hasGPS()) { // on ignore les paquets sans imu
-                LOGGER.log(Level.WARNING, "A packet has been throwed away");
+                LOGGER.warn("A packet has been throwed away");
                 return;
             }
 
@@ -74,10 +75,6 @@ public class Dive {
             if (position.hasGPS()) {
                 position.setPositionBrute(position.getGps().getPosition());
                 position.setCartesianBrute(GeoMaths.computeCartesianPosition(reference, position.getPositionBrute()));
-                /*lastVitesse = GeoMaths.computeVelocityFromCartesianCoordinate(
-                        lastPos.getCartesianBrute(),
-                        position.getCartesianBrute(),
-                        position.getTimestamp() - lastPos.getTimestamp());*/
             } else if (position.hasIMU()) {
                 lastVitesse = position.calculate(lastPos, lastVitesse);
                 position.setPositionBrute(GeoMaths.computeGPSCoordinateFromCartesian(reference, position.getCartesianBrute()));
@@ -130,7 +127,7 @@ public class Dive {
         }
 
         if(positions.isEmpty()) {
-            LOGGER.log(Level.INFO, "An empty dive has been ignored");
+            LOGGER.info("An empty dive has been ignored");
             return;
         }
 
@@ -150,7 +147,7 @@ public class Dive {
         for (Position pos : positions) {
             createUpdatedMeasuresList(pos);
         }
-        LOGGER.log(Level.INFO, "All positions have been updated");
+        LOGGER.info("All positions have been updated");
         updateMeasuresInBase();
     }
 
