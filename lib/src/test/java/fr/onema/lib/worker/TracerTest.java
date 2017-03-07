@@ -55,12 +55,12 @@ public class TracerTest {
 
     @AfterClass
     public static void delete() {
-        /*File ref = new File(refFile);
+        File ref = new File(refFile);
         ref.delete();
         File v = new File(virtualizedFile);
         v.delete();
         File res = new File(resultsFile);
-        res.delete();*/
+        res.delete();
         logger.stop();
     }
 
