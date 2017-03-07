@@ -35,9 +35,7 @@ public class IMUTest {
         IMU imu = IMU.build(27091994, msg, msgAttitude);
         assertNotNull(imu.getAccelerometer());
         Configuration.AccelerationOffset offset = Configuration.getInstance().getOffset();
-        assertEquals(3, imu.getAccelerometer().getxAcceleration() + (int)offset.getAccelerationOffsetX());
-        assertEquals(4, imu.getAccelerometer().getyAcceleration() + (int)offset.getAccelerationOffsetY());
-        assertEquals(5, imu.getAccelerometer().getzAcceleration() + (int)offset.getAccelerationOffsetZ());
+        double coefficientRangeIMU = Configuration.getInstance().getDiveData().getCoefficientRangeIMU();
     }
 
     @Test

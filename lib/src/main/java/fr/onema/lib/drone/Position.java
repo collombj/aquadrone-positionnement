@@ -225,7 +225,6 @@ public class Position {
                 imu.getGyroscope().getYaw(),
                 imu.getGyroscope().getPitch(),
                 imu.getGyroscope().getRoll(),
-                previousVelocity,
                 timestamp - previousPosition.getTimestamp(),
                 imu.getAccelerometer());
 
