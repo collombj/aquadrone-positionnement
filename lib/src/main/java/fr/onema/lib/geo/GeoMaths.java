@@ -415,8 +415,8 @@ public class GeoMaths {
 
         for (int i = rawPositions.size() - 1; i > 0; i--) {
 
-            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, -previousPos.getImu().getGyroscope().getYaw(),
-                    -previousPos.getImu().getGyroscope().getPitch(), -previousPos.getImu().getGyroscope().getRoll(),
+            MovementWrapper wrapper = computeNewPosition(previousWrapper.coordinate, previousPos.getImu().getGyroscope().getYaw() + Math.PI,
+                    previousPos.getImu().getGyroscope().getPitch(), previousPos.getImu().getGyroscope().getRoll(),
                     previousPos.getTimestamp() - rawPositions.get(i).getTimestamp(), previousPos.getImu().getAccelerometer());
             passTwo.add(wrapper.coordinate);
             previousWrapper = wrapper;
