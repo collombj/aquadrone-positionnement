@@ -4,6 +4,7 @@ import fr.onema.app.view.RootLayoutController;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.network.ServerListener;
 import fr.onema.lib.tools.Configuration;
+import fr.onema.lib.tools.LogSettings;
 import fr.onema.lib.worker.DatabaseWorker;
 import fr.onema.lib.worker.MessageWorker;
 import javafx.application.Application;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 /***
  * Classe Main de l'application graphique
@@ -48,7 +50,12 @@ public class Main extends Application {
      * @param args Les arguments passés au démarrage de l'application
      */
     public static void main(String[] args) {
-        PropertyConfigurator.configure("settings.properties");
+        try {
+            LogSettings.initLog4j();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
+
         CommandLineParser parser = new DefaultParser();
         Options options = initOptions();
 

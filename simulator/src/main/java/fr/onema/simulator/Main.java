@@ -4,8 +4,8 @@ import fr.onema.lib.file.manager.RawInput;
 import fr.onema.lib.file.manager.ResultsOutput;
 import fr.onema.lib.file.manager.VirtualizedOutput;
 import fr.onema.lib.tools.Configuration;
+import fr.onema.lib.tools.LogSettings;
 import org.apache.commons.cli.*;
-import org.apache.log4j.PropertyConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,7 +132,11 @@ public class Main {
      * @param args Arguments passés au moment de l'exécution de l'application (le simulateur)
      */
     public static void main(String[] args) {
-        PropertyConfigurator.configure("settings.properties");
+        try {
+            LogSettings.initLog4j();
+        } catch (IOException e) {
+            System.err.println(e.getMessage());
+        }
         CommandLineParser parser = new DefaultParser();
         Options options = initOptions();
 

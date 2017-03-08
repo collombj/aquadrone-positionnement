@@ -1,4 +1,3 @@
---
 -- PostgreSQL database dump
 --
 SET lock_timeout = 0;
@@ -19,6 +18,7 @@ CREATE TABLE dive (
   end_time   TIMESTAMP WITH TIME ZONE
 );
 
+
 --
 -- TOC entry 200 (class 1259 OID 20765)
 -- Name: measure; Type: TABLE; Schema: public; Owner: -; Tablespace:
@@ -28,14 +28,14 @@ CREATE TABLE measure (
   "timestamp"           TIMESTAMP WITH TIME ZONE NOT NULL,
   location_corrected    GEOMETRY,
   location_brut         GEOMETRY                 NOT NULL,
-  accelerationX         INTEGER                  NOT NULL,
-  accelerationY         INTEGER                  NOT NULL,
-  accelerationZ         INTEGER                  NOT NULL,
+  accelerationX  INTEGER                 NOT NULL,
+  accelerationY  INTEGER   NOT NULL,
+  accelerationZ  INTEGER   NOT NULL,
   precision_cm          INTEGER,
   measure_value         CHARACTER VARYING(255)   NOT NULL,
-  rotationX             INTEGER                  NOT NULL,
-  rotationY             INTEGER                  NOT NULL,
-  rotationZ             INTEGER                  NOT NULL,
+  roll  DECIMAL   NOT NULL,
+  pitch  DECIMAL   NOT NULL,
+  yaw  DECIMAL   NOT NULL,
   dive_id               INTEGER                  NOT NULL,
   measureinformation_id INTEGER
 );
@@ -92,8 +92,6 @@ ALTER TABLE ONLY measure_information
 ALTER TABLE ONLY measure
   ADD CONSTRAINT "measure_PK_ID" PRIMARY KEY (id);
 ALTER TABLE ONLY measure
-  ADD CONSTRAINT "measure_UNIQUE_POSITION_MEASURE_VALUE" UNIQUE (location_brut, location_corrected, measureinformation_id);
-ALTER TABLE ONLY measure
   ADD CONSTRAINT "measure_FK_DIVE_ID_dive_ID" FOREIGN KEY (dive_id) REFERENCES dive (id) ON DELETE CASCADE;
 ALTER TABLE ONLY measure
   ADD CONSTRAINT "measure_FK_MEASUREINFORMATION_ID_measureINFORMATION_ID" FOREIGN KEY (measureinformation_id) REFERENCES measure_information (id) ON DELETE CASCADE;
@@ -101,28 +99,22 @@ ALTER TABLE ONLY measure
 -- View: public.measure_formated
 --
 CREATE OR REPLACE VIEW public.measure_formated AS
-  SELECT
-    measure.id                                                                                          AS measure_id,
-    dive.id                                                                                             AS dive_id,
-    dive.start_time,
-    dive.end_time,
-    measure."timestamp",
-    measure.location_corrected,
-    measure.location_brut,
-    measure.measure_value,
-    regexp_replace(measure_information.display :: TEXT, '\{0\}' :: TEXT, measure.measure_value :: TEXT) AS display,
-    measure_information.type,
-    measure_information.unit,
-    measure_information.name
+SELECT measure.id AS measure_id,
+   dive.id AS dive_id,
+   dive.start_time,
+   dive.end_time,
+   measure."timestamp",
+   measure.location_corrected,
+   measure.location_brut,
+   ST_MakeLine(measure.location_corrected,measure.location_brut)AS location_difference,
+   measure.measure_value,
+   regexp_replace(measure_information.display::text, '\{0\}'::text, measure.measure_value::text) AS display,
+   measure_information.type,
+   measure_information.unit,
+   measure_information.name
   FROM dive,
-    measure,
-    measure_information
-  WHERE measure.dive_id = dive.id AND measure_information.id = measure.measureinformation_id;
+   measure,
+   measure_information
+ WHERE measure.dive_id = dive.id AND measure_information.id = measure.measureinformation_id;
 SELECT Populate_Geometry_Columns(('public.measure') :: REGCLASS);
 SELECT Populate_Geometry_Columns(('public.measure_formated') :: REGCLASS);
-
---- INSERTS
---INSERT INTO public.dive (start_time, end_time) VALUES (?, ?);
---INSERT INTO public.measure_information (type, display, unit, name) VALUES (?, ?, ?, ?);
---INSERT INTO public.measure ("timestamp", location_brut, acceleration, measure_value, dive_id, measureinformation_id)
---VALUES (time, ST_SetSRID(ST_MakePoint(X, Y, Z), 4326), ST_MakePoint(aX, aY, aZ), temp, dive_id, measure_id);
